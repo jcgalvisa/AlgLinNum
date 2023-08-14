@@ -601,11 +601,13 @@ md"""Tenemos el siguiente algoritmo (que evita división por la menor componente
 function Givens(a,b)
     if b!=0
         if abs(b)>abs(a)
+			# tipo 1
             τ=-a/b
             s=-1/sqrt(1+τ^2)
             c=s*τ
         else
-            τ=-b/a
+            # tipo 2
+			τ=-b/a
             c=1/sqrt(1+τ^2)
             s=c*τ
         end
@@ -613,18 +615,25 @@ function Givens(a,b)
     return c,s
 end        
 
+# ╔═╡ 2f1d478d-0b6e-4443-a409-3f00fb7eee7f
+md"""Observe que $|\tau|\leq 1$ e que para calsuclar $s$ y $c$ necesitamos de 5 operaciones y una raíz cuadrada.  """
+
 # ╔═╡ 51af97af-dc36-4a5b-81ae-0eaaad5a57de
 begin
 	v₁₁=[8; 6]
 	c,s = Givens(v₁₁[1],v₁₁[2])
 	G=[c -s; s c]
-	G*v₁₁
-	c, s
 end
 
+# ╔═╡ e3c682ea-ea20-4a89-8e29-71aba1b13a7d
+G*v₁₁
+
+# ╔═╡ 1bd6aef4-8a80-4245-8b02-cd2713341f6b
+md"""Tenemos la siguiente función que  aplica una 
+rotación de Gives dadas dos filas de una matriz $A$."""
+
 # ╔═╡ e57d51a4-0005-4b14-9450-73fa43cccceb
-function Giv(B, i, k, c, s)
-    A=copy(B)
+function Giv(A, i, k, c, s)
     for j=1:size(A)[2]
         τ1 = A[i,j]
         τ2 = A[k,j]
@@ -636,19 +645,36 @@ function Giv(B, i, k, c, s)
 end
 
 # ╔═╡ 6f0a344c-89a8-41e0-a3d6-7ee2013d678f
-A₁₂ = floor.(10*rand( 3, 3))
+begin
+	A₁₂ = floor.(10*rand( 3, 3))
+	B₁₂=copy(A₁₂)
+end
 
 # ╔═╡ 4d3d47ee-8362-41ea-bbbb-8f067db1aebe
 begin
+	if( A₁₂[3,1] !=0.0)
 	c₁, s₁ = Givens(A₁₂[2,1], A₁₂[3,1])
-	C= Giv(A₁₂ , 2,3 ,c₁,s₁)
+	A₁₃= Giv(B₁₂ , 2,3 ,c₁,s₁)
+	end
+	A₁₃
 end
 
 # ╔═╡ 2738ef60-adb7-4068-b24a-c82b0fc91abf
 begin
-	c₂, s₂ = Givens(C[1,1], C[2,1])
-	D = Giv(C, 1,2,c₂,s₂)
+	c₂, s₂ = Givens(A₁₃[1,1], A₁₃[2,1])
+	D = Giv(A₁₃, 1,2,c₂,s₂)
 end
+
+# ╔═╡ 027fbf5b-1419-477c-8048-7349264927f9
+md""" 
+## Givens rápido
+"""
+
+# ╔═╡ 025a34af-54bc-43b5-9f82-cbdee6003655
+md""" 
+Una matriz $G(i,k,\theta)$ puede escribirse (según sea tipo 1 o 2) como:
+"""
+
 
 # ╔═╡ 00000000-0000-0000-0000-000000000001
 PLUTO_PROJECT_TOML_CONTENTS = """
@@ -1010,10 +1036,15 @@ version = "17.4.0+0"
 # ╠═6b1c0220-f772-4cea-99b6-6d5b221fc020
 # ╠═99113f83-5cbf-4d08-b164-c6f4c7520c35
 # ╠═d9b5a5f5-0461-4455-93ea-1915decb3145
+# ╠═2f1d478d-0b6e-4443-a409-3f00fb7eee7f
 # ╠═51af97af-dc36-4a5b-81ae-0eaaad5a57de
+# ╠═e3c682ea-ea20-4a89-8e29-71aba1b13a7d
+# ╠═1bd6aef4-8a80-4245-8b02-cd2713341f6b
 # ╠═e57d51a4-0005-4b14-9450-73fa43cccceb
 # ╠═6f0a344c-89a8-41e0-a3d6-7ee2013d678f
 # ╠═4d3d47ee-8362-41ea-bbbb-8f067db1aebe
 # ╠═2738ef60-adb7-4068-b24a-c82b0fc91abf
+# ╟─027fbf5b-1419-477c-8048-7349264927f9
+# ╠═025a34af-54bc-43b5-9f82-cbdee6003655
 # ╟─00000000-0000-0000-0000-000000000001
 # ╟─00000000-0000-0000-0000-000000000002
