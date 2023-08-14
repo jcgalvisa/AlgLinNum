@@ -558,8 +558,11 @@ y además $y_j=x_j$ para $j\not=i$,$j\not=k$. Luego
 $G^T(i,k,\theta)A=G^T(i,k,\theta)
 \begin{pmatrix} 
 r_1 \\ 
-r_2 \\ 
+\vdots\\
+r_i \\ 
 \vdots \\
+r_k\\
+\vdots\\
 r_m
 \end{pmatrix}=
 \begin{pmatrix} 
@@ -574,7 +577,25 @@ r_m
 """
 
 # ╔═╡ 6b1c0220-f772-4cea-99b6-6d5b221fc020
-md"""Entonces """
+md"""Si
+
+$x_i=||x||\cos(\phi), \quad x_k=||x||\sin(\phi)$
+entonces
+
+$y_i=||x||\Big( \cos(\theta)\cos(\phi)-\sin(\theta)\sin(\phi) \Big) =||x||
+\cos(\theta+\phi)$
+y
+
+$y_i=||x||\sin(\theta+\phi).$
+Si queremos $y_k=0$ tenemos así dos alternativas, $\theta=-\phi$ o $\theta=\pi-\phi$.
+Escogemos $\theta=-\phi$. De donde
+
+$c=\cos(\theta)=\frac{x_i}{\sqrt{x_i^2+x_k^2}}, \quad
+s=\sin(\theta)=-\frac{x_k}{\sqrt{x_i^2+x_k^2}}$
+"""
+
+# ╔═╡ 99113f83-5cbf-4d08-b164-c6f4c7520c35
+md"""Tenemos el siguiente algoritmo (que evita división por la menor componente y también evita división por norma pequeña."""
 
 # ╔═╡ d9b5a5f5-0461-4455-93ea-1915decb3145
 function Givens(a,b)
@@ -983,10 +1004,11 @@ version = "17.4.0+0"
 # ╠═642a2da3-de23-422f-ace4-48667731cbfa
 # ╠═2a4c2eec-c3f1-4f8e-980c-0ff607e1e46d
 # ╟─d1b87663-6755-4eaa-9123-8717f95095a4
-# ╠═53e98911-65ae-48f0-96d4-bfb2bc04585f
+# ╟─53e98911-65ae-48f0-96d4-bfb2bc04585f
 # ╠═22106606-9bee-40cc-8d2f-17f36dda6937
-# ╟─38539181-36e0-444a-b93e-ab83600e983b
+# ╠═38539181-36e0-444a-b93e-ab83600e983b
 # ╠═6b1c0220-f772-4cea-99b6-6d5b221fc020
+# ╠═99113f83-5cbf-4d08-b164-c6f4c7520c35
 # ╠═d9b5a5f5-0461-4455-93ea-1915decb3145
 # ╠═51af97af-dc36-4a5b-81ae-0eaaad5a57de
 # ╠═e57d51a4-0005-4b14-9450-73fa43cccceb
