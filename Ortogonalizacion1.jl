@@ -672,9 +672,47 @@ md"""
 
 # ╔═╡ 025a34af-54bc-43b5-9f82-cbdee6003655
 md""" 
-Una matriz $G(i,k,\theta)$ puede escribirse (según sea tipo 1 o 2) como:
+Una matriz $G(i,k,\theta)$ puede escribirse (según sea tipo 1 o 2) como: 
+
+
+$G(i,k,\theta)^T=
+\mbox{diag}(1,\dots,1,-s,1,\dots,1,s,1,\dots)
+\begin{pmatrix} 
+\vdots & \vdots  & \vdots & \vdots & \vdots \\ 
+\dots & -\tau  & \dots & 1 & \dots \\ 
+\vdots & \vdots  & \vdots & \vdots & \vdots \\ 
+\dots & 1  & \dots & \tau& \dots \\
+\vdots & \vdots  & \vdots & \vdots & \vdots \\ 
+\end{pmatrix}=S_1(i,k,s)T_1(i,k,\tau)$
+o
+
+$G(i,k,\theta)^T=
+\mbox{diag}(1,\dots,1,c,1,\dots,1,c,1,\dots)
+\begin{pmatrix} 
+\vdots & \vdots  & \vdots & \vdots & \vdots \\ 
+\dots & 1  & \dots & -\tau & \dots \\ 
+\vdots & \vdots  & \vdots & \vdots & \vdots \\ 
+\dots & \tau  & \dots & 1& \dots \\
+\vdots & \vdots  & \vdots & \vdots & \vdots \\ 
+\end{pmatrix}=S_2(i,k,c)T_2(i,k,\tau).$
 """
 
+
+# ╔═╡ dce92edf-e838-434b-bef4-9851e5af147c
+md"""Tenemos así que, por ejemplo  
+
+$G^T(i_1,k_1,\theta_1)A=S_p(i_1,k_1,c)T_p(i_1,k_1,\tau_1)=S_p(i_1,k_1,c_1)\widetilde{A}$
+
+donde $A(1,k)=0$. Para el siguiente paso, tendriamos, 
+
+$G^T(i_2,k_2,\theta_2)G^T(i_1,k_1,\theta_1)A= S_q(i_2,k_2,c_2)T_q(i_2,k_2,\tau_2)C_p(i_1,k_1,c_1)\widetilde{A}$
+"""
+
+# ╔═╡ 04f1ebd6-13c7-4310-99d7-1abbc8963001
+md""" 
+
+Queremos proceder de tal manera que la multiplicación $C_p(i_1,k_1,c_1)\widetilde{A}$ no se haga y solo acumule hasta el final. Para esto consideramos dos casos dependiendo si la rotación de Givens es tipo 1 o tipo 2. Para simplificar consideremos sol las entradas implicadas. Por ejemplo en el caso tipo 1, tenemos, 
+"""
 
 # ╔═╡ 00000000-0000-0000-0000-000000000001
 PLUTO_PROJECT_TOML_CONTENTS = """
@@ -1046,5 +1084,7 @@ version = "17.4.0+0"
 # ╠═2738ef60-adb7-4068-b24a-c82b0fc91abf
 # ╟─027fbf5b-1419-477c-8048-7349264927f9
 # ╠═025a34af-54bc-43b5-9f82-cbdee6003655
+# ╟─dce92edf-e838-434b-bef4-9851e5af147c
+# ╠═04f1ebd6-13c7-4310-99d7-1abbc8963001
 # ╟─00000000-0000-0000-0000-000000000001
 # ╟─00000000-0000-0000-0000-000000000002
