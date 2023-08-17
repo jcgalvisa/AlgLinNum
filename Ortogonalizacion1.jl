@@ -25,10 +25,10 @@ md"""
 # Problema de ortogonalización
 
 Considermos el problema de ortogonaliar las columnas de una matriz dada $A$. Los métodos mas usados son
-1. Gram-Schmidt clásico (CGS)
-2. Gram-Schmidt modificado (MGS)
-3. Householder (H) (usando reflexiones). Desarrollado en 1958 por Householder en el Oak Ridge National Laboratory
-4. Givens (G) (usando rotaciones). Desarrollado en 1950 por Givens en el Argone National Laboratory.
+1. Gram-Schmidt clásico, CGS,  ([Gram](https://en.wikipedia.org/wiki/J%C3%B8rgen_Pedersen_Gram) 1883, Popularizado por [Schmidt](https://en.wikipedia.org/wiki/Erhard_Schmidt) 1907)
+2. Gram-Schmidt modificado, MG (Desde 1820 por [Laplace](https://en.wikipedia.org/wiki/Pierre-Simon_Laplace))
+3. Householder (H) (usando reflexiones). Desarrollado en 1958 por [Householder](https://en.wikipedia.org/wiki/Alston_Scott_Householder) en el [Oak Ridge National Laboratory](https://www.ornl.gov/)
+4. Givens (G) (usando rotaciones). Desarrollado en 1950 por [Givens](https://en.wikipedia.org/wiki/Wallace_Givens) en el [Argone National Laboratory](Argone National Laboratory).
 Además se usa 
 5. Reortogonalización 
 
@@ -1000,7 +1000,7 @@ version = "17.4.0+0"
 # ╠═6d157051-b6fe-47bf-969d-2384f0c00a21
 # ╠═51ba2480-0c4e-11ee-1e0c-594440b0ada3
 # ╠═79238d73-62a6-4a7c-bb7b-b85266fceb12
-# ╟─e3cdd44b-7e34-4111-85a6-93adf93c1189
+# ╠═e3cdd44b-7e34-4111-85a6-93adf93c1189
 # ╟─7cd9ba81-bf09-40b0-bce0-fb5792ca0f7e
 # ╟─8515b92f-1847-46ae-82cd-ebf326d68b60
 # ╟─08898697-c5f1-49ed-9944-c642ebea6b79
