@@ -102,8 +102,7 @@ Al recopilar todas estas observaciones tenemos el algoritmo de la página 231 de
 """
 
 # ╔═╡ d2e396f8-b1a6-4cd2-b6dd-d9a2851c8e75
-function QRCGS(B)
-    A=copy(B)
+function QRCGS(A)
     sizeA=size(A)
     Q = zeros(sizeA) #(m,n)
     R = zeros(sizeA[2],sizeA[2]) #(n,n)
@@ -130,10 +129,10 @@ Note que en la segunda línea del codigo copiamos la matriz $B$ a la matriz $A$.
 md""" ## Ejemplo 1 """
 
 # ╔═╡ 182be4ae-a5c7-4530-aff2-e35076523a14
-n₁,m₁= 5,4
+n₁,m₁= 3, 4
 
 # ╔═╡ 7bdd743a-b20c-46df-a979-66670dea11ee
-A₁ = rand(m₁,n₁);
+A₁ = rand(m₁,n₁)
 
 # ╔═╡ f29f9e4f-3f21-4754-8a7d-06fc29d93e59
 Q₁, R₁ = QRCGS(A₁); display(R₁)
@@ -143,6 +142,9 @@ display(Q₁)
 
 # ╔═╡ e315e430-2983-4370-834f-2e68e5779f72
 opnorm(A₁-Q₁*R₁)
+
+# ╔═╡ 47376a21-a951-4563-9adb-f6c175c50c01
+opnorm(Q₁'Q₁-UniformScaling(1))
 
 # ╔═╡ 1e41d138-d79e-4b20-804e-280cbff7e49a
 md""" En el siguiente ejemplo consideramos una matriz $A=[A_1,A_2]$ donde $A_2$ es una perturbación de $A_1$. """
@@ -1011,6 +1013,7 @@ version = "17.4.0+0"
 # ╠═f29f9e4f-3f21-4754-8a7d-06fc29d93e59
 # ╠═41ed3062-a8a0-4782-9460-48fc17e91f98
 # ╠═e315e430-2983-4370-834f-2e68e5779f72
+# ╠═47376a21-a951-4563-9adb-f6c175c50c01
 # ╟─1e41d138-d79e-4b20-804e-280cbff7e49a
 # ╠═5294223c-9c11-4c12-ba79-a493e593b4b1
 # ╠═169f8c57-dd3f-420f-ab8f-845827957bda
