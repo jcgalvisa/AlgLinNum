@@ -1,5 +1,5 @@
 ### A Pluto.jl notebook ###
-# v0.19.22
+# v0.19.27
 
 using Markdown
 using InteractiveUtils
@@ -208,11 +208,14 @@ end
 # ╔═╡ 224ac346-39f7-45dc-9b50-ec1aeb62038c
 Q₅,R₅=QRMGS(B₅);
 
+# ╔═╡ 303868fc-de8e-48a6-95a9-cd81323656f4
+cond(A₅)
+
 # ╔═╡ 0c674427-7368-4475-9aac-7db03b247cf8
 opnorm(Q₅'*Q₅-UniformScaling(1))
 
 # ╔═╡ 615c8ab5-39fe-4d28-bb8a-63e50a7df795
-opnorm(A₅-Q₅*R₅)
+opnorm(A₅-Q₅*R₅)/opnorm(A₅)
 
 # ╔═╡ cb0111b0-c27e-466b-97f3-bca58a75ca25
 begin
@@ -245,8 +248,11 @@ Q₉c,R₉c=QRCGS(A₉);
 # ╔═╡ 7e6802da-dea6-4d9d-8db0-ef9abe09fc3b
 opnorm(Q₉c'*Q₉c-UniformScaling(1))
 
+# ╔═╡ ad971243-e6d3-4f99-ab56-9071ab77d0d4
+cond(A₉)
+
 # ╔═╡ b8f16643-195c-45d9-928e-7a6112485a04
-opnorm(A₉-Q₉c*R₉c)
+opnorm(A₉-Q₉c*R₉c)/opnorm(A₉)
 
 # ╔═╡ 9518b7b6-45ef-44fb-8f0b-7a315d6a4dfe
 Q₉m,R₉m=QRMGS(B₉);
@@ -255,7 +261,7 @@ Q₉m,R₉m=QRMGS(B₉);
 opnorm(Q₉m'*Q₉m-UniformScaling(1))
 
 # ╔═╡ 9b2d9220-5c36-47a1-a5a2-a19de55159e0
-opnorm(A₉-Q₉m*R₉m)
+opnorm(A₉-Q₉m*R₉m)/opnorm(A₉)
 
 # ╔═╡ b0214333-9461-4535-a5a6-f2aeac628e06
 md"""Observe que con el MGS los vectores estan más cerca de ser realmente orgotonales que con el CGS. Además, con el CGS el residuo de la factorización es un poco menor que con MGS. Finalmente hacemos la siguiente observación: cuando el residuo de ortogonalidad es grade podemos reortogonalizar. Suponga que inicamos con $A\approx QR$. Entonces podmeos calcular $Q\approx \tilde{Q}\tilde{R}$. Obtenemos $A\approx (\tilde{Q}\tilde{R})R=\tilde{Q}\hat{R}$. """
@@ -734,7 +740,7 @@ PlutoUI = "~0.7.51"
 PLUTO_MANIFEST_TOML_CONTENTS = """
 # This file is machine-generated - editing it directly is not advised
 
-julia_version = "1.8.5"
+julia_version = "1.9.2"
 manifest_format = "2.0"
 project_hash = "d0069486257542c58ff4f12284b8908f62265555"
 
@@ -769,7 +775,7 @@ version = "0.11.4"
 [[deps.CompilerSupportLibraries_jll]]
 deps = ["Artifacts", "Libdl"]
 uuid = "e66e0078-7015-5450-92f7-15fbd957f2ae"
-version = "1.0.1+0"
+version = "1.0.5+0"
 
 [[deps.Dates]]
 deps = ["Printf"]
@@ -840,7 +846,7 @@ version = "1.10.2+0"
 uuid = "8f399da3-3557-5675-b5ff-fb832c97cbdb"
 
 [[deps.LinearAlgebra]]
-deps = ["Libdl", "libblastrampoline_jll"]
+deps = ["Libdl", "OpenBLAS_jll", "libblastrampoline_jll"]
 uuid = "37e2e46d-f89d-539d-b4ee-838fcccc9c8e"
 
 [[deps.Logging]]
@@ -858,14 +864,14 @@ uuid = "d6f4376e-aef5-505a-96c1-9c027394607a"
 [[deps.MbedTLS_jll]]
 deps = ["Artifacts", "Libdl"]
 uuid = "c8ffd9c3-330d-5841-b78e-0817d7145fa1"
-version = "2.28.0+0"
+version = "2.28.2+0"
 
 [[deps.Mmap]]
 uuid = "a63ad114-7e13-5084-954f-fe012c677804"
 
 [[deps.MozillaCACerts_jll]]
 uuid = "14a3606d-f60d-562e-9121-12d972cd8159"
-version = "2022.2.1"
+version = "2022.10.11"
 
 [[deps.NetworkOptions]]
 uuid = "ca575930-c2e3-43a9-ace4-1e988b2c1908"
@@ -874,7 +880,7 @@ version = "1.2.0"
 [[deps.OpenBLAS_jll]]
 deps = ["Artifacts", "CompilerSupportLibraries_jll", "Libdl"]
 uuid = "4536629a-c528-5b80-bd46-f80d51c5b363"
-version = "0.3.20+0"
+version = "0.3.21+4"
 
 [[deps.Parsers]]
 deps = ["Dates", "PrecompileTools", "UUIDs"]
@@ -883,9 +889,9 @@ uuid = "69de0a69-1ddd-5017-9359-2bf0b02dc9f0"
 version = "2.7.0"
 
 [[deps.Pkg]]
-deps = ["Artifacts", "Dates", "Downloads", "LibGit2", "Libdl", "Logging", "Markdown", "Printf", "REPL", "Random", "SHA", "Serialization", "TOML", "Tar", "UUIDs", "p7zip_jll"]
+deps = ["Artifacts", "Dates", "Downloads", "FileWatching", "LibGit2", "Libdl", "Logging", "Markdown", "Printf", "REPL", "Random", "SHA", "Serialization", "TOML", "Tar", "UUIDs", "p7zip_jll"]
 uuid = "44cfe95a-1eb2-52ea-b672-e2afdf69b78f"
-version = "1.8.0"
+version = "1.9.2"
 
 [[deps.PlutoUI]]
 deps = ["AbstractPlutoDingetjes", "Base64", "ColorTypes", "Dates", "FixedPointNumbers", "Hyperscript", "HypertextLiteral", "IOCapture", "InteractiveUtils", "JSON", "Logging", "MIMEs", "Markdown", "Random", "Reexport", "URIs", "UUIDs"]
@@ -937,22 +943,28 @@ uuid = "9e88b42a-f829-5b0c-bbe9-9e923198166b"
 uuid = "6462fe0b-24de-5631-8697-dd941f90decc"
 
 [[deps.SparseArrays]]
-deps = ["LinearAlgebra", "Random"]
+deps = ["Libdl", "LinearAlgebra", "Random", "Serialization", "SuiteSparse_jll"]
 uuid = "2f01184e-e22b-5df5-ae63-d93ebab69eaf"
 
 [[deps.Statistics]]
 deps = ["LinearAlgebra", "SparseArrays"]
 uuid = "10745b16-79ce-11e8-11f9-7d13ad32a3b2"
+version = "1.9.0"
+
+[[deps.SuiteSparse_jll]]
+deps = ["Artifacts", "Libdl", "Pkg", "libblastrampoline_jll"]
+uuid = "bea87d4a-7f5b-5778-9afe-8cc45184846c"
+version = "5.10.1+6"
 
 [[deps.TOML]]
 deps = ["Dates"]
 uuid = "fa267f1f-6049-4f14-aa54-33bafae1ed76"
-version = "1.0.0"
+version = "1.0.3"
 
 [[deps.Tar]]
 deps = ["ArgTools", "SHA"]
 uuid = "a4e569a6-e804-4fa4-b0f3-eef7a1d5b13e"
-version = "1.10.1"
+version = "1.10.0"
 
 [[deps.Test]]
 deps = ["InteractiveUtils", "Logging", "Random", "Serialization"]
@@ -978,12 +990,12 @@ uuid = "4ec0a83e-493e-50e2-b9ac-8f72acf5a8f5"
 [[deps.Zlib_jll]]
 deps = ["Libdl"]
 uuid = "83775a58-1f1d-513f-b197-d71354ab007a"
-version = "1.2.12+3"
+version = "1.2.13+0"
 
 [[deps.libblastrampoline_jll]]
-deps = ["Artifacts", "Libdl", "OpenBLAS_jll"]
+deps = ["Artifacts", "Libdl"]
 uuid = "8e850b90-86db-534c-a0d3-1478176c7d93"
-version = "5.1.1+0"
+version = "5.8.0+0"
 
 [[deps.nghttp2_jll]]
 deps = ["Artifacts", "Libdl"]
@@ -1000,7 +1012,7 @@ version = "17.4.0+0"
 # ╠═6d157051-b6fe-47bf-969d-2384f0c00a21
 # ╠═51ba2480-0c4e-11ee-1e0c-594440b0ada3
 # ╠═79238d73-62a6-4a7c-bb7b-b85266fceb12
-# ╠═e3cdd44b-7e34-4111-85a6-93adf93c1189
+# ╟─e3cdd44b-7e34-4111-85a6-93adf93c1189
 # ╟─7cd9ba81-bf09-40b0-bce0-fb5792ca0f7e
 # ╟─8515b92f-1847-46ae-82cd-ebf326d68b60
 # ╟─08898697-c5f1-49ed-9944-c642ebea6b79
@@ -1024,6 +1036,7 @@ version = "17.4.0+0"
 # ╠═9f9bf293-f4b3-49f2-8b0e-146e6ba52313
 # ╠═e363cbe7-a469-4a8e-9533-d13921532697
 # ╠═224ac346-39f7-45dc-9b50-ec1aeb62038c
+# ╠═303868fc-de8e-48a6-95a9-cd81323656f4
 # ╠═0c674427-7368-4475-9aac-7db03b247cf8
 # ╠═615c8ab5-39fe-4d28-bb8a-63e50a7df795
 # ╠═332554ec-b061-4d93-be61-d0c400fdea1a
@@ -1033,6 +1046,7 @@ version = "17.4.0+0"
 # ╠═5bed8ab7-6e4b-49b6-b7e8-b577f71975d4
 # ╠═bec89150-5967-429d-8539-d08848f65df1
 # ╠═7e6802da-dea6-4d9d-8db0-ef9abe09fc3b
+# ╠═ad971243-e6d3-4f99-ab56-9071ab77d0d4
 # ╠═b8f16643-195c-45d9-928e-7a6112485a04
 # ╠═9518b7b6-45ef-44fb-8f0b-7a315d6a4dfe
 # ╠═f1833e8d-3d98-4748-8373-de059294e98e
