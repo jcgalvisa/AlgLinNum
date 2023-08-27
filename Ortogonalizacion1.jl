@@ -208,6 +208,11 @@ function QRMGS(A)
     return Q, R
 end
 
+# ╔═╡ efc140bc-4fff-4631-93cc-8749fd159f6e
+md""" ## Ejemplo 3 
+Aplicamos en algoritmo anterior, calculamos los residuos de la factorización y la ortogonalización y comparamos (usando benchmarktools) el tiempo de ejecución del MGS con el CGS.
+"""
+
 # ╔═╡ e363cbe7-a469-4a8e-9533-d13921532697
 begin
 	n₅ = 30
@@ -242,6 +247,11 @@ end
 # ╔═╡ 9178ab89-2210-4b6d-b1b3-7a33a483acee
 @benchmark Q,R=QRMGS(B₆)
 
+# ╔═╡ 49829808-d34b-402c-b6a9-29f2f55dba03
+md""" ## Ejemplo 4
+Ahora consideramos el caso de columnas cercanas (casi linelmente independientes). 
+"""
+
 # ╔═╡ 5bed8ab7-6e4b-49b6-b7e8-b577f71975d4
 begin
 n₇ = 200
@@ -274,8 +284,14 @@ opnorm(Q₉m'*Q₉m-UniformScaling(1))
 # ╔═╡ 9b2d9220-5c36-47a1-a5a2-a19de55159e0
 opnorm(A₉-Q₉m*R₉m)/opnorm(A₉)
 
+# ╔═╡ 1ff4c715-6352-465c-8575-a8ccae9ee708
+md"""Observe que con el MGS los vectores estan más cerca de ser realmente orgotonales que con el CGS. Además, con el CGS el residuo de la factorización es un poco menor que con MGS."""
+
 # ╔═╡ b0214333-9461-4535-a5a6-f2aeac628e06
-md"""Observe que con el MGS los vectores estan más cerca de ser realmente orgotonales que con el CGS. Además, con el CGS el residuo de la factorización es un poco menor que con MGS. Finalmente hacemos la siguiente observación: cuando el residuo de ortogonalidad es grade podemos reortogonalizar. Suponga que inicamos con $A\approx QR$. Entonces podmeos calcular $Q\approx \tilde{Q}\tilde{R}$. Obtenemos $A\approx (\tilde{Q}\tilde{R})R=\tilde{Q}\hat{R}$. """
+md"""Observe que con el MGS los vectores estan más cerca de ser realmente orgotonales que con el CGS. Además, con el CGS el residuo de la factorización es un poco menor que con MGS.
+
+# Re-ortogonalización  
+Finalmente hacemos la siguiente observación: cuando el residuo de ortogonalidad es grade podemos reortogonalizar. Suponga que inicamos con $A\approx QR$. Entonces podmeos calcular $Q\approx \tilde{Q}\tilde{R}$. Obtenemos $A\approx (\tilde{Q}\tilde{R})R=\tilde{Q}\hat{R}$. """
 
 # ╔═╡ cca162bf-84fd-4032-a90f-522796baacf9
 tildeQ₉c,tildeR₉c=QRCGS(Q₉c);
@@ -1045,9 +1061,10 @@ version = "17.4.0+0"
 # ╠═169f8c57-dd3f-420f-ab8f-845827957bda
 # ╠═2979e236-17ff-4adf-b890-faba2dc3af9c
 # ╠═092220fa-4a6e-493e-b5cd-0d221645af48
-# ╠═326085e4-b4f3-4d36-ac87-b6ae2e57763b
+# ╟─326085e4-b4f3-4d36-ac87-b6ae2e57763b
 # ╟─c31f342a-0100-46d6-ae93-adfed9248d96
 # ╠═9f9bf293-f4b3-49f2-8b0e-146e6ba52313
+# ╟─efc140bc-4fff-4631-93cc-8749fd159f6e
 # ╠═e363cbe7-a469-4a8e-9533-d13921532697
 # ╠═224ac346-39f7-45dc-9b50-ec1aeb62038c
 # ╠═303868fc-de8e-48a6-95a9-cd81323656f4
@@ -1057,6 +1074,7 @@ version = "17.4.0+0"
 # ╠═cb0111b0-c27e-466b-97f3-bca58a75ca25
 # ╠═382da2b9-b903-4029-ad07-97d936529853
 # ╠═9178ab89-2210-4b6d-b1b3-7a33a483acee
+# ╟─49829808-d34b-402c-b6a9-29f2f55dba03
 # ╠═5bed8ab7-6e4b-49b6-b7e8-b577f71975d4
 # ╠═bec89150-5967-429d-8539-d08848f65df1
 # ╠═7e6802da-dea6-4d9d-8db0-ef9abe09fc3b
@@ -1065,7 +1083,8 @@ version = "17.4.0+0"
 # ╠═9518b7b6-45ef-44fb-8f0b-7a315d6a4dfe
 # ╠═f1833e8d-3d98-4748-8373-de059294e98e
 # ╠═9b2d9220-5c36-47a1-a5a2-a19de55159e0
-# ╟─b0214333-9461-4535-a5a6-f2aeac628e06
+# ╟─1ff4c715-6352-465c-8575-a8ccae9ee708
+# ╠═b0214333-9461-4535-a5a6-f2aeac628e06
 # ╠═cca162bf-84fd-4032-a90f-522796baacf9
 # ╠═c4421b71-29cf-4b43-a71c-5b6070bd4afe
 # ╠═7132f19f-fc36-4984-8d7e-2ff58ae08a02
