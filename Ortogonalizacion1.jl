@@ -288,10 +288,12 @@ opnorm(A₉-Q₉m*R₉m)/opnorm(A₉)
 md"""Observe que con el MGS los vectores estan más cerca de ser realmente orgotonales que con el CGS. Además, con el CGS el residuo de la factorización es un poco menor que con MGS."""
 
 # ╔═╡ b0214333-9461-4535-a5a6-f2aeac628e06
-md"""Observe que con el MGS los vectores estan más cerca de ser realmente orgotonales que con el CGS. Además, con el CGS el residuo de la factorización es un poco menor que con MGS.
-
+md"""
 # Re-ortogonalización  
-Finalmente hacemos la siguiente observación: cuando el residuo de ortogonalidad es grade podemos reortogonalizar. Suponga que inicamos con $A\approx QR$. Entonces podmeos calcular $Q\approx \tilde{Q}\tilde{R}$. Obtenemos $A\approx (\tilde{Q}\tilde{R})R=\tilde{Q}\hat{R}$. """
+Hacemos la siguiente observación: cuando el residuo de ortogonalidad es grade podemos reortogonalizar. Suponga que inicamos con $A\approx QR$. Entonces podmeos calcular $Q\approx \tilde{Q}\tilde{R}$. Obtenemos $A\approx (\tilde{Q}\tilde{R})R=\tilde{Q}\hat{R}$. """
+
+# ╔═╡ 4df2d1d6-1a1b-4b53-9390-e661acd16dd2
+md""" ## Ejemplo 4 (continuación)"""
 
 # ╔═╡ cca162bf-84fd-4032-a90f-522796baacf9
 tildeQ₉c,tildeR₉c=QRCGS(Q₉c);
@@ -387,7 +389,9 @@ function house(x)
 end
 
 # ╔═╡ 79c5957b-1ff2-4a0c-bf48-cee6540a72b5
-md""" Considere el siguiente ejemplo."""
+md""" 
+## Ejemplo 5
+Considere el siguiente ejemplo."""
 
 # ╔═╡ 15d46ffa-7175-4b72-8ed2-054abb09e1b0
 begin
@@ -408,6 +412,9 @@ H*x
 md""" 
 Note que si estamos haciendo la factorización de una sola columna, $x$, entonces $H^T$ corresponde a la matriz $Q$ de la factorización $QR$, **pero esta vez la matriz $Q$ es cuadrada y genera todo $\mathbb{R}^m$**. Es decir, obtenemos la factorización completa. En esta caso las filas $2:m$ de la matriz $H$ son vectores ortogonales a $x$. Recuerde que si queremos obtener la factorizació completa con GS tendríamos que iniciar con $m$ columnas, es decir, tendriamos que encontrar $m-n$ columnas linealmente independientes a las que tenemos y despues aplicar GS. 
 """
+
+# ╔═╡ a0587521-f2d9-4ba0-a5e3-86a3be90473f
+md""" ## Uso de Householder en ortogonalización"""
 
 # ╔═╡ 0cbb28b5-2980-413f-be18-d311ee092bb8
 md""" 
@@ -1084,7 +1091,8 @@ version = "17.4.0+0"
 # ╠═f1833e8d-3d98-4748-8373-de059294e98e
 # ╠═9b2d9220-5c36-47a1-a5a2-a19de55159e0
 # ╟─1ff4c715-6352-465c-8575-a8ccae9ee708
-# ╠═b0214333-9461-4535-a5a6-f2aeac628e06
+# ╟─b0214333-9461-4535-a5a6-f2aeac628e06
+# ╠═4df2d1d6-1a1b-4b53-9390-e661acd16dd2
 # ╠═cca162bf-84fd-4032-a90f-522796baacf9
 # ╠═c4421b71-29cf-4b43-a71c-5b6070bd4afe
 # ╠═7132f19f-fc36-4984-8d7e-2ff58ae08a02
@@ -1097,6 +1105,7 @@ version = "17.4.0+0"
 # ╠═6c6eea6c-2754-4b3d-88ad-237a10329227
 # ╠═2df12392-0700-4301-afdc-c47729fa9247
 # ╟─eb300638-4986-4c88-be9f-2474f59bd4e3
+# ╠═a0587521-f2d9-4ba0-a5e3-86a3be90473f
 # ╟─0cbb28b5-2980-413f-be18-d311ee092bb8
 # ╠═2fec112c-3819-432d-a17d-abeaef833c29
 # ╠═e5aa386a-a035-4c9a-8cdd-d43b33162347
