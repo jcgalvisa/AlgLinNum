@@ -1,5 +1,5 @@
 ### A Pluto.jl notebook ###
-# v0.19.27
+# v0.19.26
 
 using Markdown
 using InteractiveUtils
@@ -134,17 +134,28 @@ n₁,m₁= 3, 4
 # ╔═╡ 7bdd743a-b20c-46df-a979-66670dea11ee
 A₁ = rand(m₁,n₁)
 
+# ╔═╡ 46d74abc-0ee9-4013-ae45-351c1960163c
+md"""
+Aplicando el algoritmo anterior, obtenemosd los siguientes resultados, 
+"""
+
 # ╔═╡ f29f9e4f-3f21-4754-8a7d-06fc29d93e59
 Q₁, R₁ = QRCGS(A₁); display(R₁)
 
 # ╔═╡ 41ed3062-a8a0-4782-9460-48fc17e91f98
 display(Q₁)
 
+# ╔═╡ dfd4b7d6-4552-471c-9bc9-647ddacb17ae
+md"""Para indagar sobre la calidad de los resultados, podemos calcular el residuo relativo de la factorización y el residio de la ortogonalización: """
+
 # ╔═╡ e315e430-2983-4370-834f-2e68e5779f72
-opnorm(A₁-Q₁*R₁)
+opnorm(A₁-Q₁*R₁)/opnorm(A₁)
 
 # ╔═╡ 47376a21-a951-4563-9adb-f6c175c50c01
 opnorm(Q₁'Q₁-UniformScaling(1))
+
+# ╔═╡ a825ec17-d3f4-4167-9f45-ab61812883dc
+md""" ## Ejemplo 2 """
 
 # ╔═╡ 1e41d138-d79e-4b20-804e-280cbff7e49a
 md""" En el siguiente ejemplo consideramos una matriz $A=[A_1,A_2]$ donde $A_2$ es una perturbación de $A_1$. """
@@ -152,9 +163,9 @@ md""" En el siguiente ejemplo consideramos una matriz $A=[A_1,A_2]$ donde $A_2$ 
 # ╔═╡ 5294223c-9c11-4c12-ba79-a493e593b4b1
 begin
 	n₂ = 100
-	m₂ = 1000 
-	A₂ = rand(m₂,Int(n₂/2));
-	ϵ₂= 1E-5 # tamaño de la perturbación
+	m₂ = 1000
+	A₂ = randn(m₂,Int(n₂/2));
+	ϵ₂= 1E-10 # tamaño de la perturbación
 	A₃=A₂+ϵ₂*rand(m₂,Int(n₂/2));
 	A₄=[A₂ A₃];
 end
@@ -163,13 +174,13 @@ end
 Q₃, R₃ = QRCGS(A₃);
 
 # ╔═╡ 2979e236-17ff-4adf-b890-faba2dc3af9c
-opnorm(A₃-Q₃*R₃)
+opnorm(A₃-Q₃*R₃)/opnorm(A₃)
 
 # ╔═╡ 092220fa-4a6e-493e-b5cd-0d221645af48
 opnorm(Q₃'Q₃-UniformScaling(1))
 
 # ╔═╡ 326085e4-b4f3-4d36-ac87-b6ae2e57763b
-md"""Aquí observamos la poca estabilidad numérica del CGS ya que el residuo de la ortonormalidad no es pequeño. """
+md"""Aquí intentamos probar la estabilidad numérica del CGS calculando ell residuo de la ortonormalidad. """
 
 # ╔═╡ c31f342a-0100-46d6-ae93-adfed9248d96
 md"""# Gram - Schmidt modificado
@@ -740,7 +751,7 @@ PlutoUI = "~0.7.51"
 PLUTO_MANIFEST_TOML_CONTENTS = """
 # This file is machine-generated - editing it directly is not advised
 
-julia_version = "1.9.2"
+julia_version = "1.9.0"
 manifest_format = "2.0"
 project_hash = "d0069486257542c58ff4f12284b8908f62265555"
 
@@ -775,7 +786,7 @@ version = "0.11.4"
 [[deps.CompilerSupportLibraries_jll]]
 deps = ["Artifacts", "Libdl"]
 uuid = "e66e0078-7015-5450-92f7-15fbd957f2ae"
-version = "1.0.5+0"
+version = "1.0.2+0"
 
 [[deps.Dates]]
 deps = ["Printf"]
@@ -891,7 +902,7 @@ version = "2.7.0"
 [[deps.Pkg]]
 deps = ["Artifacts", "Dates", "Downloads", "FileWatching", "LibGit2", "Libdl", "Logging", "Markdown", "Printf", "REPL", "Random", "SHA", "Serialization", "TOML", "Tar", "UUIDs", "p7zip_jll"]
 uuid = "44cfe95a-1eb2-52ea-b672-e2afdf69b78f"
-version = "1.9.2"
+version = "1.9.0"
 
 [[deps.PlutoUI]]
 deps = ["AbstractPlutoDingetjes", "Base64", "ColorTypes", "Dates", "FixedPointNumbers", "Hyperscript", "HypertextLiteral", "IOCapture", "InteractiveUtils", "JSON", "Logging", "MIMEs", "Markdown", "Random", "Reexport", "URIs", "UUIDs"]
@@ -995,7 +1006,7 @@ version = "1.2.13+0"
 [[deps.libblastrampoline_jll]]
 deps = ["Artifacts", "Libdl"]
 uuid = "8e850b90-86db-534c-a0d3-1478176c7d93"
-version = "5.8.0+0"
+version = "5.7.0+0"
 
 [[deps.nghttp2_jll]]
 deps = ["Artifacts", "Libdl"]
@@ -1022,16 +1033,19 @@ version = "17.4.0+0"
 # ╠═515ea914-bf3d-4300-a894-1ad08d539e87
 # ╠═182be4ae-a5c7-4530-aff2-e35076523a14
 # ╠═7bdd743a-b20c-46df-a979-66670dea11ee
+# ╟─46d74abc-0ee9-4013-ae45-351c1960163c
 # ╠═f29f9e4f-3f21-4754-8a7d-06fc29d93e59
 # ╠═41ed3062-a8a0-4782-9460-48fc17e91f98
+# ╟─dfd4b7d6-4552-471c-9bc9-647ddacb17ae
 # ╠═e315e430-2983-4370-834f-2e68e5779f72
 # ╠═47376a21-a951-4563-9adb-f6c175c50c01
+# ╟─a825ec17-d3f4-4167-9f45-ab61812883dc
 # ╟─1e41d138-d79e-4b20-804e-280cbff7e49a
 # ╠═5294223c-9c11-4c12-ba79-a493e593b4b1
 # ╠═169f8c57-dd3f-420f-ab8f-845827957bda
 # ╠═2979e236-17ff-4adf-b890-faba2dc3af9c
 # ╠═092220fa-4a6e-493e-b5cd-0d221645af48
-# ╟─326085e4-b4f3-4d36-ac87-b6ae2e57763b
+# ╠═326085e4-b4f3-4d36-ac87-b6ae2e57763b
 # ╟─c31f342a-0100-46d6-ae93-adfed9248d96
 # ╠═9f9bf293-f4b3-49f2-8b0e-146e6ba52313
 # ╠═e363cbe7-a469-4a8e-9533-d13921532697
