@@ -660,6 +660,9 @@ end
 # ╔═╡ 2f1d478d-0b6e-4443-a409-3f00fb7eee7f
 md"""Observe que $|\tau|\leq 1$ e que para calsuclar $s$ y $c$ necesitamos de 5 operaciones y una raíz cuadrada.  """
 
+# ╔═╡ 1047dd07-a6aa-4fc0-a33f-1e6de0d72d25
+md""" ## Ejemplo 6"""
+
 # ╔═╡ 51af97af-dc36-4a5b-81ae-0eaaad5a57de
 begin
 	v₁₁=[8; 6]
@@ -685,6 +688,9 @@ function Giv(A, i, k, c, s)
     end
     return A
 end
+
+# ╔═╡ 8e6505d7-dc35-4118-980e-4dbb6ae8ba4b
+md""" ## Ejemplo 7"""
 
 # ╔═╡ 6f0a344c-89a8-41e0-a3d6-7ee2013d678f
 begin
@@ -753,7 +759,7 @@ $G^T(i_2,k_2,\theta_2)G^T(i_1,k_1,\theta_1)A= S_q(i_2,k_2,c_2)T_q(i_2,k_2,\tau_2
 # ╔═╡ 04f1ebd6-13c7-4310-99d7-1abbc8963001
 md""" 
 
-Queremos proceder de tal manera que la multiplicación $C_p(i_1,k_1,c_1)\widetilde{A}$ no se haga y solo acumule hasta el final. Para esto consideramos dos casos dependiendo si la rotación de Givens es tipo 1 o tipo 2. Para simplificar consideremos sol las entradas implicadas. Por ejemplo en el caso tipo 1, tenemos, 
+Queremos proceder de tal manera que la multiplicación $C_p(i_1,k_1,c_1)\widetilde{A}$ no se haga y solo acumule hasta el final. Para esto consideramos dos casos dependiendo si la rotación de Givens es tipo 1 o tipo 2. Para simplificar consideremos solo las entradas implicadas en nuestra notación. Por ejemplo en el caso tipo 1, tenemos, 
 """
 
 # ╔═╡ 00000000-0000-0000-0000-000000000001
@@ -1128,22 +1134,24 @@ version = "17.4.0+0"
 # ╠═2a4c2eec-c3f1-4f8e-980c-0ff607e1e46d
 # ╟─d1b87663-6755-4eaa-9123-8717f95095a4
 # ╟─53e98911-65ae-48f0-96d4-bfb2bc04585f
-# ╠═22106606-9bee-40cc-8d2f-17f36dda6937
-# ╠═38539181-36e0-444a-b93e-ab83600e983b
-# ╠═6b1c0220-f772-4cea-99b6-6d5b221fc020
-# ╠═99113f83-5cbf-4d08-b164-c6f4c7520c35
+# ╟─22106606-9bee-40cc-8d2f-17f36dda6937
+# ╟─38539181-36e0-444a-b93e-ab83600e983b
+# ╟─6b1c0220-f772-4cea-99b6-6d5b221fc020
+# ╟─99113f83-5cbf-4d08-b164-c6f4c7520c35
 # ╠═d9b5a5f5-0461-4455-93ea-1915decb3145
-# ╠═2f1d478d-0b6e-4443-a409-3f00fb7eee7f
+# ╟─2f1d478d-0b6e-4443-a409-3f00fb7eee7f
+# ╠═1047dd07-a6aa-4fc0-a33f-1e6de0d72d25
 # ╠═51af97af-dc36-4a5b-81ae-0eaaad5a57de
 # ╠═e3c682ea-ea20-4a89-8e29-71aba1b13a7d
-# ╠═1bd6aef4-8a80-4245-8b02-cd2713341f6b
+# ╟─1bd6aef4-8a80-4245-8b02-cd2713341f6b
 # ╠═e57d51a4-0005-4b14-9450-73fa43cccceb
+# ╟─8e6505d7-dc35-4118-980e-4dbb6ae8ba4b
 # ╠═6f0a344c-89a8-41e0-a3d6-7ee2013d678f
 # ╠═4d3d47ee-8362-41ea-bbbb-8f067db1aebe
 # ╠═2738ef60-adb7-4068-b24a-c82b0fc91abf
 # ╟─027fbf5b-1419-477c-8048-7349264927f9
-# ╠═025a34af-54bc-43b5-9f82-cbdee6003655
+# ╟─025a34af-54bc-43b5-9f82-cbdee6003655
 # ╟─dce92edf-e838-434b-bef4-9851e5af147c
-# ╠═04f1ebd6-13c7-4310-99d7-1abbc8963001
+# ╟─04f1ebd6-13c7-4310-99d7-1abbc8963001
 # ╟─00000000-0000-0000-0000-000000000001
 # ╟─00000000-0000-0000-0000-000000000002
