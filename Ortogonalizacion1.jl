@@ -753,14 +753,218 @@ $G^T(i_1,k_1,\theta_1)A=S_p(i_1,k_1,c)T_p(i_1,k_1,\tau_1)=S_p(i_1,k_1,c_1)\widet
 
 donde $A(1,k)=0$. Para el siguiente paso, tendriamos, 
 
-$G^T(i_2,k_2,\theta_2)G^T(i_1,k_1,\theta_1)A= S_q(i_2,k_2,c_2)T_q(i_2,k_2,\tau_2)C_p(i_1,k_1,c_1)\widetilde{A}$
+$G^T(i_2,k_2,\theta_2)G^T(i_1,k_1,\theta_1)A= S_q(i_2,k_2,c_2)T_q(i_2,k_2,\tau_2)S_p(i_1,k_1,c_1)\widetilde{A}$
+"""
+
+# ╔═╡ 4de38f69-5406-42b4-89f7-cccb4def75d9
+md"""
+Queremos proceder de tal manera que la multiplicación $C_p(i_1,k_1,c_1)\widetilde{A}$ no se haga y solo acumule hasta el final. Queremos escribir 
+
+$T_q(i_2,k_2,\tau_2)S_p(i_1,k_1,c_1)= \text{ Digonal}\times \text{Matrix similar to S}$
 """
 
 # ╔═╡ 04f1ebd6-13c7-4310-99d7-1abbc8963001
 md""" 
-
-Queremos proceder de tal manera que la multiplicación $C_p(i_1,k_1,c_1)\widetilde{A}$ no se haga y solo acumule hasta el final. Para esto consideramos dos casos dependiendo si la rotación de Givens es tipo 1 o tipo 2. Para simplificar consideremos solo las entradas implicadas en nuestra notación. Por ejemplo en el caso tipo 1, tenemos, 
+Para esto consideramos dos casos dependiendo si la rotación de Givens es tipo 1 o tipo 2. Para simplificar consideremos solo las entradas implicadas en nuestra notación. Por ejemplo en el caso tipo 1, tenemos, 
 """
+
+# ╔═╡ 0fcd6e9f-2e4b-4f66-8e5a-0e4de6f6fee2
+md""" 
+$
+G(a,b,\theta)^T
+= \begin{pmatrix}
+c&-s\\ s&c\end{pmatrix}=
+\begin{pmatrix}
+-s&0\\ 0&s\end{pmatrix}\begin{pmatrix}
+-\tau&1\\ 1&\tau
+\end{pmatrix}$
+
+con $\tau=c/s$.
+"""
+
+# ╔═╡ 365abfd3-a88d-40bd-aae7-1935832e23d6
+md"""
+Para realizar la multiplicación por una nueva matriz diagonal por la derecha podemos usar que 
+
+$\begin{pmatrix}
+-\tau&1\\ 1&\tau\end{pmatrix}\begin{pmatrix}
+d_1&0\\ 0&d_2\end{pmatrix}
+=\begin{pmatrix}
+d_1&0\\ 0&d_2\end{pmatrix}
+\begin{pmatrix}
+\left(\frac{d_1}{d_2}\right)^2 \frac{a_1}{b_1}&1\\ 1& -\frac{a_1}{b_1}\end{pmatrix}=
+D(d_1,d_2) S_3$
+y podemos realizar  la multiplicación $S_2\tilde{A}$ y acumular la multipliación de matrices diagonales $S_p\times D$. 
+"""
+
+# ╔═╡ 82104d15-0868-421d-96b6-9168383623cb
+md"""
+Obtenemos así matrices $\tilde{G}_\ell=S_3(i,k)$ tales que
+
+$D\tilde{G}_N\tilde{G}_{N-1}\cdots \tilde{G}_1 A= M (\text{ que es triangular superior})$
+"""
+
+# ╔═╡ c4ae1212-37d3-4439-876e-d37b49290b5e
+md"""Para obtener las matrices $\tilde{G}_\ell$ basta calcular $\tau$. Para calcular las entradas de la diagonal de la matriz D, tenemos elementos de la forma 
+
+$d^2=\prod_{\ell=1}^N\left(\frac{1}{1+\tau_\ell^2}\right)$
+"""
+
+# ╔═╡ e544d0c8-ea04-4545-afb1-a77d04378fed
+md"""
+Se implementa la función FastGivens que define los valores de 
+ $\alpha$ y $\beta$ 
+ de la matriz que elimina la segunda entrada del vector $x$, La función modifica $d$.
+"""
+
+# ╔═╡ 91988791-3318-4819-aaee-cf3c88dc513a
+#Input: x vector 2x1, d vecor 2x1 que representa las diagonales de una matriz 2x2
+#Output: α, β y el tipo de la matriz.
+function FastGivens(x, d)
+    if x[2] !=0 
+        α = -x[1]/x[2]
+        β = -α*d[2]/d[1]
+        γ = -α*β
+        if γ ≤ 1
+            tipo = 1
+            τ = d[1]
+            d[1] = (1+γ)*d[2]
+            d[2] = (1+γ)*τ
+        else
+            tipo = 2
+            α = 1/α
+            β = 1/β
+            γ = 1/γ
+            d[1] = (1+γ)*d[1]
+            d[2] = (1+γ)*d[2]
+        end
+    else
+        tipo = 2
+        α = 0
+        β = 0
+    end
+    return α, β, tipo
+end
+
+     
+
+# ╔═╡ 8a8de75d-5f95-4c15-94cf-9d15af142394
+A₁₄ = floor.(10*rand(4, 4))
+
+# ╔═╡ b0ffb36e-2562-44ea-ba6c-3a897b13f1ae
+md"""A continuación verificamos que se elimina la primera fila de la matriz $A_{14$}."""
+
+# ╔═╡ 98cb67a1-573d-4df0-bac6-d3cb40c4bcf9
+begin
+	D₁₄ = ones(4)
+	#Se copia A1 para no modificar la matriz inicial
+	Aaux= copy(A₁₄)
+	
+	for k = 4:-1:2
+	    d          = D₁₄[k-1:k]
+	    α, β, tipo = FastGivens(Aaux[[k-1,k],1],d)
+	    D₁₄[k-1:k]   = d
+	
+	    #Construimos la matriz G1
+	    G1 = 1.0*Matrix(I, 4, 4)
+	
+	
+	    if tipo == 1
+	        G1[k-1:k,k-1:k] = [β 1; 1 α]
+	    elseif tipo == 2
+	        G1[k-1:k,k-1:k] = [1 α; β 1]
+	    end
+	    
+	    #Actualizamos A1
+	    Aaux = G1'*Aaux
+	end
+	
+	sqrt.(D₁₄).*Aaux
+end
+
+# ╔═╡ 1d2b407e-2f00-4d99-b6f2-0810c5c85a83
+md"""
+Ahora se implementa FastGivensQR, la cual toma una matriz $A$ y sobreescribe en ella una matriz triangular superior $T$ y devuelve las matrices $M, D$ que satisfacen:
+
+$\begin{gather} M^{T}M = D\\
+M^{T}A=T\\
+A=\left(MD^{-\frac{1}{2}}\right)\left(D^{-\frac{1}{2}}T\right)
+\end{gather}$
+
+"""
+
+# ╔═╡ 2fbb08ab-57b4-49b3-bccb-ff413439a05f
+function FastGivensQR(P)
+    m, n = size(P)
+    D = ones(m)
+    
+    #Para guardar la matriz M
+    M = 1.0*Matrix(I, m, m)
+    
+    for j = 1:n
+        for i = m:-1:j+1
+            
+            d          = D[i-1:i]
+            α, β, tipo = FastGivens(P[i-1:i,j],d)
+            D[i-1:i]   = d
+            
+            if tipo == 1
+                G = [β 1; 1 α]
+                P[i-1:i,j:n] = G'*P[i-1:i,j:n]
+                M[:,i-1:i] = M[:,i-1:i]*G
+            else
+                G = [1 α; β 1]
+                P[i-1:i,j:n] = G'*P[i-1:i,j:n]
+                M[:,i-1:i] = M[:,i-1:i]*G
+            end
+            
+        end
+    end
+    return M, D
+end
+
+# ╔═╡ 76db6d8b-136f-4ee5-b4b2-c90ed92b9c01
+md"""
+Ejecutamos el algoritmo sobre una matriz $A$, verificamos que $A=QR$ y la ortogonalidad de $Q$,
+"""
+
+# ╔═╡ beb90061-374d-4937-ab9f-c7796a3c9c7a
+
+
+# ╔═╡ 63d485ef-7d43-4f98-8d1c-2630f10ae36d
+A₁₅  = floor.(20*rand(5,4))
+
+# ╔═╡ 52050d67-b0ce-4f3b-bf71-4e68fd8ef2b7
+begin
+	B₁₅=copy(A₁₅)
+	M₁₅, D₁₅ = FastGivensQR(B₁₅)
+	
+	
+	Q₁₅ = M₁₅*Diagonal(1 ./ sqrt.(D₁₅))
+	R₁₅ = Diagonal(1 ./ sqrt.(D₁₅))*B₁₅
+end
+
+# ╔═╡ cac97d98-3dc7-4b27-963b-b23c43d5cef4
+begin
+	println("La norma de M'M-D es ", opnorm(M₁₅'*M₁₅-Diagonal(D₁₅)))
+	println("la norma de Q'Q-I es ", opnorm(Q₁₅'*Q₁₅ - UniformScaling(1)))
+	println("La norma de Q*R-A es ", opnorm(Q₁₅'*R₁₅-A₁₅))
+end
+
+# ╔═╡ 142b5883-9336-44ab-9a70-83847e4865f1
+Q₁₅'B₁₅
+
+# ╔═╡ ca11dab1-ad35-4f81-87e4-67d42f5a86b2
+Q11,R11=QFA(A₁₅)
+
+# ╔═╡ 2f1f0ac5-4a86-469a-94de-080af6b5ccc0
+R₁₅
+
+# ╔═╡ e98232c2-8c51-4ef5-81d7-38ddd86162b8
+R11
+
+# ╔═╡ d6662ec4-4f1d-4a87-bcda-cb51741caf4d
+R₁₅-R11
 
 # ╔═╡ 00000000-0000-0000-0000-000000000001
 PLUTO_PROJECT_TOML_CONTENTS = """
@@ -1150,8 +1354,30 @@ version = "17.4.0+0"
 # ╠═4d3d47ee-8362-41ea-bbbb-8f067db1aebe
 # ╠═2738ef60-adb7-4068-b24a-c82b0fc91abf
 # ╟─027fbf5b-1419-477c-8048-7349264927f9
-# ╟─025a34af-54bc-43b5-9f82-cbdee6003655
-# ╟─dce92edf-e838-434b-bef4-9851e5af147c
-# ╟─04f1ebd6-13c7-4310-99d7-1abbc8963001
+# ╠═025a34af-54bc-43b5-9f82-cbdee6003655
+# ╠═dce92edf-e838-434b-bef4-9851e5af147c
+# ╠═4de38f69-5406-42b4-89f7-cccb4def75d9
+# ╠═04f1ebd6-13c7-4310-99d7-1abbc8963001
+# ╠═0fcd6e9f-2e4b-4f66-8e5a-0e4de6f6fee2
+# ╟─365abfd3-a88d-40bd-aae7-1935832e23d6
+# ╟─82104d15-0868-421d-96b6-9168383623cb
+# ╠═c4ae1212-37d3-4439-876e-d37b49290b5e
+# ╟─e544d0c8-ea04-4545-afb1-a77d04378fed
+# ╠═91988791-3318-4819-aaee-cf3c88dc513a
+# ╠═8a8de75d-5f95-4c15-94cf-9d15af142394
+# ╟─b0ffb36e-2562-44ea-ba6c-3a897b13f1ae
+# ╠═98cb67a1-573d-4df0-bac6-d3cb40c4bcf9
+# ╠═1d2b407e-2f00-4d99-b6f2-0810c5c85a83
+# ╠═2fbb08ab-57b4-49b3-bccb-ff413439a05f
+# ╟─76db6d8b-136f-4ee5-b4b2-c90ed92b9c01
+# ╠═beb90061-374d-4937-ab9f-c7796a3c9c7a
+# ╠═63d485ef-7d43-4f98-8d1c-2630f10ae36d
+# ╠═52050d67-b0ce-4f3b-bf71-4e68fd8ef2b7
+# ╠═cac97d98-3dc7-4b27-963b-b23c43d5cef4
+# ╠═142b5883-9336-44ab-9a70-83847e4865f1
+# ╠═ca11dab1-ad35-4f81-87e4-67d42f5a86b2
+# ╠═2f1f0ac5-4a86-469a-94de-080af6b5ccc0
+# ╠═e98232c2-8c51-4ef5-81d7-38ddd86162b8
+# ╠═d6662ec4-4f1d-4a87-bcda-cb51741caf4d
 # ╟─00000000-0000-0000-0000-000000000001
 # ╟─00000000-0000-0000-0000-000000000002
