@@ -1001,6 +1001,18 @@ R_{11} & R_{12}\end{pmatrix}$ son linealmente independientes.
 
 """
 
+# ╔═╡ cc6c8f66-78b5-46df-a254-cc78c9246aa5
+md"""
+$Q^TA\pi Q=
+\begin{pmatrix}
+R_{11}& R_{12}\\ 0 & R_{12}\end{pmatrix}\widetilde{A}=
+\begin{pmatrix}
+T_{11}& 0\\ 0 & 0\end{pmatrix}.$
+"""
+
+# ╔═╡ 99a78df6-b509-4b8b-8995-b8ea47f051ce
+md"""Ahora, para colocar una atriz triangular en lugar de $T_{11}$ """
+
 # ╔═╡ 00000000-0000-0000-0000-000000000001
 PLUTO_PROJECT_TOML_CONTENTS = """
 [deps]
@@ -1411,6 +1423,8 @@ version = "17.4.0+0"
 # ╠═cac97d98-3dc7-4b27-963b-b23c43d5cef4
 # ╠═d02a2b57-8b0d-4d54-b907-c812a91c0520
 # ╠═f2b42fb9-e120-48db-aa64-4d14657555d6
-# ╠═ef7ea364-601e-4f70-bcd8-1a3257b6facc
+# ╟─ef7ea364-601e-4f70-bcd8-1a3257b6facc
+# ╠═cc6c8f66-78b5-46df-a254-cc78c9246aa5
+# ╠═99a78df6-b509-4b8b-8995-b8ea47f051ce
 # ╟─00000000-0000-0000-0000-000000000001
 # ╟─00000000-0000-0000-0000-000000000002
