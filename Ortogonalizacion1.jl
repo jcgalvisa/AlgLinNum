@@ -959,7 +959,47 @@ begin
 end
 
 # ╔═╡ d02a2b57-8b0d-4d54-b907-c812a91c0520
+md""" 
+# Householder con dependencia lineal
+"""
 
+# ╔═╡ f2b42fb9-e120-48db-aa64-4d14657555d6
+md"""
+Cosidere ahora $A\in\mathbb{R}^{m\times n}$ con $A=[a_1,a_2,\dots,a_n]$ donde $a_i, i=1,2,\dots,n$ denotan las columnas de $A$ que no son necesariamente linealmente independientes. 
+
+Podemos aplicar, por ejemplo, Householder con permutación de columnas y si en ese caso llegamos hasta el paso $r$, entonces, $\mbox{rank}(A)\geq r$ y además, 
+
+$
+H_rH_{r-1}\cdots H_1 A \pi_1\pi_2\cdots\pi_r =
+\begin{pmatrix}
+R_{11}&R_{12}\\ 0&R_{22}\end{pmatrix}$
+donde $R_{11}$ es de tamaño $r\times r$, $R_{1,2}$ es de tamaño $(r,n-r)$, 
+$R_{2,2}$ es de tamaño $(m-r)\times (m-r)$ y $0$ representa la matriz $0$ de tamaño 
+$(m-r)\times r$.
+"""
+
+# ╔═╡ ef7ea364-601e-4f70-bcd8-1a3257b6facc
+md"""
+Supongamos que $\mbox{rank}(A)=r$, debe ser $R_{2,2}\equiv 0$. Queremos ahora obtener "0" en el lugar de $R_{2,1}$, para esto observe que podemos aplicar Hoseholder a 
+
+$
+\begin{pmatrix}
+R_{12}^T\\ R_{12}^T\end{pmatrix}$
+para obtener
+
+$
+Z_r\dots Z_1\begin{pmatrix}
+R_{12}^T\\ R_{12}^T\end{pmatrix}=
+\begin{pmatrix}
+T_{11}^T\\ 0\end{pmatrix} \mbox{ y por tanto } \begin{pmatrix}
+R_{11} & R_{12}\end{pmatrix}\widetilde{Q}= \begin{pmatrix}
+T_{11} & 0\end{pmatrix}$
+con $T_{11}$ de tamaño $r\times r$ triangular inferior y 
+$\widetilde{Q}^T=Z_r\dots Z_1$. Note que en esta última aplicación de Householder no es necesario aplicar permutaciones pues las filas de
+$\begin{pmatrix}
+R_{11} & R_{12}\end{pmatrix}$ son linealmente independientes.
+
+"""
 
 # ╔═╡ 00000000-0000-0000-0000-000000000001
 PLUTO_PROJECT_TOML_CONTENTS = """
@@ -1370,5 +1410,7 @@ version = "17.4.0+0"
 # ╠═52050d67-b0ce-4f3b-bf71-4e68fd8ef2b7
 # ╠═cac97d98-3dc7-4b27-963b-b23c43d5cef4
 # ╠═d02a2b57-8b0d-4d54-b907-c812a91c0520
+# ╠═f2b42fb9-e120-48db-aa64-4d14657555d6
+# ╠═ef7ea364-601e-4f70-bcd8-1a3257b6facc
 # ╟─00000000-0000-0000-0000-000000000001
 # ╟─00000000-0000-0000-0000-000000000002
