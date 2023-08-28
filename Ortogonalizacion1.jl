@@ -568,6 +568,16 @@ Q₁₀r = UniformScaling(1) + W*Y'
 # ╔═╡ 2a4c2eec-c3f1-4f8e-980c-0ff607e1e46d
 A₁₀-Q₁₀r*R
 
+# ╔═╡ fb0292ab-884b-4c56-9151-dbceabd45a56
+md""" ## Observaciones
+
+El costo de este algoritmo es del orden de $2n^2m-2n^3/3$.
+
+Una ventaja empirica de Householder es que opera con transformaciones ortogonales, así que preserva normas, mientras que MGS no tiene transformaciones ortogonales. 
+
+Otra ventaja es que cuando los vectores son casi linealmente independientes, en las cuentas del algoritmos de Householder se hace el cálculo numerico con cuidado, esto no se hace en MGS.
+"""
+
 # ╔═╡ d1b87663-6755-4eaa-9123-8717f95095a4
 md"""# Rotaciones de Givens """
 
@@ -924,12 +934,9 @@ function FastGivensQR(P)
 end
 
 # ╔═╡ 76db6d8b-136f-4ee5-b4b2-c90ed92b9c01
-md"""
+md""" ## Ejemplo 8
 Ejecutamos el algoritmo sobre una matriz $A$, verificamos que $A=QR$ y la ortogonalidad de $Q$,
 """
-
-# ╔═╡ beb90061-374d-4937-ab9f-c7796a3c9c7a
-
 
 # ╔═╡ 63d485ef-7d43-4f98-8d1c-2630f10ae36d
 A₁₅  = floor.(20*rand(5,4))
@@ -948,23 +955,11 @@ end
 begin
 	println("La norma de M'M-D es ", opnorm(M₁₅'*M₁₅-Diagonal(D₁₅)))
 	println("la norma de Q'Q-I es ", opnorm(Q₁₅'*Q₁₅ - UniformScaling(1)))
-	println("La norma de Q*R-A es ", opnorm(Q₁₅'*R₁₅-A₁₅))
+	println("La norma de Q*R-A es ", opnorm(Q₁₅*R₁₅-A₁₅))
 end
 
-# ╔═╡ 142b5883-9336-44ab-9a70-83847e4865f1
-Q₁₅'B₁₅
+# ╔═╡ d02a2b57-8b0d-4d54-b907-c812a91c0520
 
-# ╔═╡ ca11dab1-ad35-4f81-87e4-67d42f5a86b2
-Q11,R11=QFA(A₁₅)
-
-# ╔═╡ 2f1f0ac5-4a86-469a-94de-080af6b5ccc0
-R₁₅
-
-# ╔═╡ e98232c2-8c51-4ef5-81d7-38ddd86162b8
-R11
-
-# ╔═╡ d6662ec4-4f1d-4a87-bcda-cb51741caf4d
-R₁₅-R11
 
 # ╔═╡ 00000000-0000-0000-0000-000000000001
 PLUTO_PROJECT_TOML_CONTENTS = """
@@ -1336,6 +1331,7 @@ version = "17.4.0+0"
 # ╠═4d628c4b-4311-40d2-8db8-4cab9e768bac
 # ╠═642a2da3-de23-422f-ace4-48667731cbfa
 # ╠═2a4c2eec-c3f1-4f8e-980c-0ff607e1e46d
+# ╠═fb0292ab-884b-4c56-9151-dbceabd45a56
 # ╟─d1b87663-6755-4eaa-9123-8717f95095a4
 # ╟─53e98911-65ae-48f0-96d4-bfb2bc04585f
 # ╟─22106606-9bee-40cc-8d2f-17f36dda6937
@@ -1369,15 +1365,10 @@ version = "17.4.0+0"
 # ╠═98cb67a1-573d-4df0-bac6-d3cb40c4bcf9
 # ╠═1d2b407e-2f00-4d99-b6f2-0810c5c85a83
 # ╠═2fbb08ab-57b4-49b3-bccb-ff413439a05f
-# ╟─76db6d8b-136f-4ee5-b4b2-c90ed92b9c01
-# ╠═beb90061-374d-4937-ab9f-c7796a3c9c7a
+# ╠═76db6d8b-136f-4ee5-b4b2-c90ed92b9c01
 # ╠═63d485ef-7d43-4f98-8d1c-2630f10ae36d
 # ╠═52050d67-b0ce-4f3b-bf71-4e68fd8ef2b7
 # ╠═cac97d98-3dc7-4b27-963b-b23c43d5cef4
-# ╠═142b5883-9336-44ab-9a70-83847e4865f1
-# ╠═ca11dab1-ad35-4f81-87e4-67d42f5a86b2
-# ╠═2f1f0ac5-4a86-469a-94de-080af6b5ccc0
-# ╠═e98232c2-8c51-4ef5-81d7-38ddd86162b8
-# ╠═d6662ec4-4f1d-4a87-bcda-cb51741caf4d
+# ╠═d02a2b57-8b0d-4d54-b907-c812a91c0520
 # ╟─00000000-0000-0000-0000-000000000001
 # ╟─00000000-0000-0000-0000-000000000002
