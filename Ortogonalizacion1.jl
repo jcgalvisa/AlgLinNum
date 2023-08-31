@@ -1089,6 +1089,32 @@ $
 """
 
 
+# ╔═╡ 44c4f4ae-29ca-4eb7-a37b-3ca3757f1d0d
+md"""
+# Sobre la orgogonalización completa
+"""
+
+# ╔═╡ d5eae0e6-855c-4a42-93bb-0904500daf4e
+md""" Usando Householder podemos obtener, 
+
+$\overline{Q}^TAZ=\begin{pmatrix} R_{11} &0\\ 0 &0\end{pmatrix}$
+donde $Q^T$ y $Z^T$ son matrices orgonales. Esta descomposición es concocida como la descomposición ortogonal completa. Etonces, 
+
+$A=Q\begin{pmatrix} R_{11} &0\\ 0 &0\end{pmatrix} Z^T=
+\begin{pmatrix} Q_{1} &Q_2\end{pmatrix}
+\begin{pmatrix} R_{11} &0\\ 0 &0\end{pmatrix}
+\begin{pmatrix} Z_1 &Z_2\end{pmatrix}^T =Q_1R_{11}Z_1^T.$
+Además, 
+
+$\mbox{Image}(A)=\mbox{span}(Q_1), \quad \mbox{Image}(A)^\perp=\mbox{span}(Q_2)$
+$\mbox{ker}(A)=\mbox{span}(Z_2), \quad \mbox{ker}(A)^\perp=\mbox{span}(Z_1)$
+"""
+
+# ╔═╡ dd86261a-3364-4d44-a0af-0cd751e3c45e
+md"""
+# Mínimos cuadrados
+"""
+
 # ╔═╡ 00000000-0000-0000-0000-000000000001
 PLUTO_PROJECT_TOML_CONTENTS = """
 [deps]
@@ -1503,7 +1529,10 @@ version = "17.4.0+0"
 # ╟─ef7ea364-601e-4f70-bcd8-1a3257b6facc
 # ╠═ba1cb3e8-3f76-49fa-9c1b-831f2e6d1dc3
 # ╠═815a7885-8006-44b1-8bd6-b19c0272379b
-# ╟─2fddfd18-c93f-4361-8c94-7ceba91d8d63
-# ╠═4c97b8bf-6943-4d58-94c2-9dfdf8d83cdc
+# ╠═2fddfd18-c93f-4361-8c94-7ceba91d8d63
+# ╟─4c97b8bf-6943-4d58-94c2-9dfdf8d83cdc
+# ╠═44c4f4ae-29ca-4eb7-a37b-3ca3757f1d0d
+# ╟─d5eae0e6-855c-4a42-93bb-0904500daf4e
+# ╠═dd86261a-3364-4d44-a0af-0cd751e3c45e
 # ╟─00000000-0000-0000-0000-000000000001
 # ╟─00000000-0000-0000-0000-000000000002
