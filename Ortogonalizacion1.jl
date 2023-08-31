@@ -1,5 +1,5 @@
 ### A Pluto.jl notebook ###
-# v0.19.27
+# v0.19.26
 
 using Markdown
 using InteractiveUtils
@@ -521,10 +521,26 @@ md"""
 
 Mencionamos antes que realizar la multiplicación de las matrices de Householder puede ser costoso. En su lugar, cuando se requiere la $R$ podemos usar al siguiente resulado. 
 
+"""
+
+# ╔═╡ 33dd679d-315a-454b-84b0-569a3d380405
+md""" 
 **Teorema (Representación por bloques de Householder)** Si definimos 
 $Q_1=H_1, \quad Q_2=H_1H_2, \dots, Q_i=H_1H_{2}\cdots H_{i-1}H_i= Q_{i-1}H_i$
 entonces $Q_i=I +W_i Y_i^T$, $i=1,2,\dots,n$, $W_i, Y_i \in \mathbb{R}^{m\times i}$.
+
+**Demostración:** Tensmos que $Q_1=H_1=I -\beta_1 v_1 v_1^T==I +W_1 Y_1^T$ donde $W_1=-\beta_1v_1$ y $Y_1=v_1$. Continuando por inducción suponga que 
+$Q_j=I +W_j Y_j^T$, con $W_j,Y_j\in \mathbb{R}^{m\times j}$. Tenemos que 
+
+$\begin{align}
+Q_{j+1}=Q_jH_{j+1}&= (I +W_j Y_j^T)(I -\beta_{j+1}v_{j+1}  v_{j+1}^T)\\
+&= I +W_j Y_j^T -\beta_{j+1}Q_jv_{j+1}  v_{j+1}^T\\
+&= I +W_j Y_j^T +z_{j+1} v_{j+1}^T \quad \mbox{ con } \quad z_{j+1}=-\beta_{j+1}Q_jv_{j+1},\\
+&=  I +[W_j\quad  z_{j+1}][Y_j \quad v_{j+1}]^T\\
+&= I +W_{j+1} Y_{j+1}^T.
+\end{align}$
 """
+
 
 # ╔═╡ bc00e335-4fac-4c07-86d9-7a2e7a05a61d
 function VβHouse(A)
@@ -1091,7 +1107,7 @@ PlutoUI = "~0.7.51"
 PLUTO_MANIFEST_TOML_CONTENTS = """
 # This file is machine-generated - editing it directly is not advised
 
-julia_version = "1.9.2"
+julia_version = "1.9.0"
 manifest_format = "2.0"
 project_hash = "d0069486257542c58ff4f12284b8908f62265555"
 
@@ -1126,7 +1142,7 @@ version = "0.11.4"
 [[deps.CompilerSupportLibraries_jll]]
 deps = ["Artifacts", "Libdl"]
 uuid = "e66e0078-7015-5450-92f7-15fbd957f2ae"
-version = "1.0.5+0"
+version = "1.0.2+0"
 
 [[deps.Dates]]
 deps = ["Printf"]
@@ -1242,7 +1258,7 @@ version = "2.7.0"
 [[deps.Pkg]]
 deps = ["Artifacts", "Dates", "Downloads", "FileWatching", "LibGit2", "Libdl", "Logging", "Markdown", "Printf", "REPL", "Random", "SHA", "Serialization", "TOML", "Tar", "UUIDs", "p7zip_jll"]
 uuid = "44cfe95a-1eb2-52ea-b672-e2afdf69b78f"
-version = "1.9.2"
+version = "1.9.0"
 
 [[deps.PlutoUI]]
 deps = ["AbstractPlutoDingetjes", "Base64", "ColorTypes", "Dates", "FixedPointNumbers", "Hyperscript", "HypertextLiteral", "IOCapture", "InteractiveUtils", "JSON", "Logging", "MIMEs", "Markdown", "Random", "Reexport", "URIs", "UUIDs"]
@@ -1346,7 +1362,7 @@ version = "1.2.13+0"
 [[deps.libblastrampoline_jll]]
 deps = ["Artifacts", "Libdl"]
 uuid = "8e850b90-86db-534c-a0d3-1478176c7d93"
-version = "5.8.0+0"
+version = "5.7.0+0"
 
 [[deps.nghttp2_jll]]
 deps = ["Artifacts", "Libdl"]
@@ -1436,7 +1452,8 @@ version = "17.4.0+0"
 # ╠═43d5dc23-ab26-4752-8210-ac393f1a0268
 # ╠═2c51de0a-b4d3-485c-897c-95da6fcceafc
 # ╟─8bd19164-dcc4-4a16-b552-1d11030c0366
-# ╟─dbdc714a-231b-405c-be14-8c60d50acc7f
+# ╠═dbdc714a-231b-405c-be14-8c60d50acc7f
+# ╟─33dd679d-315a-454b-84b0-569a3d380405
 # ╠═bc00e335-4fac-4c07-86d9-7a2e7a05a61d
 # ╠═b37cf5d3-e7b2-41c3-9fcb-e232718f7957
 # ╠═079e1d22-d81c-4d2d-91db-d929f8898bff
