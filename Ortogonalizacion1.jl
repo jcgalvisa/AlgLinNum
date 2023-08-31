@@ -519,11 +519,28 @@ md"""
 # ╔═╡ dbdc714a-231b-405c-be14-8c60d50acc7f
 md""" 
 
-Mencionamos antes que realizar la multiplicación de las matrices de Householder puede ser costoso. En su lugar, cuando se requiere la $R$ podemos usar al siguiente resulado. 
+Mencionamos antes que realizar la multiplicación de las matrices de Householder puede ser costoso. En su lugar, cuando se requiere la $Q$ podemos usar los siguiente resultado.
+"""
+
+# ╔═╡ 42ca33da-7cd8-4ccb-87cf-3445d59f1da5
+md"""
 
 **Teorema (Representación por bloques de Householder)** Si definimos 
 $Q_1=H_1, \quad Q_2=H_1H_2, \dots, Q_i=H_1H_{2}\cdots H_{i-1}H_i= Q_{i-1}H_i$
 entonces $Q_i=I +W_i Y_i^T$, $i=1,2,\dots,n$, $W_i, Y_i \in \mathbb{R}^{m\times i}$.
+
+**Demostración:** Tomemos $Q_1=H_1=I-\beta_1v_1v_1^T=I+W_1Y_1^T$ donde 
+$W_1=-\beta_1v_1$ y $Y_1=v_1$. Por inducción suponga que $Q_j=I+W_jY_j^T$ con 
+$W_j,Y_j\in \mathbb{R}^{m\times j}$. Tenemos que 
+
+$
+\begin{align}
+Q_{j+1}&=Q_jH_j=(I+W_jY_j^T)(I-\beta_{j+1}v_{j+1}v_{j+1}^T) \\
+&= I+W_jY_j^T-\beta_{j+1}Q_jv_{j+1}v_{j+1}^T\\
+&=  I+W_jY_j^T+z_{j+1}v_{j+1}^T \quad \mbox{ con } z_{j+1}=-\beta_{j+1}Q_jv_{j+1}\\
+&= I + [W_j z_{j+1}][Y_j v_{j+1}]^T\\
+&= I+W_{j+1}Y_{j+1}^T.\\
+\end{align}$
 """
 
 # ╔═╡ bc00e335-4fac-4c07-86d9-7a2e7a05a61d
@@ -1377,13 +1394,14 @@ version = "17.4.0+0"
 # ╠═2c51de0a-b4d3-485c-897c-95da6fcceafc
 # ╟─8bd19164-dcc4-4a16-b552-1d11030c0366
 # ╟─dbdc714a-231b-405c-be14-8c60d50acc7f
+# ╟─42ca33da-7cd8-4ccb-87cf-3445d59f1da5
 # ╠═bc00e335-4fac-4c07-86d9-7a2e7a05a61d
 # ╠═b37cf5d3-e7b2-41c3-9fcb-e232718f7957
 # ╠═079e1d22-d81c-4d2d-91db-d929f8898bff
 # ╠═4d628c4b-4311-40d2-8db8-4cab9e768bac
 # ╠═642a2da3-de23-422f-ace4-48667731cbfa
 # ╠═2a4c2eec-c3f1-4f8e-980c-0ff607e1e46d
-# ╠═fb0292ab-884b-4c56-9151-dbceabd45a56
+# ╟─fb0292ab-884b-4c56-9151-dbceabd45a56
 # ╟─d1b87663-6755-4eaa-9123-8717f95095a4
 # ╟─53e98911-65ae-48f0-96d4-bfb2bc04585f
 # ╟─22106606-9bee-40cc-8d2f-17f36dda6937
