@@ -1,5 +1,5 @@
 ### A Pluto.jl notebook ###
-# v0.19.27
+# v0.19.26
 
 using Markdown
 using InteractiveUtils
@@ -525,8 +525,7 @@ Mencionamos antes que realizar la multiplicación de las matrices de Householder
 # ╔═╡ 42ca33da-7cd8-4ccb-87cf-3445d59f1da5
 md"""
 
-**Teorema (Representación por bloques de Householder)** Si definimos 
-$Q_1=H_1, \quad Q_2=H_1H_2, \dots, Q_i=H_1H_{2}\cdots H_{i-1}H_i= Q_{i-1}H_i$
+**Teorema (Representación por bloques de Householder)** Si definimos $Q_1=H_1$, $Q_2=H_1H_2$, $\dots, Q_i=H_1H_{2}\cdots H_{i-1}H_i= Q_{i-1}H_i$
 entonces $Q_i=I +W_i Y_i^T$, $i=1,2,\dots,n$, $W_i, Y_i \in \mathbb{R}^{m\times i}$.
 
 **Demostración:** Tomemos $Q_1=H_1=I-\beta_1v_1v_1^T=I+W_1Y_1^T$ donde 
@@ -828,7 +827,7 @@ y podemos realizar  la multiplicación $S_2\tilde{A}$ y acumular la multipliaci�
 md"""
 Obtenemos así matrices $\tilde{G}_\ell=S_3(i,k)$ tales que
 
-$D\tilde{G}_N\tilde{G}_{N-1}\cdots \tilde{G}_1 A= M (\text{ que es triangular superior})$
+$D\tilde{G}_N\tilde{G}_{N-1}\cdots \tilde{G}_1 A= T (\text{ que es triangular superior})$
 """
 
 # ╔═╡ c4ae1212-37d3-4439-876e-d37b49290b5e
@@ -1018,77 +1017,17 @@ R_{11} & R_{12}\end{pmatrix}$ son linealmente independientes.
 
 """
 
-# ╔═╡ ba1cb3e8-3f76-49fa-9c1b-831f2e6d1dc3
-md""" 
-Concluimos que
-
-$Q^TA\pi \widetilde{Q}\begin{pmatrix}R_{11}& R_{12}\\ 0& R_{22}\end{pmatrix}\widetilde{Q}
-=\begin{pmatrix} T_{11} &0\\ 0 &0\end{pmatrix}$
-donde $T_{1,1}$ es una matriz triangular inferior de tamaño $r \times r$. Finalmente, para obtener una matriz triangular superior en el lugar de $T_{11}$, permutamos la filas y columnas de $T_{11}$, para esto usamos las siguientes tranformaciones
-"""
-
-# ╔═╡ 815a7885-8006-44b1-8bd6-b19c0272379b
-md""" 
-$\widetilde{\pi}_1 =
+# ╔═╡ cc6c8f66-78b5-46df-a254-cc78c9246aa5
+md"""
+$Q^TA\pi Q=
 \begin{pmatrix}
-J & 0\\ 0 & I_{n-r}\end{pmatrix} \quad \mbox{ con } \quad 
-J_{r\times r}=\begin{pmatrix}
-0& 0& \cdots & 0 & 0 &1\\  
-0& 0& \cdots & 0 & 1 &0\\
-0& 0& \cdots & 1 & 0 &0\\
-\vdots & \vdots& \cdots & \vdots & \vdots &\vdots\\
-0& 1& \cdots & 0 & 0 &0\\
-1& 0& \cdots & 0 & 0 &0\\
-\end{pmatrix}$\
-y donde $I_{n-r}$ denota la matriz identidad $(n-r)\times(n-r)$. Analogamente
-
-$\widetilde{\pi}_2 =
+R_{11}& R_{12}\\ 0 & R_{12}\end{pmatrix}\widetilde{A}=
 \begin{pmatrix}
-J & 0\\ 0 & I_{m-r}\end{pmatrix}$
+T_{11}& 0\\ 0 & 0\end{pmatrix}.$
 """
 
-# ╔═╡ 2fddfd18-c93f-4361-8c94-7ceba91d8d63
-md"""Obtenemos
-
-$\overline{Q}^TAW=\widetilde{\pi}_2Q^TA\pi \widetilde{Q}\widetilde{\pi}_1=
-\begin{pmatrix} T_{11}^T &0\\ 0 &0\end{pmatrix}$
-donde $\overline{Q}^T=\widetilde{\pi}_2Q^T$y $W=\pi \widetilde{Q}\widetilde{\pi}_1$. Esta descomposición es concocida como la descomposición ortogonal completa (y no es la descomposición de Schur que es dela forma $Q^TAQ=R$ donde $R$ es triangular superior). 
-"""
-
-# ╔═╡ 4c97b8bf-6943-4d58-94c2-9dfdf8d83cdc
-md"""En lugar de pedir $T_{11}$ triangular superior se puede requerir que sea bidiagonal superior, lo que se conoce como bidiagonalización. Podemos usar Householder de la siguiente manera. Resumimos el procedimiento aplicado a una matriz $B$
-
-1. Aplicackos HH a la primera columa de $B$ para obtener $H_1B$ con zeros debajo de la primera entrada
-2. Aplicamos HH a la primera fila sin la primera entrada para obtener zero en la primera fila despues de la segunda entrada, obtenermos $H_1B\widetilde{H}_2$
-3. Continuamos con este procedimiento obtenemos 
-
-$
-H_n\dots H_1 B \widetilde{H}_2 \dots \widetilde{H}_m$
-qie debe ser una matriz  bidiagonal. 
-
-La bidiagonalización es usadad en el calculo de valore propios, primero se bidiagonliza y despues se aplica el método de Jacobi. 
-
-Como aspecto negativo de este algoritmo, tenemos su forato "alternado", por lo que se pierde la facultad de usar operaciones de nivel 3 como en Householder normal.  Por esta razon se realiza $R-bidiagonliaación$ que consiste en aplicar Householder para obtner
-
-$
-Q^TA=\begin{pmatrix}R_{1} \\ 0\end{pmatrix}$
-y depués aplicar Bidiagonlización a la matrix $R_{1}$ que generalmente es menor que $A$. Se obtine entonces 
-
-$
-Q_B^TR_{1}U_B=\mbox{ bigiagonal}$
-y luego usamos 
-
-$
-\overline{U}_B=Q\begin{pmatrix}Q_B &0\\ 0& I\end{pmatrix}$ 
-para terminar con 
-
-$
-\overline{U}_B^TAU_B=\begin{pmatrix}Q_B^T &0\\ 0& I\end{pmatrix}Q^TAU_B=
-\begin{pmatrix}Q_B^T &0\\ 0& I\end{pmatrix}
-\begin{pmatrix}R_1\\ 0\end{pmatrix}U_B=
-\begin{pmatrix}Q_B^TR_1U_B\\ 0\end{pmatrix}=\begin{pmatrix}\mbox{didiagonal}\\ 0\end{pmatrix}.$
-"""
-
+# ╔═╡ 99a78df6-b509-4b8b-8995-b8ea47f051ce
+md"""Ahora, para colocar una atriz triangular en lugar de $T_{11}$ """
 
 # ╔═╡ 00000000-0000-0000-0000-000000000001
 PLUTO_PROJECT_TOML_CONTENTS = """
@@ -1108,7 +1047,7 @@ PlutoUI = "~0.7.51"
 PLUTO_MANIFEST_TOML_CONTENTS = """
 # This file is machine-generated - editing it directly is not advised
 
-julia_version = "1.9.2"
+julia_version = "1.9.0"
 manifest_format = "2.0"
 project_hash = "d0069486257542c58ff4f12284b8908f62265555"
 
@@ -1143,7 +1082,7 @@ version = "0.11.4"
 [[deps.CompilerSupportLibraries_jll]]
 deps = ["Artifacts", "Libdl"]
 uuid = "e66e0078-7015-5450-92f7-15fbd957f2ae"
-version = "1.0.5+0"
+version = "1.0.2+0"
 
 [[deps.Dates]]
 deps = ["Printf"]
@@ -1259,7 +1198,7 @@ version = "2.7.0"
 [[deps.Pkg]]
 deps = ["Artifacts", "Dates", "Downloads", "FileWatching", "LibGit2", "Libdl", "Logging", "Markdown", "Printf", "REPL", "Random", "SHA", "Serialization", "TOML", "Tar", "UUIDs", "p7zip_jll"]
 uuid = "44cfe95a-1eb2-52ea-b672-e2afdf69b78f"
-version = "1.9.2"
+version = "1.9.0"
 
 [[deps.PlutoUI]]
 deps = ["AbstractPlutoDingetjes", "Base64", "ColorTypes", "Dates", "FixedPointNumbers", "Hyperscript", "HypertextLiteral", "IOCapture", "InteractiveUtils", "JSON", "Logging", "MIMEs", "Markdown", "Random", "Reexport", "URIs", "UUIDs"]
@@ -1363,7 +1302,7 @@ version = "1.2.13+0"
 [[deps.libblastrampoline_jll]]
 deps = ["Artifacts", "Libdl"]
 uuid = "8e850b90-86db-534c-a0d3-1478176c7d93"
-version = "5.8.0+0"
+version = "5.7.0+0"
 
 [[deps.nghttp2_jll]]
 deps = ["Artifacts", "Libdl"]
@@ -1439,7 +1378,7 @@ version = "17.4.0+0"
 # ╠═6c6eea6c-2754-4b3d-88ad-237a10329227
 # ╠═2df12392-0700-4301-afdc-c47729fa9247
 # ╟─eb300638-4986-4c88-be9f-2474f59bd4e3
-# ╠═a0587521-f2d9-4ba0-a5e3-86a3be90473f
+# ╟─a0587521-f2d9-4ba0-a5e3-86a3be90473f
 # ╟─0cbb28b5-2980-413f-be18-d311ee092bb8
 # ╠═2fec112c-3819-432d-a17d-abeaef833c29
 # ╠═e5aa386a-a035-4c9a-8cdd-d43b33162347
@@ -1480,13 +1419,13 @@ version = "17.4.0+0"
 # ╠═4d3d47ee-8362-41ea-bbbb-8f067db1aebe
 # ╠═2738ef60-adb7-4068-b24a-c82b0fc91abf
 # ╟─027fbf5b-1419-477c-8048-7349264927f9
-# ╠═025a34af-54bc-43b5-9f82-cbdee6003655
-# ╠═dce92edf-e838-434b-bef4-9851e5af147c
+# ╟─025a34af-54bc-43b5-9f82-cbdee6003655
+# ╟─dce92edf-e838-434b-bef4-9851e5af147c
 # ╠═4de38f69-5406-42b4-89f7-cccb4def75d9
-# ╠═04f1ebd6-13c7-4310-99d7-1abbc8963001
+# ╟─04f1ebd6-13c7-4310-99d7-1abbc8963001
 # ╠═0fcd6e9f-2e4b-4f66-8e5a-0e4de6f6fee2
 # ╟─365abfd3-a88d-40bd-aae7-1935832e23d6
-# ╟─82104d15-0868-421d-96b6-9168383623cb
+# ╠═82104d15-0868-421d-96b6-9168383623cb
 # ╠═c4ae1212-37d3-4439-876e-d37b49290b5e
 # ╟─e544d0c8-ea04-4545-afb1-a77d04378fed
 # ╠═91988791-3318-4819-aaee-cf3c88dc513a
@@ -1501,6 +1440,8 @@ version = "17.4.0+0"
 # ╠═cac97d98-3dc7-4b27-963b-b23c43d5cef4
 # ╠═d02a2b57-8b0d-4d54-b907-c812a91c0520
 # ╠═f2b42fb9-e120-48db-aa64-4d14657555d6
-# ╠═ef7ea364-601e-4f70-bcd8-1a3257b6facc
+# ╟─ef7ea364-601e-4f70-bcd8-1a3257b6facc
+# ╠═cc6c8f66-78b5-46df-a254-cc78c9246aa5
+# ╠═99a78df6-b509-4b8b-8995-b8ea47f051ce
 # ╟─00000000-0000-0000-0000-000000000001
 # ╟─00000000-0000-0000-0000-000000000002
