@@ -1,5 +1,5 @@
 ### A Pluto.jl notebook ###
-# v0.19.26
+# v0.19.27
 
 using Markdown
 using InteractiveUtils
@@ -1018,17 +1018,77 @@ R_{11} & R_{12}\end{pmatrix}$ son linealmente independientes.
 
 """
 
-# ╔═╡ cc6c8f66-78b5-46df-a254-cc78c9246aa5
-md"""
-$Q^TA\pi Q=
-\begin{pmatrix}
-R_{11}& R_{12}\\ 0 & R_{12}\end{pmatrix}\widetilde{A}=
-\begin{pmatrix}
-T_{11}& 0\\ 0 & 0\end{pmatrix}.$
+# ╔═╡ ba1cb3e8-3f76-49fa-9c1b-831f2e6d1dc3
+md""" 
+Concluimos que
+
+$Q^TA\pi \widetilde{Q}\begin{pmatrix}R_{11}& R_{12}\\ 0& R_{22}\end{pmatrix}\widetilde{Q}
+=\begin{pmatrix} T_{11} &0\\ 0 &0\end{pmatrix}$
+donde $T_{1,1}$ es una matriz triangular inferior de tamaño $r \times r$. Finalmente, para obtener una matriz triangular superior en el lugar de $T_{11}$, permutamos la filas y columnas de $T_{11}$, para esto usamos las siguientes tranformaciones
 """
 
-# ╔═╡ 99a78df6-b509-4b8b-8995-b8ea47f051ce
-md"""Ahora, para colocar una atriz triangular en lugar de $T_{11}$ """
+# ╔═╡ 815a7885-8006-44b1-8bd6-b19c0272379b
+md""" 
+$\widetilde{\pi}_1 =
+\begin{pmatrix}
+J & 0\\ 0 & I_{n-r}\end{pmatrix} \quad \mbox{ con } \quad 
+J_{r\times r}=\begin{pmatrix}
+0& 0& \cdots & 0 & 0 &1\\  
+0& 0& \cdots & 0 & 1 &0\\
+0& 0& \cdots & 1 & 0 &0\\
+\vdots & \vdots& \cdots & \vdots & \vdots &\vdots\\
+0& 1& \cdots & 0 & 0 &0\\
+1& 0& \cdots & 0 & 0 &0\\
+\end{pmatrix}$\
+y donde $I_{n-r}$ denota la matriz identidad $(n-r)\times(n-r)$. Analogamente
+
+$\widetilde{\pi}_2 =
+\begin{pmatrix}
+J & 0\\ 0 & I_{m-r}\end{pmatrix}$
+"""
+
+# ╔═╡ 2fddfd18-c93f-4361-8c94-7ceba91d8d63
+md"""Obtenemos
+
+$\overline{Q}^TAW=\widetilde{\pi}_2Q^TA\pi \widetilde{Q}\widetilde{\pi}_1=
+\begin{pmatrix} T_{11}^T &0\\ 0 &0\end{pmatrix}$
+donde $\overline{Q}^T=\widetilde{\pi}_2Q^T$y $W=\pi \widetilde{Q}\widetilde{\pi}_1$. Esta descomposición es concocida como la descomposición ortogonal completa (y no es la descomposición de Schur que es dela forma $Q^TAQ=R$ donde $R$ es triangular superior). 
+"""
+
+# ╔═╡ 4c97b8bf-6943-4d58-94c2-9dfdf8d83cdc
+md"""En lugar de pedir $T_{11}$ triangular superior se puede requerir que sea bidiagonal superior, lo que se conoce como bidiagonalización. Podemos usar Householder de la siguiente manera. Resumimos el procedimiento aplicado a una matriz $B$
+
+1. Aplicackos HH a la primera columa de $B$ para obtener $H_1B$ con zeros debajo de la primera entrada
+2. Aplicamos HH a la primera fila sin la primera entrada para obtener zero en la primera fila despues de la segunda entrada, obtenermos $H_1B\widetilde{H}_2$
+3. Continuamos con este procedimiento obtenemos 
+
+$
+H_n\dots H_1 B \widetilde{H}_2 \dots \widetilde{H}_m$
+qie debe ser una matriz  bidiagonal. 
+
+La bidiagonalización es usadad en el calculo de valore propios, primero se bidiagonliza y despues se aplica el método de Jacobi. 
+
+Como aspecto negativo de este algoritmo, tenemos su forato "alternado", por lo que se pierde la facultad de usar operaciones de nivel 3 como en Householder normal.  Por esta razon se realiza $R-bidiagonliaación$ que consiste en aplicar Householder para obtner
+
+$
+Q^TA=\begin{pmatrix}R_{1} \\ 0\end{pmatrix}$
+y depués aplicar Bidiagonlización a la matrix $R_{1}$ que generalmente es menor que $A$. Se obtine entonces 
+
+$
+Q_B^TR_{1}U_B=\mbox{ bigiagonal}$
+y luego usamos 
+
+$
+\overline{U}_B=Q\begin{pmatrix}Q_B &0\\ 0& I\end{pmatrix}$ 
+para terminar con 
+
+$
+\overline{U}_B^TAU_B=\begin{pmatrix}Q_B^T &0\\ 0& I\end{pmatrix}Q^TAU_B=
+\begin{pmatrix}Q_B^T &0\\ 0& I\end{pmatrix}
+\begin{pmatrix}R_1\\ 0\end{pmatrix}U_B=
+\begin{pmatrix}Q_B^TR_1U_B\\ 0\end{pmatrix}=\begin{pmatrix}\mbox{didiagonal}\\ 0\end{pmatrix}.$
+"""
+
 
 # ╔═╡ 00000000-0000-0000-0000-000000000001
 PLUTO_PROJECT_TOML_CONTENTS = """
@@ -1048,7 +1108,7 @@ PlutoUI = "~0.7.51"
 PLUTO_MANIFEST_TOML_CONTENTS = """
 # This file is machine-generated - editing it directly is not advised
 
-julia_version = "1.9.0"
+julia_version = "1.9.2"
 manifest_format = "2.0"
 project_hash = "d0069486257542c58ff4f12284b8908f62265555"
 
@@ -1083,7 +1143,7 @@ version = "0.11.4"
 [[deps.CompilerSupportLibraries_jll]]
 deps = ["Artifacts", "Libdl"]
 uuid = "e66e0078-7015-5450-92f7-15fbd957f2ae"
-version = "1.0.2+0"
+version = "1.0.5+0"
 
 [[deps.Dates]]
 deps = ["Printf"]
@@ -1199,7 +1259,7 @@ version = "2.7.0"
 [[deps.Pkg]]
 deps = ["Artifacts", "Dates", "Downloads", "FileWatching", "LibGit2", "Libdl", "Logging", "Markdown", "Printf", "REPL", "Random", "SHA", "Serialization", "TOML", "Tar", "UUIDs", "p7zip_jll"]
 uuid = "44cfe95a-1eb2-52ea-b672-e2afdf69b78f"
-version = "1.9.0"
+version = "1.9.2"
 
 [[deps.PlutoUI]]
 deps = ["AbstractPlutoDingetjes", "Base64", "ColorTypes", "Dates", "FixedPointNumbers", "Hyperscript", "HypertextLiteral", "IOCapture", "InteractiveUtils", "JSON", "Logging", "MIMEs", "Markdown", "Random", "Reexport", "URIs", "UUIDs"]
@@ -1303,7 +1363,7 @@ version = "1.2.13+0"
 [[deps.libblastrampoline_jll]]
 deps = ["Artifacts", "Libdl"]
 uuid = "8e850b90-86db-534c-a0d3-1478176c7d93"
-version = "5.7.0+0"
+version = "5.8.0+0"
 
 [[deps.nghttp2_jll]]
 deps = ["Artifacts", "Libdl"]
@@ -1441,8 +1501,6 @@ version = "17.4.0+0"
 # ╠═cac97d98-3dc7-4b27-963b-b23c43d5cef4
 # ╠═d02a2b57-8b0d-4d54-b907-c812a91c0520
 # ╠═f2b42fb9-e120-48db-aa64-4d14657555d6
-# ╟─ef7ea364-601e-4f70-bcd8-1a3257b6facc
-# ╠═cc6c8f66-78b5-46df-a254-cc78c9246aa5
-# ╠═99a78df6-b509-4b8b-8995-b8ea47f051ce
+# ╠═ef7ea364-601e-4f70-bcd8-1a3257b6facc
 # ╟─00000000-0000-0000-0000-000000000001
 # ╟─00000000-0000-0000-0000-000000000002
