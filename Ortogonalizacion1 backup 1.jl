@@ -1,5 +1,5 @@
 ### A Pluto.jl notebook ###
-# v0.19.27
+# v0.19.26
 
 using Markdown
 using InteractiveUtils
@@ -1018,68 +1018,16 @@ R_{11} & R_{12}\end{pmatrix}$ son linealmente independientes.
 """
 
 # ╔═╡ cc6c8f66-78b5-46df-a254-cc78c9246aa5
-md""" 
-Concluimos que
-
-$Q^TA\pi \widetilde{Q}\begin{pmatrix}R_{11}& R_{12}\\ 0& R_{22}\end{pmatrix}\widetilde{Q}
-=\begin{pmatrix} T_{11} &0\\ 0 &0\end{pmatrix}$
-donde $T_{1,1}$ es una matriz triangular inferior de tamaño $r \times r$. Finalmente, para obtener una matriz triangular superior en el lugar de $T_{11}$, permutamos la filas y columnas de $T_{11}$, para esto usamos las siguientes tranformaciones
-"""
-
-# ╔═╡ 55854ee3-512e-432b-80f6-788a780f9769
-md""" 
-$\widetilde{\pi}_1 =
+md"""
+$Q^TA\pi Q=
 \begin{pmatrix}
-J & 0\\ 0 & I_{n-r}\end{pmatrix} \quad \mbox{ con } \quad 
-J_{r\times r}=\begin{pmatrix}
-0& 0& \cdots & 0 & 0 &1\\  
-0& 0& \cdots & 0 & 1 &0\\
-0& 0& \cdots & 1 & 0 &0\\
-\vdots & \vdots& \cdots & \vdots & \vdots &\vdots\\
-0& 1& \cdots & 0 & 0 &0\\
-1& 0& \cdots & 0 & 0 &0\\
-\end{pmatrix}$\
-y donde $I_{n-r}$ denota la matriz identidad $(n-r)\times(n-r)$. Analogamente
-
-$\widetilde{\pi}_2 =
+R_{11}& R_{12}\\ 0 & R_{12}\end{pmatrix}\widetilde{A}=
 \begin{pmatrix}
-J & 0\\ 0 & I_{m-r}\end{pmatrix}$
+T_{11}& 0\\ 0 & 0\end{pmatrix}.$
 """
 
-# ╔═╡ 690172c6-f40d-4340-8269-fe2cd0154a35
-md"""En lugar de pedir $T_{11}$ triangular superior se puede requerir que sea bidiagonal superior, lo que se conoce como bidiagonalización. Podemos usar Householder de la siguiente manera. Resumimos el procedimiento aplicado a una matriz $B$
-
-1. Aplicackos HH a la primera columa de $B$ para obtener $H_1B$ con zeros debajo de la primera entrada
-2. Aplicamos HH a la primera fila sin la primera entrada para obtener zero en la primera fila despues de la segunda entrada, obtenermos $H_1B\widetilde{H}_2$
-3. Continuamos con este procedimiento obtenemos 
-
-$
-H_n\dots H_1 B \widetilde{H}_2 \dots \widetilde{H}_m$
-qie debe ser una matriz  bidiagonal. 
-
-La bidiagonalización es usadad en el calculo de valore propios, primero se bidiagonliza y despues se aplica el método de Jacobi. 
-
-Como aspecto negativo de este algoritmo, tenemos su forato "alternado", por lo que se pierde la facultad de usar operaciones de nivel 3 como en Householder normal.  Por esta razon se realiza $R-bidiagonliaación$ que consiste en aplicar Householder para obtner
-
-$
-Q^TA=\begin{pmatrix}R_{1} \\ 0\end{pmatrix}$
-y depués aplicar Bidiagonlización a la matrix $R_{1}$ que generalmente es menor que $A$. Se obtine entonces 
-
-$
-Q_B^TR_{1}U_B=\mbox{ bigiagonal}$
-y luego usamos 
-
-$
-\overline{U}_B=Q\begin{pmatrix}Q_B &0\\ 0& I\end{pmatrix}$ 
-para terminar con 
-
-$
-\overline{U}_B^TAU_B=\begin{pmatrix}Q_B^T &0\\ 0& I\end{pmatrix}Q^TAU_B=
-\begin{pmatrix}Q_B^T &0\\ 0& I\end{pmatrix}
-\begin{pmatrix}R_1\\ 0\end{pmatrix}U_B=
-\begin{pmatrix}Q_B^TR_1U_B\\ 0\end{pmatrix}=\begin{pmatrix}\mbox{didiagonal}\\ 0\end{pmatrix}.$
-"""
-
+# ╔═╡ 99a78df6-b509-4b8b-8995-b8ea47f051ce
+md"""Ahora, para colocar una atriz triangular en lugar de $T_{11}$ """
 
 # ╔═╡ 00000000-0000-0000-0000-000000000001
 PLUTO_PROJECT_TOML_CONTENTS = """
@@ -1092,22 +1040,22 @@ PlutoUI = "7f904dfe-b85e-4ff6-b463-dae2292396a8"
 [compat]
 BenchmarkTools = "~1.3.2"
 HypertextLiteral = "~0.9.4"
-PlutoUI = "~0.7.52"
+PlutoUI = "~0.7.51"
 """
 
 # ╔═╡ 00000000-0000-0000-0000-000000000002
 PLUTO_MANIFEST_TOML_CONTENTS = """
 # This file is machine-generated - editing it directly is not advised
 
-julia_version = "1.9.2"
+julia_version = "1.9.0"
 manifest_format = "2.0"
-project_hash = "c787f6af90ff2585a39bcdb0fed0d616a160272b"
+project_hash = "d0069486257542c58ff4f12284b8908f62265555"
 
 [[deps.AbstractPlutoDingetjes]]
 deps = ["Pkg"]
-git-tree-sha1 = "91bd53c39b9cbfb5ef4b015e8b582d344532bd0a"
+git-tree-sha1 = "8eaf9f1b4921132a4cff3f36a1d9ba923b14a481"
 uuid = "6e696c72-6542-2067-7265-42206c756150"
-version = "1.2.0"
+version = "1.1.4"
 
 [[deps.ArgTools]]
 uuid = "0dad84c5-d112-42e6-8d28-ef12dabb789f"
@@ -1134,7 +1082,7 @@ version = "0.11.4"
 [[deps.CompilerSupportLibraries_jll]]
 deps = ["Artifacts", "Libdl"]
 uuid = "e66e0078-7015-5450-92f7-15fbd957f2ae"
-version = "1.0.5+0"
+version = "1.0.2+0"
 
 [[deps.Dates]]
 deps = ["Printf"]
@@ -1243,26 +1191,26 @@ version = "0.3.21+4"
 
 [[deps.Parsers]]
 deps = ["Dates", "PrecompileTools", "UUIDs"]
-git-tree-sha1 = "716e24b21538abc91f6205fd1d8363f39b442851"
+git-tree-sha1 = "5a6ab2f64388fd1175effdf73fe5933ef1e0bac0"
 uuid = "69de0a69-1ddd-5017-9359-2bf0b02dc9f0"
-version = "2.7.2"
+version = "2.7.0"
 
 [[deps.Pkg]]
 deps = ["Artifacts", "Dates", "Downloads", "FileWatching", "LibGit2", "Libdl", "Logging", "Markdown", "Printf", "REPL", "Random", "SHA", "Serialization", "TOML", "Tar", "UUIDs", "p7zip_jll"]
 uuid = "44cfe95a-1eb2-52ea-b672-e2afdf69b78f"
-version = "1.9.2"
+version = "1.9.0"
 
 [[deps.PlutoUI]]
 deps = ["AbstractPlutoDingetjes", "Base64", "ColorTypes", "Dates", "FixedPointNumbers", "Hyperscript", "HypertextLiteral", "IOCapture", "InteractiveUtils", "JSON", "Logging", "MIMEs", "Markdown", "Random", "Reexport", "URIs", "UUIDs"]
-git-tree-sha1 = "e47cd150dbe0443c3a3651bc5b9cbd5576ab75b7"
+git-tree-sha1 = "b478a748be27bd2f2c73a7690da219d0844db305"
 uuid = "7f904dfe-b85e-4ff6-b463-dae2292396a8"
-version = "0.7.52"
+version = "0.7.51"
 
 [[deps.PrecompileTools]]
 deps = ["Preferences"]
-git-tree-sha1 = "03b4c25b43cb84cee5c90aa9b5ea0a78fd848d2f"
+git-tree-sha1 = "9673d39decc5feece56ef3940e5dafba15ba0f81"
 uuid = "aea7be01-6a6a-4083-8856-8a6e6704d82a"
-version = "1.2.0"
+version = "1.1.2"
 
 [[deps.Preferences]]
 deps = ["TOML"]
@@ -1335,9 +1283,9 @@ uuid = "410a4b4d-49e4-4fbc-ab6d-cb71b17b3775"
 version = "0.1.7"
 
 [[deps.URIs]]
-git-tree-sha1 = "b7a5e99f24892b6824a954199a45e9ffcc1c70f0"
+git-tree-sha1 = "074f993b0ca030848b897beff716d93aca60f06a"
 uuid = "5c2747f8-b7ea-4ff2-ba2e-563bfd36b1d4"
-version = "1.5.0"
+version = "1.4.2"
 
 [[deps.UUIDs]]
 deps = ["Random", "SHA"]
@@ -1354,7 +1302,7 @@ version = "1.2.13+0"
 [[deps.libblastrampoline_jll]]
 deps = ["Artifacts", "Libdl"]
 uuid = "8e850b90-86db-534c-a0d3-1478176c7d93"
-version = "5.8.0+0"
+version = "5.7.0+0"
 
 [[deps.nghttp2_jll]]
 deps = ["Artifacts", "Libdl"]
@@ -1493,8 +1441,14 @@ version = "17.4.0+0"
 # ╟─d02a2b57-8b0d-4d54-b907-c812a91c0520
 # ╟─f2b42fb9-e120-48db-aa64-4d14657555d6
 # ╟─ef7ea364-601e-4f70-bcd8-1a3257b6facc
-# ╟─cc6c8f66-78b5-46df-a254-cc78c9246aa5
-# ╟─55854ee3-512e-432b-80f6-788a780f9769
-# ╟─690172c6-f40d-4340-8269-fe2cd0154a35
+<<<<<<< HEAD
+# ╟─ba1cb3e8-3f76-49fa-9c1b-831f2e6d1dc3
+# ╟─815a7885-8006-44b1-8bd6-b19c0272379b
+# ╟─2fddfd18-c93f-4361-8c94-7ceba91d8d63
+# ╟─4c97b8bf-6943-4d58-94c2-9dfdf8d83cdc
+=======
+# ╠═cc6c8f66-78b5-46df-a254-cc78c9246aa5
+# ╠═99a78df6-b509-4b8b-8995-b8ea47f051ce
+>>>>>>> b876838b3bc364c0184c34a5c84fe16101b3cda3
 # ╟─00000000-0000-0000-0000-000000000001
 # ╟─00000000-0000-0000-0000-000000000002
