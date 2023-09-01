@@ -1,5 +1,5 @@
 ### A Pluto.jl notebook ###
-# v0.19.26
+# v0.19.27
 
 using Markdown
 using InteractiveUtils
@@ -1091,13 +1091,13 @@ $
 
 # ╔═╡ 44c4f4ae-29ca-4eb7-a37b-3ca3757f1d0d
 md"""
-# Sobre la orgogonalización completa
+# Mínimos cuadrados
 """
 
 # ╔═╡ d5eae0e6-855c-4a42-93bb-0904500daf4e
 md""" Usando Householder podemos obtener, 
 
-$\overline{Q}^TAZ=\begin{pmatrix} R_{11} &0\\ 0 &0\end{pmatrix}$
+${Q}^TAZ=\begin{pmatrix} R_{11} &0\\ 0 &0\end{pmatrix}$
 donde $Q^T$ y $Z^T$ son matrices orgonales. Esta descomposición es concocida como la descomposición ortogonal completa. Etonces, 
 
 $A=Q\begin{pmatrix} R_{11} &0\\ 0 &0\end{pmatrix} Z^T=
@@ -1107,21 +1107,94 @@ $A=Q\begin{pmatrix} R_{11} &0\\ 0 &0\end{pmatrix} Z^T=
 Además, 
 
 $\mbox{Image}(A)=\mbox{span}(Q_1), \quad \mbox{Image}(A)^\perp=\mbox{span}(Q_2)$
-$\mbox{ker}(A)=\mbox{span}(Z_2), \quad \mbox{ker}(A)^\perp=\mbox{span}(Z_1)$
-"""
+$\mbox{ker}(A)=\mbox{span}(Z_2), \quad \mbox{ker}(A)^\perp=\mbox{span}(Z_1).$
 
-# ╔═╡ dd86261a-3364-4d44-a0af-0cd751e3c45e
-md"""
-# Mínimos cuadrados
+Ademas $A(\mbox{span}(Z_1))=\mbox{Image}(A)$, es decir, para generar la imagen de $A$, basta usar vectores en $\mbox{span}(Z_1)$.
 """
 
 # ╔═╡ 731dbcca-22b6-41df-9c7a-172fd6a1eda0
 md"""
-test
+Considere el sistema $Ax=b$ con $A\in \mathbb{R}^{m\times n}$.
+
+En el caso en que $b\not\in \mbox{Image}(A)$, una forma natural de definir una solución es proyectar $b$ a la $\mbox{Image}(A)=\mbox{span}(Q_1)$. En este caso debemo resolver 
+
+$
+Ax=Q_1Q_1^Tb.$
+
+Por lo mencionado anteriormente podemos buscar $x\in \mbox{span}(Z_1)$. Esto da la unicidad de la solución ya que si $y\in \mbox{span}(Z_1)$ es tal que $Ay=Q_1Q_1^Tb$ entonces $A(x-y)=0$, lo que impliaría que $x-y\in \mbox{ker}(A)=\mbox{span}(Z_2)$ y por tanto $x-y\in \mbox{span}(Z_1)\cap\mbox{span}(Z_2)$. Esto implica que $x-y=0$.
 """
 
 # ╔═╡ e9090e19-34b5-4efb-8c92-f0896265dec2
+md"""
+Si $x\in \mbox{span}(Z_1)$ podemos escribir $z=Z_1\alpha$, con $\alpha\in \mathbb{R}^r$ y tenemos 
 
+$
+AZ_1\alpha=Q_1Q_1^Tb.$
+
+Pero $A=Q_1R_{11}Z_1^T$, entonces,
+
+$Q_1R_{11}Z_1^TZ_1\alpha= Q_1R_{11}\alpha =Q_1Q_1^Tb$
+Lo que implica, al multiplicar por $Q_1^T$,
+
+$R_{11}\alpha =Q_1^Tb \quad \mbox{ y } \quad \alpha=R_{11}^{-1}Q_1^Tb.$
+Definimos 
+
+$x_{LS}=Z_1R_{11}^{-1}Q_1^Tb$
+
+Observe que el calculo de esta solución requiere resolver un sistema con una matriz triangular superior $r\times r$ y dos multiplicacines matriciales.
+"""
+
+# ╔═╡ b25ea97f-5098-4624-963c-4951cb29e307
+md""" 
+Otra forma de escoger una solución de $Ax=b$ es resolver 
+
+$||Ax^\star-b||=\min_{x\in\mathbb{R}^n} || Ax-b||_2.$
+
+En este caso tenemos
+
+$
+\begin{align}
+|| Ax-b||_2^2 &=|| Q^T(Ax-b)||_2^2=|| Q^TAx-Q^Tb||_2^2 \\
+&=|| Q^TAZ\alpha-Q^Tb||_2^2\\
+&=\left\| \begin{pmatrix} R_{11} &0\\ 0 &0\end{pmatrix}
+ \begin{pmatrix} \alpha_{1} \\ \alpha_2\end{pmatrix}-
+ \begin{pmatrix} Q_1^Tb \\ Q_2^Tb\end{pmatrix}\right\|^2\\
+&=\left\| \begin{pmatrix} R_{11}\alpha_{1}\\ 0\end{pmatrix}
+- \begin{pmatrix} Q_1^Tb \\ Q_2^Tb\end{pmatrix}\right\|^2\\
+&= ||R_{11}\alpha_1 - Q_1^Tb ||^2_2+||Q_2^Tb||^2_2.
+\end{align}$
+Entonces, 
+"""
+
+# ╔═╡ 6a293633-40e6-45f9-a98e-5ea862cb345e
+md"""
+$
+\begin{align}
+||Ax^\star-b||^2&=\min_{x\in\mathbb{R}^n} || Ax-b||_2^2\\
+&=\min_{\alpha_1\in\mathbb{R}^r} ||R_{11}\alpha_1 - Q_1^Tb ||^2_2+||Q_2^Tb||^2_2\\
+\end{align} =||Q_2^Tb||$
+con el punto de minimo $\alpha_1=R_{11}^{-1}Q_1^Tb$. Ademas
+
+$
+x^\star = Z_1\alpha_1+Z_2\alpha_2=Z_1=R_{11}^{-1}Q_1^Tb=x_{LS}$
+donde usamos $\alpha_1=R_{11}^{-1}Q_1^Tb$ y $\alpha_2=0$ (solución de norma minima ya que $||Z_1\alpha_1+Z_2\alpha_2||^2_2=||\alpha_1||^2_2+||\alpha_2||^2_2$). Observe que obtuvimos la misma solución que antes. 
+"""
+
+# ╔═╡ 2c3125ac-6b05-4cdb-b749-e0b9fff163fb
+md"""Cuando las colaumnas de $A$ son linealmente independientes, se puede selecionar $\bar{x}$  de tal forma que $A\bar{x}-b$ sea orgonal a las columnas de $A$. O sea, 
+
+$
+A^T(Ax-b)=0$
+que da
+
+$A^TAx=A^Tb \quad \mbox{ y }\quad \bar{x}=(A^TA)^{-1}A^Tb.$
+
+Se puede ver fácilmente que $\bar{x}=x_{LS}$.
+
+"""
+
+# ╔═╡ a246c9f6-baab-4ffc-b35d-33a052692469
+md"""Las tres formas anteriores de seleccioar una solución dan como resultado el mismo vector. Debido a la segunda forma $x_{LS}$ es conocida como solución de  minimos cuadrados o de norma Euclididana minima del residuo. """
 
 # ╔═╡ 00000000-0000-0000-0000-000000000001
 PLUTO_PROJECT_TOML_CONTENTS = """
@@ -1141,7 +1214,7 @@ PlutoUI = "~0.7.51"
 PLUTO_MANIFEST_TOML_CONTENTS = """
 # This file is machine-generated - editing it directly is not advised
 
-julia_version = "1.9.0"
+julia_version = "1.9.2"
 manifest_format = "2.0"
 project_hash = "d0069486257542c58ff4f12284b8908f62265555"
 
@@ -1176,7 +1249,7 @@ version = "0.11.4"
 [[deps.CompilerSupportLibraries_jll]]
 deps = ["Artifacts", "Libdl"]
 uuid = "e66e0078-7015-5450-92f7-15fbd957f2ae"
-version = "1.0.2+0"
+version = "1.0.5+0"
 
 [[deps.Dates]]
 deps = ["Printf"]
@@ -1292,7 +1365,7 @@ version = "2.7.0"
 [[deps.Pkg]]
 deps = ["Artifacts", "Dates", "Downloads", "FileWatching", "LibGit2", "Libdl", "Logging", "Markdown", "Printf", "REPL", "Random", "SHA", "Serialization", "TOML", "Tar", "UUIDs", "p7zip_jll"]
 uuid = "44cfe95a-1eb2-52ea-b672-e2afdf69b78f"
-version = "1.9.0"
+version = "1.9.2"
 
 [[deps.PlutoUI]]
 deps = ["AbstractPlutoDingetjes", "Base64", "ColorTypes", "Dates", "FixedPointNumbers", "Hyperscript", "HypertextLiteral", "IOCapture", "InteractiveUtils", "JSON", "Logging", "MIMEs", "Markdown", "Random", "Reexport", "URIs", "UUIDs"]
@@ -1396,7 +1469,7 @@ version = "1.2.13+0"
 [[deps.libblastrampoline_jll]]
 deps = ["Artifacts", "Libdl"]
 uuid = "8e850b90-86db-534c-a0d3-1478176c7d93"
-version = "5.7.0+0"
+version = "5.8.0+0"
 
 [[deps.nghttp2_jll]]
 deps = ["Artifacts", "Libdl"]
@@ -1539,10 +1612,13 @@ version = "17.4.0+0"
 # ╠═815a7885-8006-44b1-8bd6-b19c0272379b
 # ╠═2fddfd18-c93f-4361-8c94-7ceba91d8d63
 # ╟─4c97b8bf-6943-4d58-94c2-9dfdf8d83cdc
-# ╠═44c4f4ae-29ca-4eb7-a37b-3ca3757f1d0d
-# ╟─d5eae0e6-855c-4a42-93bb-0904500daf4e
-# ╟─dd86261a-3364-4d44-a0af-0cd751e3c45e
-# ╠═731dbcca-22b6-41df-9c7a-172fd6a1eda0
-# ╠═e9090e19-34b5-4efb-8c92-f0896265dec2
+# ╟─44c4f4ae-29ca-4eb7-a37b-3ca3757f1d0d
+# ╠═d5eae0e6-855c-4a42-93bb-0904500daf4e
+# ╟─731dbcca-22b6-41df-9c7a-172fd6a1eda0
+# ╟─e9090e19-34b5-4efb-8c92-f0896265dec2
+# ╟─b25ea97f-5098-4624-963c-4951cb29e307
+# ╠═6a293633-40e6-45f9-a98e-5ea862cb345e
+# ╠═2c3125ac-6b05-4cdb-b749-e0b9fff163fb
+# ╠═a246c9f6-baab-4ffc-b35d-33a052692469
 # ╟─00000000-0000-0000-0000-000000000001
 # ╟─00000000-0000-0000-0000-000000000002
