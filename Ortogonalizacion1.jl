@@ -806,33 +806,44 @@ c&-s\\ s&c\end{pmatrix}=
 -\tau&1\\ 1&\tau
 \end{pmatrix}$
 
-con $\tau=c/s$.
+con $\tau=c/s$ y note que podemos escribir $s$ en termios de $\tau$,
+
+$s^2=\frac{1}{1+\tau^2}$
+
+De esta forma, para calcular productos de varios de estos elementos podemos calcular el producto al cuadrado usando el valor de $\tau$ y al final aplicaruna raíz cuadrada.
 """
 
 # ╔═╡ 365abfd3-a88d-40bd-aae7-1935832e23d6
 md"""
-Para realizar la multiplicación por una nueva matriz diagonal por la derecha podemos usar que 
+Para realizar la multiplicación por una nueva matriz diagonal por la derecha podemos usar que para calcular la matriz de Gives en $[a_1,b_1]$, $\tau=-a_1/b_1$ y además
 
-$\begin{pmatrix}
+$\begin{align}
+\begin{pmatrix}
 -\tau&1\\ 1&\tau\end{pmatrix}\begin{pmatrix}
 d_1&0\\ 0&d_2\end{pmatrix}
-=\begin{pmatrix}
+&=\begin{pmatrix}
 d_1&0\\ 0&d_2\end{pmatrix}
 \begin{pmatrix}
-\left(\frac{d_1}{d_2}\right)^2 \frac{a_1}{b_1}&1\\ 1& -\frac{a_1}{b_1}\end{pmatrix}=
-D(d_1,d_2) S_3$
-y podemos realizar  la multiplicación $S_2\tilde{A}$ y acumular la multipliación de matrices diagonales $S_p\times D$. 
+\left(\frac{d_1}{d_2}\right)^2 \frac{a_1}{b_1}&1\\ 1& -\frac{a_1}{b_1}\end{pmatrix}
+\\&=
+\begin{pmatrix}
+d_1&0\\ 0&d_2\end{pmatrix}
+\begin{pmatrix}
+\beta&1\\ 1& \alpha\end{pmatrix}=
+D(d_1,d_2) S_3
+\end{align}$
+y podemos realizar  la multiplicación $S_2\tilde{A}$ y acumular la multipliación de matrices diagonales $S_p\times D.$  Notoriamente la estructura de zeros se sigue conservando e igual se obtendrá una matriz triangular superior al final del procedimiento. 
 """
 
 # ╔═╡ 82104d15-0868-421d-96b6-9168383623cb
 md"""
 Obtenemos así matrices $\tilde{G}_\ell=S_3(i,k)$ tales que
 
-$D\tilde{G}_N\tilde{G}_{N-1}\cdots \tilde{G}_1 A= M (\text{ que es triangular superior})$
+$D\tilde{G}_N\tilde{G}_{N-1}\cdots \tilde{G}_1 A= T (\text{ que es triangular superior})$
 """
 
 # ╔═╡ c4ae1212-37d3-4439-876e-d37b49290b5e
-md"""Para obtener las matrices $\tilde{G}_\ell$ basta calcular $\tau$. Para calcular las entradas de la diagonal de la matriz D, tenemos elementos de la forma 
+md"""Para obtener las matrices $\tilde{G}_\ell$ basta calcular $\tau$. Para calcular las entradas de la diagonal de la matriz D, tenemos elementos de la forma  (recuerde que arriba escribismo los elementos de la diagonal $s$ en en función de $\tau$)
 
 $d^2=\prod_{\ell=1}^N\left(\frac{1}{1+\tau_\ell^2}\right)$
 """
@@ -1591,10 +1602,10 @@ version = "17.4.0+0"
 # ╠═dce92edf-e838-434b-bef4-9851e5af147c
 # ╠═4de38f69-5406-42b4-89f7-cccb4def75d9
 # ╠═04f1ebd6-13c7-4310-99d7-1abbc8963001
-# ╠═0fcd6e9f-2e4b-4f66-8e5a-0e4de6f6fee2
+# ╟─0fcd6e9f-2e4b-4f66-8e5a-0e4de6f6fee2
 # ╟─365abfd3-a88d-40bd-aae7-1935832e23d6
 # ╟─82104d15-0868-421d-96b6-9168383623cb
-# ╠═c4ae1212-37d3-4439-876e-d37b49290b5e
+# ╟─c4ae1212-37d3-4439-876e-d37b49290b5e
 # ╟─e544d0c8-ea04-4545-afb1-a77d04378fed
 # ╠═91988791-3318-4819-aaee-cf3c88dc513a
 # ╠═8a8de75d-5f95-4c15-94cf-9d15af142394
@@ -1609,17 +1620,17 @@ version = "17.4.0+0"
 # ╟─d02a2b57-8b0d-4d54-b907-c812a91c0520
 # ╟─f2b42fb9-e120-48db-aa64-4d14657555d6
 # ╟─ef7ea364-601e-4f70-bcd8-1a3257b6facc
-# ╠═ba1cb3e8-3f76-49fa-9c1b-831f2e6d1dc3
-# ╠═815a7885-8006-44b1-8bd6-b19c0272379b
-# ╠═2fddfd18-c93f-4361-8c94-7ceba91d8d63
+# ╟─ba1cb3e8-3f76-49fa-9c1b-831f2e6d1dc3
+# ╟─815a7885-8006-44b1-8bd6-b19c0272379b
+# ╟─2fddfd18-c93f-4361-8c94-7ceba91d8d63
 # ╟─4c97b8bf-6943-4d58-94c2-9dfdf8d83cdc
 # ╟─44c4f4ae-29ca-4eb7-a37b-3ca3757f1d0d
-# ╠═d5eae0e6-855c-4a42-93bb-0904500daf4e
+# ╟─d5eae0e6-855c-4a42-93bb-0904500daf4e
 # ╟─731dbcca-22b6-41df-9c7a-172fd6a1eda0
 # ╟─e9090e19-34b5-4efb-8c92-f0896265dec2
 # ╟─b25ea97f-5098-4624-963c-4951cb29e307
-# ╠═6a293633-40e6-45f9-a98e-5ea862cb345e
-# ╠═2c3125ac-6b05-4cdb-b749-e0b9fff163fb
-# ╠═a246c9f6-baab-4ffc-b35d-33a052692469
+# ╟─6a293633-40e6-45f9-a98e-5ea862cb345e
+# ╟─2c3125ac-6b05-4cdb-b749-e0b9fff163fb
+# ╟─a246c9f6-baab-4ffc-b35d-33a052692469
 # ╟─00000000-0000-0000-0000-000000000001
 # ╟─00000000-0000-0000-0000-000000000002
