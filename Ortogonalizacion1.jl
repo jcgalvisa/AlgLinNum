@@ -712,6 +712,7 @@ function Giv(A, i, k, c, s)
         A[i,j] = c*τ1 - s*τ2
         A[k,j] = s*τ1 + c*τ2
     end
+#	A[i,:]=c*A[i;:]-s*A[k;:]
     return A
 end
 
@@ -726,18 +727,18 @@ end
 
 # ╔═╡ 4d3d47ee-8362-41ea-bbbb-8f067db1aebe
 begin
-	if( A₁₂[3,1] !=0.0)
-	c₁, s₁ = Givens(A₁₂[2,1], A₁₂[3,1])
-	A₁₃= Giv(B₁₂ , 2,3 ,c₁,s₁)
+	if( A₁₂[2,1] !=0.0)
+	c₁, s₁ = Givens(A₁₂[1,1], A₁₂[2,1])
+	A₁₃= Giv(B₁₂ , 1, 2,c₁,s₁)
 	end
 	A₁₃
 end
 
 # ╔═╡ 2738ef60-adb7-4068-b24a-c82b0fc91abf
-begin
-	c₂, s₂ = Givens(A₁₃[1,1], A₁₃[2,1])
-	D = Giv(A₁₃, 1,2,c₂,s₂)
-end
+#begin
+#	c₂, s₂ = Givens(A₁₃[1,1], A₁₃[2,1])
+#	D = Giv(A₁₃, 1,2,c₂,s₂)
+#end
 
 # ╔═╡ 027fbf5b-1419-477c-8048-7349264927f9
 md""" 
@@ -1586,7 +1587,7 @@ version = "17.4.0+0"
 # ╠═4d3d47ee-8362-41ea-bbbb-8f067db1aebe
 # ╠═2738ef60-adb7-4068-b24a-c82b0fc91abf
 # ╟─027fbf5b-1419-477c-8048-7349264927f9
-# ╠═025a34af-54bc-43b5-9f82-cbdee6003655
+# ╟─025a34af-54bc-43b5-9f82-cbdee6003655
 # ╠═dce92edf-e838-434b-bef4-9851e5af147c
 # ╠═4de38f69-5406-42b4-89f7-cccb4def75d9
 # ╠═04f1ebd6-13c7-4310-99d7-1abbc8963001
@@ -1605,7 +1606,7 @@ version = "17.4.0+0"
 # ╠═63d485ef-7d43-4f98-8d1c-2630f10ae36d
 # ╠═52050d67-b0ce-4f3b-bf71-4e68fd8ef2b7
 # ╠═cac97d98-3dc7-4b27-963b-b23c43d5cef4
-# ╠═d02a2b57-8b0d-4d54-b907-c812a91c0520
+# ╟─d02a2b57-8b0d-4d54-b907-c812a91c0520
 # ╟─f2b42fb9-e120-48db-aa64-4d14657555d6
 # ╟─ef7ea364-601e-4f70-bcd8-1a3257b6facc
 # ╠═ba1cb3e8-3f76-49fa-9c1b-831f2e6d1dc3
