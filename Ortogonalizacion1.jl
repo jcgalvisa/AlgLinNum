@@ -712,6 +712,7 @@ function Giv(A, i, k, c, s)
         A[i,j] = c*τ1 - s*τ2
         A[k,j] = s*τ1 + c*τ2
     end
+#	A[i,:]=c*A[i;:]-s*A[k;:]
     return A
 end
 
@@ -726,18 +727,18 @@ end
 
 # ╔═╡ 4d3d47ee-8362-41ea-bbbb-8f067db1aebe
 begin
-	if( A₁₂[3,1] !=0.0)
-	c₁, s₁ = Givens(A₁₂[2,1], A₁₂[3,1])
-	A₁₃= Giv(B₁₂ , 2,3 ,c₁,s₁)
+	if( A₁₂[2,1] !=0.0)
+	c₁, s₁ = Givens(A₁₂[1,1], A₁₂[2,1])
+	A₁₃= Giv(B₁₂ , 1, 2,c₁,s₁)
 	end
 	A₁₃
 end
 
 # ╔═╡ 2738ef60-adb7-4068-b24a-c82b0fc91abf
-begin
-	c₂, s₂ = Givens(A₁₃[1,1], A₁₃[2,1])
-	D = Giv(A₁₃, 1,2,c₂,s₂)
-end
+#begin
+#	c₂, s₂ = Givens(A₁₃[1,1], A₁₃[2,1])
+#	D = Giv(A₁₃, 1,2,c₂,s₂)
+#end
 
 # ╔═╡ 027fbf5b-1419-477c-8048-7349264927f9
 md""" 
@@ -805,33 +806,44 @@ c&-s\\ s&c\end{pmatrix}=
 -\tau&1\\ 1&\tau
 \end{pmatrix}$
 
-con $\tau=c/s$.
+con $\tau=c/s$ y note que podemos escribir $s$ en termios de $\tau$,
+
+$s^2=\frac{1}{1+\tau^2}$
+
+De esta forma, para calcular productos de varios de estos elementos podemos calcular el producto al cuadrado usando el valor de $\tau$ y al final aplicaruna raíz cuadrada.
 """
 
 # ╔═╡ 365abfd3-a88d-40bd-aae7-1935832e23d6
 md"""
-Para realizar la multiplicación por una nueva matriz diagonal por la derecha podemos usar que 
+Para realizar la multiplicación por una nueva matriz diagonal por la derecha podemos usar que para calcular la matriz de Gives en $[a_1,b_1]$, $\tau=-a_1/b_1$ y además
 
-$\begin{pmatrix}
+$\begin{align}
+\begin{pmatrix}
 -\tau&1\\ 1&\tau\end{pmatrix}\begin{pmatrix}
 d_1&0\\ 0&d_2\end{pmatrix}
-=\begin{pmatrix}
+&=\begin{pmatrix}
 d_1&0\\ 0&d_2\end{pmatrix}
 \begin{pmatrix}
-\left(\frac{d_1}{d_2}\right)^2 \frac{a_1}{b_1}&1\\ 1& -\frac{a_1}{b_1}\end{pmatrix}=
-D(d_1,d_2) S_3$
-y podemos realizar  la multiplicación $S_2\tilde{A}$ y acumular la multipliación de matrices diagonales $S_p\times D$. 
+\left(\frac{d_1}{d_2}\right)^2 \frac{a_1}{b_1}&1\\ 1& -\frac{a_1}{b_1}\end{pmatrix}
+\\&=
+\begin{pmatrix}
+d_1&0\\ 0&d_2\end{pmatrix}
+\begin{pmatrix}
+\beta&1\\ 1& \alpha\end{pmatrix}=
+D(d_1,d_2) S_3
+\end{align}$
+y podemos realizar  la multiplicación $S_2\tilde{A}$ y acumular la multipliación de matrices diagonales $S_p\times D.$  Notoriamente la estructura de zeros se sigue conservando e igual se obtendrá una matriz triangular superior al final del procedimiento. 
 """
 
 # ╔═╡ 82104d15-0868-421d-96b6-9168383623cb
 md"""
 Obtenemos así matrices $\tilde{G}_\ell=S_3(i,k)$ tales que
 
-$D\tilde{G}_N\tilde{G}_{N-1}\cdots \tilde{G}_1 A= M (\text{ que es triangular superior})$
+$D\tilde{G}_N\tilde{G}_{N-1}\cdots \tilde{G}_1 A= T (\text{ que es triangular superior})$
 """
 
 # ╔═╡ c4ae1212-37d3-4439-876e-d37b49290b5e
-md"""Para obtener las matrices $\tilde{G}_\ell$ basta calcular $\tau$. Para calcular las entradas de la diagonal de la matriz D, tenemos elementos de la forma 
+md"""Para obtener las matrices $\tilde{G}_\ell$ basta calcular $\tau$. Para calcular las entradas de la diagonal de la matriz D, tenemos elementos de la forma  (recuerde que arriba escribismo los elementos de la diagonal $s$ en en función de $\tau$)
 
 $d^2=\prod_{\ell=1}^N\left(\frac{1}{1+\tau_\ell^2}\right)$
 """
@@ -1587,9 +1599,9 @@ version = "17.4.0+0"
 # ╠═2738ef60-adb7-4068-b24a-c82b0fc91abf
 # ╟─027fbf5b-1419-477c-8048-7349264927f9
 # ╟─025a34af-54bc-43b5-9f82-cbdee6003655
-# ╟─dce92edf-e838-434b-bef4-9851e5af147c
-# ╟─4de38f69-5406-42b4-89f7-cccb4def75d9
-# ╟─04f1ebd6-13c7-4310-99d7-1abbc8963001
+# ╠═dce92edf-e838-434b-bef4-9851e5af147c
+# ╠═4de38f69-5406-42b4-89f7-cccb4def75d9
+# ╠═04f1ebd6-13c7-4310-99d7-1abbc8963001
 # ╟─0fcd6e9f-2e4b-4f66-8e5a-0e4de6f6fee2
 # ╟─365abfd3-a88d-40bd-aae7-1935832e23d6
 # ╟─82104d15-0868-421d-96b6-9168383623cb
