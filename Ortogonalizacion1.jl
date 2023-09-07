@@ -1,5 +1,5 @@
 ### A Pluto.jl notebook ###
-# v0.19.27
+# v0.19.26
 
 using Markdown
 using InteractiveUtils
@@ -1214,7 +1214,7 @@ PlutoUI = "~0.7.51"
 PLUTO_MANIFEST_TOML_CONTENTS = """
 # This file is machine-generated - editing it directly is not advised
 
-julia_version = "1.9.2"
+julia_version = "1.9.0"
 manifest_format = "2.0"
 project_hash = "d0069486257542c58ff4f12284b8908f62265555"
 
@@ -1249,7 +1249,7 @@ version = "0.11.4"
 [[deps.CompilerSupportLibraries_jll]]
 deps = ["Artifacts", "Libdl"]
 uuid = "e66e0078-7015-5450-92f7-15fbd957f2ae"
-version = "1.0.5+0"
+version = "1.0.2+0"
 
 [[deps.Dates]]
 deps = ["Printf"]
@@ -1365,7 +1365,7 @@ version = "2.7.0"
 [[deps.Pkg]]
 deps = ["Artifacts", "Dates", "Downloads", "FileWatching", "LibGit2", "Libdl", "Logging", "Markdown", "Printf", "REPL", "Random", "SHA", "Serialization", "TOML", "Tar", "UUIDs", "p7zip_jll"]
 uuid = "44cfe95a-1eb2-52ea-b672-e2afdf69b78f"
-version = "1.9.2"
+version = "1.9.0"
 
 [[deps.PlutoUI]]
 deps = ["AbstractPlutoDingetjes", "Base64", "ColorTypes", "Dates", "FixedPointNumbers", "Hyperscript", "HypertextLiteral", "IOCapture", "InteractiveUtils", "JSON", "Logging", "MIMEs", "Markdown", "Random", "Reexport", "URIs", "UUIDs"]
@@ -1469,7 +1469,7 @@ version = "1.2.13+0"
 [[deps.libblastrampoline_jll]]
 deps = ["Artifacts", "Libdl"]
 uuid = "8e850b90-86db-534c-a0d3-1478176c7d93"
-version = "5.8.0+0"
+version = "5.7.0+0"
 
 [[deps.nghttp2_jll]]
 deps = ["Artifacts", "Libdl"]
@@ -1532,7 +1532,7 @@ version = "17.4.0+0"
 # ╠═9b2d9220-5c36-47a1-a5a2-a19de55159e0
 # ╟─1ff4c715-6352-465c-8575-a8ccae9ee708
 # ╟─b0214333-9461-4535-a5a6-f2aeac628e06
-# ╠═4df2d1d6-1a1b-4b53-9390-e661acd16dd2
+# ╟─4df2d1d6-1a1b-4b53-9390-e661acd16dd2
 # ╠═cca162bf-84fd-4032-a90f-522796baacf9
 # ╠═c4421b71-29cf-4b43-a71c-5b6070bd4afe
 # ╠═7132f19f-fc36-4984-8d7e-2ff58ae08a02
@@ -1545,7 +1545,7 @@ version = "17.4.0+0"
 # ╠═6c6eea6c-2754-4b3d-88ad-237a10329227
 # ╠═2df12392-0700-4301-afdc-c47729fa9247
 # ╟─eb300638-4986-4c88-be9f-2474f59bd4e3
-# ╠═a0587521-f2d9-4ba0-a5e3-86a3be90473f
+# ╟─a0587521-f2d9-4ba0-a5e3-86a3be90473f
 # ╟─0cbb28b5-2980-413f-be18-d311ee092bb8
 # ╠═2fec112c-3819-432d-a17d-abeaef833c29
 # ╠═e5aa386a-a035-4c9a-8cdd-d43b33162347
@@ -1559,7 +1559,7 @@ version = "17.4.0+0"
 # ╠═43d5dc23-ab26-4752-8210-ac393f1a0268
 # ╠═2c51de0a-b4d3-485c-897c-95da6fcceafc
 # ╟─8bd19164-dcc4-4a16-b552-1d11030c0366
-# ╠═dbdc714a-231b-405c-be14-8c60d50acc7f
+# ╟─dbdc714a-231b-405c-be14-8c60d50acc7f
 # ╟─33dd679d-315a-454b-84b0-569a3d380405
 # ╠═bc00e335-4fac-4c07-86d9-7a2e7a05a61d
 # ╠═b37cf5d3-e7b2-41c3-9fcb-e232718f7957
@@ -1567,7 +1567,7 @@ version = "17.4.0+0"
 # ╠═4d628c4b-4311-40d2-8db8-4cab9e768bac
 # ╠═642a2da3-de23-422f-ace4-48667731cbfa
 # ╠═2a4c2eec-c3f1-4f8e-980c-0ff607e1e46d
-# ╠═fb0292ab-884b-4c56-9151-dbceabd45a56
+# ╟─fb0292ab-884b-4c56-9151-dbceabd45a56
 # ╟─d1b87663-6755-4eaa-9123-8717f95095a4
 # ╟─53e98911-65ae-48f0-96d4-bfb2bc04585f
 # ╟─22106606-9bee-40cc-8d2f-17f36dda6937
@@ -1586,39 +1586,39 @@ version = "17.4.0+0"
 # ╠═4d3d47ee-8362-41ea-bbbb-8f067db1aebe
 # ╠═2738ef60-adb7-4068-b24a-c82b0fc91abf
 # ╟─027fbf5b-1419-477c-8048-7349264927f9
-# ╠═025a34af-54bc-43b5-9f82-cbdee6003655
-# ╠═dce92edf-e838-434b-bef4-9851e5af147c
-# ╠═4de38f69-5406-42b4-89f7-cccb4def75d9
-# ╠═04f1ebd6-13c7-4310-99d7-1abbc8963001
-# ╠═0fcd6e9f-2e4b-4f66-8e5a-0e4de6f6fee2
+# ╟─025a34af-54bc-43b5-9f82-cbdee6003655
+# ╟─dce92edf-e838-434b-bef4-9851e5af147c
+# ╟─4de38f69-5406-42b4-89f7-cccb4def75d9
+# ╟─04f1ebd6-13c7-4310-99d7-1abbc8963001
+# ╟─0fcd6e9f-2e4b-4f66-8e5a-0e4de6f6fee2
 # ╟─365abfd3-a88d-40bd-aae7-1935832e23d6
 # ╟─82104d15-0868-421d-96b6-9168383623cb
-# ╠═c4ae1212-37d3-4439-876e-d37b49290b5e
+# ╟─c4ae1212-37d3-4439-876e-d37b49290b5e
 # ╟─e544d0c8-ea04-4545-afb1-a77d04378fed
 # ╠═91988791-3318-4819-aaee-cf3c88dc513a
 # ╠═8a8de75d-5f95-4c15-94cf-9d15af142394
 # ╟─b0ffb36e-2562-44ea-ba6c-3a897b13f1ae
 # ╠═98cb67a1-573d-4df0-bac6-d3cb40c4bcf9
-# ╠═1d2b407e-2f00-4d99-b6f2-0810c5c85a83
+# ╟─1d2b407e-2f00-4d99-b6f2-0810c5c85a83
 # ╠═2fbb08ab-57b4-49b3-bccb-ff413439a05f
 # ╠═76db6d8b-136f-4ee5-b4b2-c90ed92b9c01
 # ╠═63d485ef-7d43-4f98-8d1c-2630f10ae36d
 # ╠═52050d67-b0ce-4f3b-bf71-4e68fd8ef2b7
 # ╠═cac97d98-3dc7-4b27-963b-b23c43d5cef4
-# ╠═d02a2b57-8b0d-4d54-b907-c812a91c0520
+# ╟─d02a2b57-8b0d-4d54-b907-c812a91c0520
 # ╟─f2b42fb9-e120-48db-aa64-4d14657555d6
 # ╟─ef7ea364-601e-4f70-bcd8-1a3257b6facc
-# ╠═ba1cb3e8-3f76-49fa-9c1b-831f2e6d1dc3
-# ╠═815a7885-8006-44b1-8bd6-b19c0272379b
-# ╠═2fddfd18-c93f-4361-8c94-7ceba91d8d63
+# ╟─ba1cb3e8-3f76-49fa-9c1b-831f2e6d1dc3
+# ╟─815a7885-8006-44b1-8bd6-b19c0272379b
+# ╟─2fddfd18-c93f-4361-8c94-7ceba91d8d63
 # ╟─4c97b8bf-6943-4d58-94c2-9dfdf8d83cdc
 # ╟─44c4f4ae-29ca-4eb7-a37b-3ca3757f1d0d
-# ╠═d5eae0e6-855c-4a42-93bb-0904500daf4e
+# ╟─d5eae0e6-855c-4a42-93bb-0904500daf4e
 # ╟─731dbcca-22b6-41df-9c7a-172fd6a1eda0
 # ╟─e9090e19-34b5-4efb-8c92-f0896265dec2
 # ╟─b25ea97f-5098-4624-963c-4951cb29e307
-# ╠═6a293633-40e6-45f9-a98e-5ea862cb345e
-# ╠═2c3125ac-6b05-4cdb-b749-e0b9fff163fb
-# ╠═a246c9f6-baab-4ffc-b35d-33a052692469
+# ╟─6a293633-40e6-45f9-a98e-5ea862cb345e
+# ╟─2c3125ac-6b05-4cdb-b749-e0b9fff163fb
+# ╟─a246c9f6-baab-4ffc-b35d-33a052692469
 # ╟─00000000-0000-0000-0000-000000000001
 # ╟─00000000-0000-0000-0000-000000000002
