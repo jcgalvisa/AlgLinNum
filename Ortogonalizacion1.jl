@@ -1,5 +1,5 @@
 ### A Pluto.jl notebook ###
-# v0.19.27
+# v0.19.26
 
 using Markdown
 using InteractiveUtils
@@ -1226,7 +1226,7 @@ PlutoUI = "~0.7.51"
 PLUTO_MANIFEST_TOML_CONTENTS = """
 # This file is machine-generated - editing it directly is not advised
 
-julia_version = "1.9.2"
+julia_version = "1.9.0"
 manifest_format = "2.0"
 project_hash = "d0069486257542c58ff4f12284b8908f62265555"
 
@@ -1261,7 +1261,7 @@ version = "0.11.4"
 [[deps.CompilerSupportLibraries_jll]]
 deps = ["Artifacts", "Libdl"]
 uuid = "e66e0078-7015-5450-92f7-15fbd957f2ae"
-version = "1.0.5+0"
+version = "1.0.2+0"
 
 [[deps.Dates]]
 deps = ["Printf"]
@@ -1377,7 +1377,7 @@ version = "2.7.0"
 [[deps.Pkg]]
 deps = ["Artifacts", "Dates", "Downloads", "FileWatching", "LibGit2", "Libdl", "Logging", "Markdown", "Printf", "REPL", "Random", "SHA", "Serialization", "TOML", "Tar", "UUIDs", "p7zip_jll"]
 uuid = "44cfe95a-1eb2-52ea-b672-e2afdf69b78f"
-version = "1.9.2"
+version = "1.9.0"
 
 [[deps.PlutoUI]]
 deps = ["AbstractPlutoDingetjes", "Base64", "ColorTypes", "Dates", "FixedPointNumbers", "Hyperscript", "HypertextLiteral", "IOCapture", "InteractiveUtils", "JSON", "Logging", "MIMEs", "Markdown", "Random", "Reexport", "URIs", "UUIDs"]
@@ -1481,7 +1481,7 @@ version = "1.2.13+0"
 [[deps.libblastrampoline_jll]]
 deps = ["Artifacts", "Libdl"]
 uuid = "8e850b90-86db-534c-a0d3-1478176c7d93"
-version = "5.8.0+0"
+version = "5.7.0+0"
 
 [[deps.nghttp2_jll]]
 deps = ["Artifacts", "Libdl"]
@@ -1544,7 +1544,7 @@ version = "17.4.0+0"
 # ╠═9b2d9220-5c36-47a1-a5a2-a19de55159e0
 # ╟─1ff4c715-6352-465c-8575-a8ccae9ee708
 # ╟─b0214333-9461-4535-a5a6-f2aeac628e06
-# ╠═4df2d1d6-1a1b-4b53-9390-e661acd16dd2
+# ╟─4df2d1d6-1a1b-4b53-9390-e661acd16dd2
 # ╠═cca162bf-84fd-4032-a90f-522796baacf9
 # ╠═c4421b71-29cf-4b43-a71c-5b6070bd4afe
 # ╠═7132f19f-fc36-4984-8d7e-2ff58ae08a02
@@ -1557,7 +1557,7 @@ version = "17.4.0+0"
 # ╠═6c6eea6c-2754-4b3d-88ad-237a10329227
 # ╠═2df12392-0700-4301-afdc-c47729fa9247
 # ╟─eb300638-4986-4c88-be9f-2474f59bd4e3
-# ╠═a0587521-f2d9-4ba0-a5e3-86a3be90473f
+# ╟─a0587521-f2d9-4ba0-a5e3-86a3be90473f
 # ╟─0cbb28b5-2980-413f-be18-d311ee092bb8
 # ╠═2fec112c-3819-432d-a17d-abeaef833c29
 # ╠═e5aa386a-a035-4c9a-8cdd-d43b33162347
@@ -1571,7 +1571,7 @@ version = "17.4.0+0"
 # ╠═43d5dc23-ab26-4752-8210-ac393f1a0268
 # ╠═2c51de0a-b4d3-485c-897c-95da6fcceafc
 # ╟─8bd19164-dcc4-4a16-b552-1d11030c0366
-# ╠═dbdc714a-231b-405c-be14-8c60d50acc7f
+# ╟─dbdc714a-231b-405c-be14-8c60d50acc7f
 # ╟─33dd679d-315a-454b-84b0-569a3d380405
 # ╠═bc00e335-4fac-4c07-86d9-7a2e7a05a61d
 # ╠═b37cf5d3-e7b2-41c3-9fcb-e232718f7957
@@ -1579,7 +1579,7 @@ version = "17.4.0+0"
 # ╠═4d628c4b-4311-40d2-8db8-4cab9e768bac
 # ╠═642a2da3-de23-422f-ace4-48667731cbfa
 # ╠═2a4c2eec-c3f1-4f8e-980c-0ff607e1e46d
-# ╠═fb0292ab-884b-4c56-9151-dbceabd45a56
+# ╟─fb0292ab-884b-4c56-9151-dbceabd45a56
 # ╟─d1b87663-6755-4eaa-9123-8717f95095a4
 # ╟─53e98911-65ae-48f0-96d4-bfb2bc04585f
 # ╟─22106606-9bee-40cc-8d2f-17f36dda6937
@@ -1611,7 +1611,7 @@ version = "17.4.0+0"
 # ╠═8a8de75d-5f95-4c15-94cf-9d15af142394
 # ╟─b0ffb36e-2562-44ea-ba6c-3a897b13f1ae
 # ╠═98cb67a1-573d-4df0-bac6-d3cb40c4bcf9
-# ╠═1d2b407e-2f00-4d99-b6f2-0810c5c85a83
+# ╟─1d2b407e-2f00-4d99-b6f2-0810c5c85a83
 # ╠═2fbb08ab-57b4-49b3-bccb-ff413439a05f
 # ╠═76db6d8b-136f-4ee5-b4b2-c90ed92b9c01
 # ╠═63d485ef-7d43-4f98-8d1c-2630f10ae36d
