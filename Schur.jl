@@ -44,7 +44,7 @@ md"""##### *Preliminares:*
 
 $$T=\begin{bmatrix} T_{11}&T_{12}\\ O& T_{22} \end{bmatrix}$$ 
 
-entonces $\lambda(A)=\lambda(T_{11})\cup \lambda(T_{22})$.
+entonces $\lambda(T)=\lambda(T_{11})\cup \lambda(T_{22})$.
 
 **Lema 2:** Si $A\in\mathbb{C}^{n\times n}$, $B\in\mathbb{C}^{p\times p}$ y $X\in\mathbb{C}^{n\times p}$ son tales que satisfacen que $AX=XB$ y $rang(X)=p$ entonces existe una matriz $Q\in\mathbb{C}^{n\times n}$ unitaria tal que
 
@@ -126,19 +126,24 @@ md"""La descomposición de schur es:"""
 
 # ╔═╡ 06b62b7f-01a5-45c7-9abe-b86ac44f51ed
 begin
- function Schur(A,epsilon)
+ function Schur(A)
 	A₁=copy(A)
-	for i=1:100000
+	 Q₁=UniformScaling(1);
+	for i=1:1000
 	Q,R=QRCGS(A₁)
-	Q₁=UniformScaling(1)*QRCGS(A₁)[1]
+	Q₁=Q₁*QRCGS(A₁)[1]
 	A₁=R*Q
-    if(opnorm(A-(Q₁*A₁*adjoint(Q₁)))<epsilon)
-		return A₁,Q₁
-	else 
-		print("El método no converge")
+#    if(opnorm(A-(Q₁*A₁*adjoint(Q₁)))<epsilon)
+#	else 
+#		print("El método no converge")
+#	end
 	end
-	end
+
+ 	return A₁,Q₁
+
  end
+
+
 end
 
 
@@ -147,10 +152,13 @@ md""" por ejemplo, escojamos la siguiente matriz y hallemos su descomposición d
 
 # ╔═╡ 9f5b7c35-7a7d-4a50-9e20-3cae5c55eef1
 begin
-B=rand(100,100)
+B=rand(40,40)
 epsilon=1E-10
-A₂, Q₂ =Schur(B,epsilon); display(A₂)
+A₂, Q₂ =Schur(B); display(A₂)
 end
+
+# ╔═╡ 4884e5b2-4bdc-4ae1-96af-336df91aeede
+eigvals(B)
 
 # ╔═╡ 6fcf1cdd-5780-430d-bdd2-6934370d4fcd
 display(Q₂)
@@ -734,6 +742,7 @@ version = "17.4.0+0"
 # ╠═06b62b7f-01a5-45c7-9abe-b86ac44f51ed
 # ╟─892365bc-0464-4d5a-be36-6f938379c58f
 # ╠═9f5b7c35-7a7d-4a50-9e20-3cae5c55eef1
+# ╠═4884e5b2-4bdc-4ae1-96af-336df91aeede
 # ╠═6fcf1cdd-5780-430d-bdd2-6934370d4fcd
 # ╟─c00dc9e0-9970-41ab-9aae-b39205df9f66
 # ╠═0cf97d60-8d02-48f8-94af-bbb91fee69d6
