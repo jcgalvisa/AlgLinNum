@@ -152,13 +152,22 @@ md""" por ejemplo, escojamos la siguiente matriz y hallemos su descomposición d
 
 # ╔═╡ 9f5b7c35-7a7d-4a50-9e20-3cae5c55eef1
 begin
-B=rand(40,40)
+B=rand(4:10,5,5)
 epsilon=1E-10
 A₂, Q₂ =Schur(B); display(A₂)
 end
 
 # ╔═╡ 4884e5b2-4bdc-4ae1-96af-336df91aeede
 eigvals(B)
+
+# ╔═╡ 582b64d5-f7fa-4477-98fc-36d08e8b9efa
+Block=[-0.470364     -1.81725 ; 1.46617      -0.72121]
+
+# ╔═╡ 4d982c26-a0ef-407a-9f19-8d876502697f
+eigvals(Block)
+
+# ╔═╡ 28fa22fc-c9ba-4da3-882c-1a386345c962
+0.470364/1.81725
 
 # ╔═╡ 6fcf1cdd-5780-430d-bdd2-6934370d4fcd
 display(Q₂)
@@ -743,6 +752,9 @@ version = "17.4.0+0"
 # ╟─892365bc-0464-4d5a-be36-6f938379c58f
 # ╠═9f5b7c35-7a7d-4a50-9e20-3cae5c55eef1
 # ╠═4884e5b2-4bdc-4ae1-96af-336df91aeede
+# ╠═582b64d5-f7fa-4477-98fc-36d08e8b9efa
+# ╠═4d982c26-a0ef-407a-9f19-8d876502697f
+# ╠═28fa22fc-c9ba-4da3-882c-1a386345c962
 # ╠═6fcf1cdd-5780-430d-bdd2-6934370d4fcd
 # ╟─c00dc9e0-9970-41ab-9aae-b39205df9f66
 # ╠═0cf97d60-8d02-48f8-94af-bbb91fee69d6
