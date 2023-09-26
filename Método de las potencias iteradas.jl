@@ -83,6 +83,9 @@ end
 # ╔═╡ 24c3f394-112f-46a4-b543-23e81b747d96
 vector_propio=vector_iterado
 
+# ╔═╡ 371561bc-12cc-4686-ac73-3f5a113c6a7e
+vector_propio/vector_propio[3]
+
 # ╔═╡ 743aaf61-5b03-4e2d-8908-2d4a73f6b487
 valor_propio=(vector_propio'*A*vector_propio)/(vector_propio'*vector_propio)
 
@@ -154,7 +157,7 @@ function iteraciones_de_potencias(A,numero_iteraciones,error)
 end
 
 # ╔═╡ 1431849a-3a49-4a6a-a2c9-4bdc58c02043
-iteraciones_de_potencias(A,30,0.001)
+iteraciones_de_potencias(A,30000,0.00000000001)
 
 # ╔═╡ f6b7969a-f690-4b24-96cd-e2198cf33f95
 md"""
@@ -191,6 +194,9 @@ begin
 	end
 end
 
+# ╔═╡ d79a77a4-2674-48f3-82d2-42ac0320fd6c
+Matriz_Actual
+
 # ╔═╡ 63088883-9caa-45d4-ba1b-04251dd37cf9
 Tamaño_minimo:salto:Tamaño_maximo
 
@@ -201,7 +207,7 @@ plot(collect(Tamaño_minimo:salto:Tamaño_maximo),Lista_Errores, title="Error po
 Lista_Errores
 
 # ╔═╡ 9188baa9-8cfe-49ec-9791-8e5afe2f89d5
-plot(collect(Tamaño_minimo:salto:Tamaño_maximo),Lista_iteraciones, title="Error por tamaño de la matriz", label="Error", linewidth=3)
+plot(collect(Tamaño_minimo:salto:Tamaño_maximo),Lista_iteraciones, title="iteraciones por tamaño de la matriz", label="Error", linewidth=3)
 
 # ╔═╡ b63083ac-4fbf-4466-86bf-1e490f505514
 Lista_iteraciones
@@ -220,7 +226,7 @@ Plots = "~1.39.0"
 PLUTO_MANIFEST_TOML_CONTENTS = """
 # This file is machine-generated - editing it directly is not advised
 
-julia_version = "1.9.3"
+julia_version = "1.9.2"
 manifest_format = "2.0"
 project_hash = "5e256db6c75b471ea99b497bdce369f472c9aed2"
 
@@ -344,6 +350,12 @@ version = "0.9.3"
 deps = ["ArgTools", "FileWatching", "LibCURL", "NetworkOptions"]
 uuid = "f43a241f-c20a-4ad4-852c-f6b1247861c6"
 version = "1.6.0"
+
+[[deps.EpollShim_jll]]
+deps = ["Artifacts", "JLLWrappers", "Libdl"]
+git-tree-sha1 = "8e9441ee83492030ace98f9789a654a6d0b1f643"
+uuid = "2702e6a9-849d-5ed8-8c21-79e8b8f9ee43"
+version = "0.0.20230411+0"
 
 [[deps.ExceptionUnwrapping]]
 deps = ["Test"]
@@ -965,7 +977,7 @@ uuid = "41fe7b60-77ed-43a1-b4f0-825fd5a5650d"
 version = "0.2.0"
 
 [[deps.Wayland_jll]]
-deps = ["Artifacts", "Expat_jll", "JLLWrappers", "Libdl", "Libffi_jll", "Pkg", "XML2_jll"]
+deps = ["Artifacts", "EpollShim_jll", "Expat_jll", "JLLWrappers", "Libdl", "Libffi_jll", "Pkg", "XML2_jll"]
 git-tree-sha1 = "ed8d92d9774b077c53e1da50fd81a36af3744c1c"
 uuid = "a2964d1f-97da-50d4-b82a-358c7fce9d89"
 version = "1.21.0+0"
@@ -1207,20 +1219,22 @@ version = "1.4.1+0"
 # ╟─d7342b7e-eeb1-46b2-945c-4dc7d799025d
 # ╟─3908d3f3-11f6-47cd-a55f-e13bc84e8d55
 # ╟─d94feafa-497b-4708-bb56-230dcb61930c
-# ╟─816759b0-5b1c-11ee-2daa-ef9ab90053d5
-# ╟─afb3b415-f4ca-4e9d-8786-0dc77177732d
-# ╟─24c3f394-112f-46a4-b543-23e81b747d96
-# ╟─743aaf61-5b03-4e2d-8908-2d4a73f6b487
+# ╠═816759b0-5b1c-11ee-2daa-ef9ab90053d5
+# ╠═afb3b415-f4ca-4e9d-8786-0dc77177732d
+# ╠═24c3f394-112f-46a4-b543-23e81b747d96
+# ╠═371561bc-12cc-4686-ac73-3f5a113c6a7e
+# ╠═743aaf61-5b03-4e2d-8908-2d4a73f6b487
 # ╟─3e02b946-178d-46c9-87af-81d3923a6849
 # ╟─998ce29a-cb66-400f-bad4-319677bf095a
 # ╟─bde80dd5-1b74-46b4-8e67-1f59743f9865
-# ╟─480a9a64-dc41-4519-91f1-db3c75802ca6
-# ╟─3211791b-2279-4ba2-992f-85abb709dde4
-# ╟─f758edfd-004e-4d05-9210-8f772a011ee6
+# ╠═480a9a64-dc41-4519-91f1-db3c75802ca6
+# ╠═3211791b-2279-4ba2-992f-85abb709dde4
+# ╠═f758edfd-004e-4d05-9210-8f772a011ee6
 # ╠═1431849a-3a49-4a6a-a2c9-4bdc58c02043
 # ╠═f6b7969a-f690-4b24-96cd-e2198cf33f95
 # ╠═0125094e-5616-4688-8870-bee1c596b5a7
 # ╠═bad8eb42-57e8-4b42-9692-2acefe2d07de
+# ╠═d79a77a4-2674-48f3-82d2-42ac0320fd6c
 # ╠═63088883-9caa-45d4-ba1b-04251dd37cf9
 # ╠═f453c2e2-b6aa-43af-98e3-96d3aef65b1d
 # ╠═32ceeeea-c91d-46d1-9895-bf2ac81b2364

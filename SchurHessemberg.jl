@@ -131,15 +131,16 @@ md"""La descomposición de schur es:"""
 begin
  function Schur(A,epsilon)
 	A₁=copy(A)
-	for i=1:100000
+	for i=1:100
 	Q,R=QRCGS(A₁)
 	Q₁=UniformScaling(1)*QRCGS(A₁)[1]
 	A₁=R*Q
-    if(opnorm(A-(Q₁*A₁*adjoint(Q₁)))<epsilon)
-		return A₁,Q₁
-	else 
-		print("El método no converge")
-	end
+		
+    #if(opnorm(A-(Q₁*A₁*adjoint(Q₁)))<epsilon)
+	return A₁,Q₁
+	#else 
+	#	print("El método no converge")
+	#end
 	end
  end
 end
@@ -330,7 +331,7 @@ md""" Por ejemplo continuando con la matriz inicial se tiene lo siguiente:"""
 # ╔═╡ 6b123991-0773-40f8-a0ac-6ea353ca0a3e
 begin
 BH =rand(5,5)
-H₁, U₁=HessenbergForm(BH)
+H₁, U₁=HessenbergForm(BH+BH')
 display(H₁)
 end
 
@@ -390,7 +391,7 @@ end
 
 # ╔═╡ 27f987d7-7c82-47bc-a441-e9fc4469bc56
 begin
-	function RealSchur(A, iteraciones = 10000)
+	function RealSchur(A, iteraciones = 100)
     # H0 = A
     H1 = HessenbergForm(A)[1]
     # δ = 10
