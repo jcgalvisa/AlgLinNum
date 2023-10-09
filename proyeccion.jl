@@ -4,242 +4,173 @@
 using Markdown
 using InteractiveUtils
 
-# ╔═╡ 2985ebc5-4984-4c35-8d27-688c4802c1d9
+# ╔═╡ 7d363390-66d7-11ee-12b0-0f5139bbd847
 begin
 	using LinearAlgebra
 	using PlutoUI
 end
 
-# ╔═╡ 66799e76-c94a-411c-b96b-30e3a6dd06e6
-PlutoUI.TableOfContents(title="Matrices simetricas: Jacobi ", aside=true)
+# ╔═╡ 2a3b7177-38a5-4cbe-8e49-06a92ee44870
+PlutoUI.TableOfContents(title="Métodos de Proyección ", aside=true)
 
-# ╔═╡ 54c72fc0-ed03-4b3b-b429-8b67f8c9a900
+# ╔═╡ 8bb16c2a-c1ce-475e-a3e1-e78a6c7801a4
 md"""
-# Métodos de Jacobi
+# Métodod de proyección
 
-Dada una matriz simétrica $A$ de tamaño $n$, la idea es llevar a $A$ lo más cerca posible a una forma diagonal. Si denotamos por $D^{(0)}$ la diagonal de $A$ y $N^{(0)}$ la parte no diagonal, entonces
+Considere los subspacasios $\mathcal{K},\mathcal{L}\subset \mathbb{R}^n$. El espacio solución es $\mathcal{k}$ y $\mathcal{L}$ es el espacio de prueba. 
 
-$$\begin{align}
-A&=D^{(0)}+N^{(0)}\\
-||A||_F^2&=||D^{(0)}||_F^2+||N^{(0)}||_F^2
-\end{align}$$
+Queremos aproximar la solución de $Ax=b$. 
+La idea es en cada iteración seleccionar espacios adecuados. Suponga que tenemos $x^{(k)}$ y espacios 
+$\mathcal{K}^{(k)},\mathcal{L}^{(k)}\subset \mathbb{R}^n$
+Queremos encontrar una posible mejor aproximación $x^{(k+1)}=x^{(k)}+\delta^{(k)}$ tal que 
+1. el incremento satisface $\delta^{(k)}\in \mathcal{K}^{(k)}$.
+
+2. el residuo satisface $r^{(k+1)}= b-Ax^{(k+1)} \perp \mathcal{L}^{(k)}$. ($r$ es el residuo).
+
+Note que $$r^{(k+1)}=b-Ax^{(k+1)}=b-A(x^{(k)}+\delta^{(k)})=(b-Ax^{(k)})+\delta^{(k)}=r^{(k)}-A\delta^{(k)}.$$
+
+Por lo tanto, el ítem 2. arriba es equivalente a 
+
+$w^T(r^{(k)}-A\delta^{(k)})=0 \mbox{ para todo } w\in \mathcal{L}^{(k)},$
+lo que podemos escribir como
+
+$w^T(A\delta^{(k)})=w^Tr^{(k)}\mbox{ para todo } w\in \mathcal{L}^{(k)}.$
+
+*Se observa entonces que $A\delta^{(k)}$ es la projección en $A\mathcal{K}$ ortogonalmente a $\mathcal{L}$*. Note que si $\mathcal{L}=A\mathcal{L}$ tenemos el caso de una proyección ortogonal en la noma euclidiana.  
+
+Si $\mathcal{K}=\mathcal{L}$ es el caso de Galerkin o de proyección ortogonal. En general se dice que es el caso de Petrov-Galerkin.
+
+Podemos ilustrar este procedimeinto como sigue a continuación. 
+
+"""
+
+# ╔═╡ 4702d844-c4d5-47a0-bb1b-01927b8daac7
+LocalResource("projection.png")
+
+# ╔═╡ a4323b5f-d950-4dc0-b697-4dfabedf4db8
+md"""
+## Representación matricial
+
+Si  $\mathcal{K}^{(k)}=\mbox{span}(V)$, es decir, es la imagen de una matriz $V$ con columnas linealmente independientes, entonces $\delta^{(k)}=Vy^{(k)}$. 
+
+De igual forma, si  $\mathcal{L}^{(k)}=\mbox{span}(W)$ entonces íitem 2. arriba es equivalente a 
+
+$W^Tr^{(k+1)}=0.$
+
+Reemplazando $r^{(k+1)}=r^{(k)}-A\delta^{(k)}$ obtenemos 
+
+$W^TAV y^{(k)} =W^Tr^{(k)}$
+que da, en caso que que $H:=W^TAV$ sea no singular (lo cual hay que garantizar de alguna forma), 
+
+$y^{(k)} =(W^TAV)^{-1}W^Tr^{(k)}.$
+Obtenemos finalmente, 
+
+$x^{(k+1)}=x^{(k)} + V(W^TAV)^{-1}W^Tr^{(k)}$
+y además, 
+
+$r^{(k+1)}=r^{(k)}-A Vy^{(k)}.$
 
 
-Se quiere un algoritmo que en cada iteración disminuya la norma de $N^{(i)}$:
-
-$$||N^{(i+1)}||_F<||N^{(i)}||_F$$
-
-Definimimos 
-
-$$\text{off}(A) = ||N^{(0)}||_F$$
-Para esto se utilizan matrices de Givens para eliminar selectivamente componentes de $$N^{(i)}$$. Se escogen índices $p,q$ con $p<q$ y se busca eliminar dos entradas de la matriz por fuera de la diagonal, es decir, queremos escoger $c$ y $s$ adecuados para que la siguiente matriz sea diagonal:
-
-$$
-\begin{align}
-\left[\begin{array}{cc}
-b_{pp}& b_{pq}\\
-b_{qp}& b_{qq}
-\end{array}\right] &= 
-\left[\begin{array}{cc}
-c& s\\
--s& c
-\end{array}\right]^T
-\left[\begin{array}{cc}
-a_{pp}& a_{pq}\\
-a_{qp}& a_{qq}
-\end{array}\right]
-\left[\begin{array}{cc}
-c& s\\
--s& c
-\end{array}\right]\\
-&= \left[\begin{array}{cc}
-b_{pp}& 0\\
-0& b_{qq}
-\end{array}\right] 
-\end{align}
-$$
-
-Recordando que las transformaciones ortogonales preservan la norma de Frobenius, tenemos 
-
-$$a_{pp}^2+a_{qq}^2 + 2a_{pq}^2 = b_{pp}^2 + b_{qq}^2$$
-
-Notando $B=G(p,q,\theta)^TAG(p,q,\theta)$, dado que las diagonales de $B$ y $A$ solo difieren en las componentes con índices $pp$ y $qq$, tenemos que
 
 
 """
 
-# ╔═╡ 8f5f97a0-62ea-11ee-042b-c170cf36465d
+# ╔═╡ 6ce74da7-fc10-4b67-af8d-10a4e5160f46
 md"""
+Tenemos el siguiente pseudocódigo:
 
-$$\begin{align}
-\text{off}(B)^2 &= ||B||_F^2 - \sum_{i=1}^{n} b_{ii}^2 \\
-&= ||A||_F^2 - \sum_{i=1}^{n} a_{ii}^2 + (a_{pp}^2+a_{qq}^2 - b_{pp}^2- b_{qq}^2)\\
-&=\text{off}(A)^2-2a_{pq}^2
-\end{align}$$
 
-es decir, 
+Hasta convergencia haga:
+1. Seleccionar  subsepacios $\mathcal{K}$ y $\mathcal{L}$
+2. Seleccionar bases $V=[v_1,v_2,\dots,v_m]$ y $W=[w_1,w_2,\dots,w_m]$ para  $\mathcal{K}$ y $\mathcal{L}$
+3. Calcular residuo $r=b-Ax$
+4. Calcular $y=(W^TAV)^{-1}W^Tr$
+5. Actualizar $x=x+Vy$
 
-$$\text{off}(B)\leq \text{off}(A)$$
-
-por lo que $B$ es "más diagonal" que $A$. Para escoger $c$ y $s$ adecuados, vemos que 
-
-$$0= a_{pq}(c^2-s^2) + (a_{pp}-a_{qq})cs$$
-
-Asumimos que $a_{pq}\neq 0$, o de lo contrario, escogemos la matriz de Givens igual a la identidad. Tenemos 
-
-$$\begin{align}
-\frac{a_{qq}-a_{pp}}{2 a_{pq}} &= \frac{(c^2-s^2)}{2 cs}\\
-&= \frac{1}{2} \left(\frac{c}{s}-\frac{s}{c}\right)
-\end{align}$$
-
-escogiendo $\tau = \frac{a_{qq}-a_{pp}}{2 a_{pq}}$ y $t = \frac{s}{c}$, lo anterior se escribe
-
-$$
-\begin{align}
-\tau &= \frac{1}{2}\left(\frac{1}{t}-t\right)\\
-2t\tau&= 1-t^2\\
-t^2+2t\tau-1&=0
-\end{align}
-$$
-
-Las raices son 
-
-$$
-t=-\tau \pm \sqrt{1+\tau^2}
-$$
-
-y se despeja $c$ y $s$ en términos de $t$ así,
-
-$$c = \frac{1}{\sqrt{1+t^2}} \quad s = tc$$
-
-se escoge la menor de las raíces.
 """
 
-# ╔═╡ 1ab37b62-861d-431c-9fc5-e6b2435323cc
+# ╔═╡ b51a1aac-6ab3-4d53-9fde-417401083ade
 md"""
-La función **symSchur2** toma una matriz simétrica $A$ y dos índices $p,q$ y devuelve $c$ y $s$ tales que 
-
-$$\left[\begin{array}{cc}
-c& s\\
--s& c
-\end{array}\right]^T
-\left[\begin{array}{cc}
-a_{pp}& a_{pq}\\
-a_{qp}& a_{qq}
-\end{array}\right]
-\left[\begin{array}{cc}
-c& s\\
--s& c
-\end{array}\right]$$
-es diagonal.
+La matriz $W^TAV$ es no singular sii ningún vector del subspacio $A\mathcal{K}$ es ortogonal al subspacio $\mathcal{L}$.
 """
 
-# ╔═╡ bca20b25-e93e-4e7a-81cc-59b2d765cb77
+# ╔═╡ 3a14c566-e3fe-4d9e-b279-d6be971c0a1f
 md"""
-Como $|a_{p,q}|$ es el de mayor valor absolution fuera de la diagonal, entonces 
+**Teorema:** Si tenemos alguna de las dos posibilidades
+1. La matriz $A$ is positiva definida y $\mathcal{K}=\mathcal{L}$, o
+2. La matriz $A$ es no singular y $\mathcal{L}=A\mathcal{K}$
 
-$\mbox{off}(A)^2\leq (n(n-1)/2) ( 2 a_{p,q}^2)$
 
-y por lo tanto, con $N= n(n-1)/2$, 
-
-$\mbox{off}(B)\leq (1-\frac{1}{N})\mbox{off}(A)^2.$ En el paso $(k)$, tenemos que 
-
-$\mbox{off}(A^{(k)})\leq (1-\frac{1}{N})^k\mbox{off}(A^{(0)})^2.$
+entonces $H=W^TAV$ es no singular para cualquier bases $V$ y $W$ de  $\mathcal{K}$ y $\mathcal{L}$. 
 """
 
-# ╔═╡ 6f24cd3d-da53-4079-b226-10e2671d145b
-function symSchur2(A, p ,q)
-    if A[p,q] != 0
-        τ = (A[q,q] - A[p,p])/(2*A[p,q])
-        if τ >= 0
-            t = 1/(τ + sqrt(1+τ^2))
-        else
-            t = -1/(-τ + sqrt(1+τ^2))
-        end
-        c = 1/sqrt(1 + t^2)
-        s = t*c 
-    else
-        c = 1
-        s = 0
-    end
-    return c, s
-end
+# ╔═╡ fdff76fe-cb0c-45bf-b0c2-9f45cb04081b
+md"""
+## Teoría general
 
-# ╔═╡ b7352b83-f1e2-4a43-b375-ffc0081c0ebe
-begin
-	B = [1 -2
-	     -2 1]
-	c, s = symSchur2(B,1,2)
-	
-	print("La matriz G'BG es:")
-	display([c -s; s c]*B*[c s; -s c])
-end
+**Proposición:** Asuma que $A$ es simetrica y positiva definida con $\mathcal{K}=\mathcal{L}$. Supoga que $Ax_*=b$. Etonces un vector $\bar{x}$ es el result de un método de projección orgotonal sobre $\mathcal{K}$ con vector inicial $x_0$ sii 
+$\bar{x} \in \arg \min E(x)$
+donde 
 
-# ╔═╡ 1ade213d-191e-4d81-9377-2c5938c420c3
-begin
-	B1 = 
-	[8.0  3.0  4.0  1.0
-	 3.0  9.0  4.0  1.0
-	 4.0  4.0  8.0  5.0
-	 1.0  1.0  5.0  8.0]
-	
-	c1, s1 = symSchur2(B1,2,4)
-	
-	
-	C1 = copy(B1)
-	C1[[2, 4],:] = [c1 -s1;s1 c1]*C1[[2, 4],:]
-	C1[:,[2,4]] = C1[:,[2,4]]*[c1 s1;-s1 c1]
-	
-	print("La matriz G'BG es:")
-	display(C1) 
-	
-end
+$E(x):=\Big( (x_*-x)^TA(x_*-x) \Big)^{0.5} := ||x_*-x ||_A.$
+"""
 
-# ╔═╡ b7e47025-ad62-4a3f-9006-bcef49a94703
-begin
-	function maxpq(A)
-	    n = size(A)[1]
-	    p = 1
-	    q = 2
-	    for i = 1:n
-	        for j = i:n
-	            if i != j
-	                if abs(A[i,j]) > abs(A[p,q])
-	                    p = i
-	                    q = j
-	                end
-	            end
-	        end
-	    end
-	    return p,q
-	end
-	
-	function offdiagonal(A)
-	    return sqrt(norm(A ,2)^2 - norm(diag(A))^2)
-	end
-	
-	function classicalJacobi(A, tol, iteraciones)
-	    n = size(A)[1]
-	    V = UniformScaling(n)
-	    eps = tol*norm(A, 2)
-	    for k = 1:iteraciones
-	        p, q = maxpq(A)
-	        c, s = symSchur2(A,p,q)
-	        A[[p, q],:] = [c -s;s c]*A[[p, q],:]
-	        A[:,[p,q]] = A[:,[p,q]]*[c s;-s c]
-	        if offdiagonal(A) <= eps
-	            return A
-	        end
-	    end
-	    print("máximo de iteraciones")
-	end
-end
+# ╔═╡ 33456248-bf4e-4615-853b-a7cc22ad4fe1
+md"""
+**Proposición:** Asuma que $A$ es no singulary que $\mathcal{L}=A\mathcal{K}$. Supoga que $Ax_*=b$. 
+Etonces un vector $\tilde{x}$ es el resultado de un método de projección (oblicua) sobre $\mathcal{K}$ y ortogonalmente a $\mathcal{L}$ con vector inicial $x_0$ sii 
 
-# ╔═╡ 171c59e8-c217-4332-ac0f-3bd0be05f576
-classicalJacobi(B1, 0.00001, 1000)
+$\tilde{x} \in \arg \min R(x)$
+donde 
 
-# ╔═╡ 43ffd4c1-5ce5-4794-bf69-0656bee9f0e5
-eigvals(B1)
+$R(x):=||b-Ax||_2.$
+"""
+
+# ╔═╡ 55ad72fa-756a-4709-993b-5c784a74a093
+md"""
+## Error
+"""
+
+# ╔═╡ d1e32cc0-df8c-4f21-99c6-0a7daa40f9e5
+md"""
+# Proyecciones unidimensionales
+
+## Descenso mas empinado
+
+Recuerde que con $H=W^TAV$ tenemos el incremento
+
+$y =H^{-1}W^Tr.$
+y la acutalización 
+
+$x=x + VH^{-1}W^Tr.$
+
+
+En este caso $V=[r]$ y $W=[r]$. En este caso $H=r^TAr$ y $y=\frac{r^Tr}{r^TAr}=\alpha$. 
+Por lo que la acutalización es 
+
+$x=x+\alpha r.$
+y 
+
+$r=r-\alpha Ar.$
+
+Tenemos el suguiente algoritmo, 
+
+**Algoritmo:**
+
+(0) Calcular $r=b-Ax$ y $p=Ar$
+
+Hasta convergencia haga, 
+
+(1) $\alpha=r^Tr/r^Tp$
+
+(2) $x=x+\alpha r$
+
+(3) $r=r-\alpha p$
+
+(4) $p=Ar$
+
+
+"""
 
 # ╔═╡ 00000000-0000-0000-0000-000000000001
 PLUTO_PROJECT_TOML_CONTENTS = """
@@ -514,17 +445,17 @@ version = "17.4.0+0"
 """
 
 # ╔═╡ Cell order:
-# ╠═2985ebc5-4984-4c35-8d27-688c4802c1d9
-# ╠═66799e76-c94a-411c-b96b-30e3a6dd06e6
-# ╟─54c72fc0-ed03-4b3b-b429-8b67f8c9a900
-# ╟─8f5f97a0-62ea-11ee-042b-c170cf36465d
-# ╟─1ab37b62-861d-431c-9fc5-e6b2435323cc
-# ╟─bca20b25-e93e-4e7a-81cc-59b2d765cb77
-# ╠═6f24cd3d-da53-4079-b226-10e2671d145b
-# ╠═b7352b83-f1e2-4a43-b375-ffc0081c0ebe
-# ╠═1ade213d-191e-4d81-9377-2c5938c420c3
-# ╠═b7e47025-ad62-4a3f-9006-bcef49a94703
-# ╠═171c59e8-c217-4332-ac0f-3bd0be05f576
-# ╠═43ffd4c1-5ce5-4794-bf69-0656bee9f0e5
+# ╠═7d363390-66d7-11ee-12b0-0f5139bbd847
+# ╠═2a3b7177-38a5-4cbe-8e49-06a92ee44870
+# ╟─8bb16c2a-c1ce-475e-a3e1-e78a6c7801a4
+# ╟─4702d844-c4d5-47a0-bb1b-01927b8daac7
+# ╠═a4323b5f-d950-4dc0-b697-4dfabedf4db8
+# ╟─6ce74da7-fc10-4b67-af8d-10a4e5160f46
+# ╠═b51a1aac-6ab3-4d53-9fde-417401083ade
+# ╟─3a14c566-e3fe-4d9e-b279-d6be971c0a1f
+# ╠═fdff76fe-cb0c-45bf-b0c2-9f45cb04081b
+# ╠═33456248-bf4e-4615-853b-a7cc22ad4fe1
+# ╠═55ad72fa-756a-4709-993b-5c784a74a093
+# ╟─d1e32cc0-df8c-4f21-99c6-0a7daa40f9e5
 # ╟─00000000-0000-0000-0000-000000000001
 # ╟─00000000-0000-0000-0000-000000000002
