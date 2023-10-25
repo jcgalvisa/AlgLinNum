@@ -1,0 +1,29 @@
+   26 :     fespace Vh(Th, P1);
+   27 :     Vh  h = hTriangle;
+   28 :     Msize[i] = h[].max;
+   29 :     Vh u,v;
+   30 :     // Problem
+   31 :     solve smoothcrack(u, v)
+   32 :     = int2d(Th)(dx(u)*dx(v) + dy(u)*dy(v))
+   33 :     - int2d(Th)(f*v)
+   34 :     + on(outside, u=g);
+   35 :     plot(u, value=true, fill=true, wait=true);
+   36 :
+   37 :     Ntraingles[i] = Th.nt;
+   38 :     Th = trunc(Th,1,split=2); //refine mesh
+   39 :     plot(Th, wait=true);
+   40 :   } sizestack + 1024 =2016  ( 992 )
+ 
+  --  mesh:  Nb of Triangles =     58, Nb of Vertices 40
+  -- Solve :
+          min 3.45616e-62  max 0.0697046
+  -- Solve :
+          min 1.26451e-62  max 0.0732507
+  -- Solve :
+          min 4.29921e-63  max 0.0735653
+  -- Solve :
+          min 1.35315e-63  max 0.0736447
+times: compile 0.073s, execution 2.957s,  mpirank:0
+ CodeAlloc : nb ptr  3646,  size :479096 mpirank: 0
+Ok: Normal End
+ try getConsole C:\Users\matematicas1\Documents\GITHUB\AlgLinNum\FEM\SLaplace.edp
