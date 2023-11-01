@@ -1,5 +1,5 @@
 ### A Pluto.jl notebook ###
-# v0.19.27
+# v0.19.29
 
 using Markdown
 using InteractiveUtils
@@ -180,6 +180,12 @@ begin
 	display(A)
 end
 
+# ╔═╡ 8a8a8e99-5365-49a7-858f-01be53f26388
+eigvals(A)
+
+# ╔═╡ d7550a06-a204-451f-bcee-a07f871072ff
+A-A'
+
 # ╔═╡ 4128a480-88ef-4c3a-a76f-d026da7a4c98
 function dme(A,x,b,M,tol)
     r=b-A*x
@@ -204,9 +210,12 @@ end
 begin
 	b=fill(1,size(A)[2])
 	x=fill(0,size(A)[2])
-	x=dme(A,x,b,200,0.001)
-	b-A*x
+	x=dme(A,x,b,200,0.000001)
+
 end
+
+# ╔═╡ 3d63b547-bd59-4724-935d-b138a3e61c27
+norm(b-A*x)
 
 # ╔═╡ 60616fe9-11f5-47d8-82be-2817b6075132
 md"""
@@ -382,7 +391,7 @@ PlutoUI = "~0.7.52"
 PLUTO_MANIFEST_TOML_CONTENTS = """
 # This file is machine-generated - editing it directly is not advised
 
-julia_version = "1.9.2"
+julia_version = "1.9.3"
 manifest_format = "2.0"
 project_hash = "1ff3745eff7c3e774e7175c12e528d972b134f01"
 
@@ -1477,8 +1486,11 @@ version = "1.4.1+1"
 # ╟─55ad72fa-756a-4709-993b-5c784a74a093
 # ╟─d1e32cc0-df8c-4f21-99c6-0a7daa40f9e5
 # ╠═ddd8cf41-0312-4e30-a06f-4db660cb711d
+# ╠═8a8a8e99-5365-49a7-858f-01be53f26388
+# ╠═d7550a06-a204-451f-bcee-a07f871072ff
 # ╠═4128a480-88ef-4c3a-a76f-d026da7a4c98
 # ╠═075409f4-8111-43c2-b228-c9b4a22b38df
+# ╠═3d63b547-bd59-4724-935d-b138a3e61c27
 # ╟─60616fe9-11f5-47d8-82be-2817b6075132
 # ╠═dfde1f7d-bcd0-4cea-973b-70f8471e5251
 # ╠═0a5b8b75-67ac-4318-b3f7-621076cac2df
