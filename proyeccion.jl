@@ -176,7 +176,10 @@ Hasta convergencia haga,
 # ╔═╡ ddd8cf41-0312-4e30-a06f-4db660cb711d
 begin
 	Aaux=rand(5,5)
-	A=Aaux'Aaux+0.1*I
+	qraux=qr(Aaux)
+	D=diagm([1,10,50,100,200])
+	A=qraux.Q'*D*qraux.Q
+	
 	display(A)
 end
 
@@ -210,9 +213,12 @@ end
 begin
 	b=fill(1,size(A)[2])
 	x=fill(0,size(A)[2])
-	x=dme(A,x,b,200,0.000001)
+	x=dme(A,x,b,2000,0.001)
 
 end
+
+# ╔═╡ 7c3300d5-c311-4bed-9dde-826f940d276d
+x
 
 # ╔═╡ 3d63b547-bd59-4724-935d-b138a3e61c27
 norm(b-A*x)
@@ -1490,6 +1496,7 @@ version = "1.4.1+1"
 # ╠═d7550a06-a204-451f-bcee-a07f871072ff
 # ╠═4128a480-88ef-4c3a-a76f-d026da7a4c98
 # ╠═075409f4-8111-43c2-b228-c9b4a22b38df
+# ╠═7c3300d5-c311-4bed-9dde-826f940d276d
 # ╠═3d63b547-bd59-4724-935d-b138a3e61c27
 # ╟─60616fe9-11f5-47d8-82be-2817b6075132
 # ╠═dfde1f7d-bcd0-4cea-973b-70f8471e5251
