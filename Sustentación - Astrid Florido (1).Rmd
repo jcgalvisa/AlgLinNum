@@ -1,0 +1,198 @@
+---
+title: "IBNR"
+author: "Astrid Florido Alvarado"
+date: "2023-11-21"
+output: html_document
+---
+# Modelo matemático IBNR
+
+El siguiente reporte, busca aplicar la metodología Chain Ladder que es utilizada normalmente para el cálculo de las reservas de los siniestros incurridos no avisados - **IBNR** ***(incurred but not reported)***.
+
+El **IBNR** se define como: *Un siniestro tardío, es un siniestro ya ocurrido, pero aún no avisado y, por consiguiente, desconocido al asegurador directo y al reasegurador. Y los motivos de ocurrencia de este tipo de siniestros son los avisos tardíos, la tramitación retrasada, el reconocimiento tardío y las sentencias judiciales.
+
+La metodología mas usada para conocer los siniestros tardíos  consiste en la construcción de triangulos de desarrollo con la información histórica de siniestros incurridos. Es importante tener suficiente cantidad de años a analizar para conocer el comportamiento o desarrollo de los siniestros. 
+
+Para el cálculo del IBNR exinten métodos determinísticos y metodos estocásticos:  dentro de los métodos determinísticos están los métodos de desarrollo de siniestros, los métodos basados en la frecuencia y severidad como Loss Ratio con ajuste de primas, **Loss development (Chain Ladder)**, Bornhuetter-Ferguson y Cape Cod. Así mismo, en los métodos  estocásticos se encuentra el Broodstraping.En este ejercicio, usaremos el método deterministico *Chain Ladder*
+
+
+#  Chain Ladder
+
+Este cálculo comprende la estimación conjunta de las reservas técnicas que provisionan las empresas aseguradoras, y en este caso comprendiendo la Reserva de siniestros ocurridos y no avisados (IBNR).
+
+las aseguradoras no conocen el costo inicial de su servicio, sino que confían en el análisis y el juicio de datos históricos y de un experto para predecir un precio sostenible para su oferta. En seguros generales (o seguros distintos de los de vida, por ejemplo, seguros de automóviles, de propiedad y de accidentes), la mayoría de las pólizas tienen una duración de 12 meses. Sin embargo, el proceso de pago de reclamaciones puede llevar años o incluso décadas. Por lo tanto, a menudo las aseguradoras ni siquiera conocen la fecha de entrega de su producto.Por lo tanto, la partida más importante en el lado del pasivo del balance de una aseguradora es la provisión o reservas para pagos de siniestros futuros. 
+
+**Triangulos**
+
+Los datos históricos de seguros a menudo se presentan en forma de estructura triangular, que muestra el desarrollo de las reclamaciones a lo largo del tiempo para cada período de exposición (origen). Un período de origen podría ser el año en que se emitió u obtuvo la póliza, o el período de ocurrencia de la pérdida. El período de desarrollo de un período de origen también se llama edad o rezago.
+
+Los datos de las diagonales presentan pagos en el mismo período calendario. 
+
+***library(ChainLadder)***
+
+El paquete ChainLadder proporciona varios métodos estadísticos que se suelen utilizar para la estimación de las reservas de siniestros pendientes en seguros generales, incluidos aquellos para estimar los resultados del desarrollo de siniestros según lo exige Solvencia II.
+
+La mayoría de los métodos de reserva del paquete ChainLadder esperan triángulos como conjuntos de datos de entrada con períodos de desarrollo a lo largo de las columnas y el período de origen en las filas, a continuación instalaremos la libreria *ChainLadder*
+
+```{r}
+#install.packages("ChainLadder") 
+library(ChainLadder)
+```
+Instalamos las librerias que van a ser necesarias para este ejercicio:
+
+*readxl*        Sirve para importar archivos en excel.
+*dplyr*         El paquete dplyr contiene una colección de funciones para manipular datos comunes como:filtrar por fila, seleccionar columnas específicas, añadir nuevas variables, entre otros.
+*rstudioapi*    Sirve para automatizar el directorio de trabajo.
+*rshape2*       facilita la transformación de datos en los formatos *ancho* y *largo*
+
+```{r}
+#install.packages("readxl")
+library(readxl)
+#install.packages("dplyr")
+library(dplyr)
+#install.packages("rstudioapi")
+library(rstudioapi)
+#install.packages("reshape2")
+library(reshape2)
+
+```
+**efinir el directorio de trabajo**
+
+```{r}
+#Definimos el directorio de trabajo automatico
+current_path <- getActiveDocumentContext()$path
+setwd(dirname(current_path))
+```
+**Importa base de datos**
+
+Se carga la base de datos de la Asociación de Reaseguros de América (RAA).
+
+El objetivo de un ejercicio de reserva es pronosticar el futuro en la esquina inferior derecha del triángulo y Posibles desarrollos posteriores a los 10 años de edad. Hablamos de negocios de cola larga y corta dependiendo del tiempo que se tarda en pagar todas las reclamaciones.
+
+```{r}
+RAA <- read_xlsx("BD.xlsx", sheet = "Datos")
+RAA
+
+```
+Se crea la variable N_ANUAL que es el numero de periodo en que se paga el siniestro, esto es, si el siniestro ocurrio en el 2008 y pago l siniestro en el 2008, entonces el periodo en el que se pago fue en el año cero (0), si por el contrario, el siniestro ocurrio en el año 2008 pero se pago en el año 2010, entonces este siniestro se pago en el periodo 2.
+
+```{r}
+#Determinamos los periodos de pago denominados como N_ANUAL
+RAA$N_ANUAL <- RAA$AÑO_PAGO - RAA$AÑO_OCURRENCIA
+
+#Covertimos la base en una dataframe
+RAA <- as.data.frame(RAA)
+
+#Seleccionamos las variables que vamos a usar
+RAA <- RAA %>% select(AÑO_OCURRENCIA,N_ANUAL, MONTO_PAGADO )
+RAA
+```
+**Construcción del Triangulo**
+
+La información histórica siniestral se reune en una tabla denominada Triángulo. En su eje vertical tendrá los periodos de ocurrencia de los siniestros y en el eje horizontal los periodos de desarrollo de pago de los siniestros. Contiene, por lo tanto, por cada periodo de ocurrencia, el valor de los siniestros pagados. 
+
+A continuacion, construiremos el triangulo con la funcion **decast** y Su configuración es la siguiente:
+```{r}
+Triangulo <- dcast(RAA, AÑO_OCURRENCIA ~ N_ANUAL)
+Triangulo
+
+```
+Ahora, convierto el dataframe anterior en una matriz para que sea más fáclil hacer las operaciones. 
+
+```{r}
+rownames(Triangulo)<- Triangulo[,1]
+Triangulo<- Triangulo[,-1]
+# Convert to matrix
+Triangulo <- as.matrix(Triangulo)
+Triangulo
+```
+**Construcción del triangulo acumulado**
+
+A continuación, se construye la tabla denominada Triángulo_cum, que es el monto de los pagos
+acumulados neto; cuya finalidad es la especulación de volatilidad, este triángulo contiene para
+cada periodo de ocurrencia el valor acumulado de los siniestros pagados en cada uno de los
+periodos de desarrollo; debido a la menor proporción en las variaciones del triángulo anterior.
+Su expresión es la siguiente:
+
+```{r}
+#Convert into a triangle class
+Triangulo  <- as.triangle(Triangulo)
+Triangulo_cum <- incr2cum(Triangulo )
+Triangulo_cum[Triangulo_cum==0]<-1
+Triangulo_cum<- as.triangle(Triangulo_cum,origin="origin",dev="dev",value="value")
+Triangulo_cum
+```
+**Calculo de los factores de desarrollo**
+
+los factores, o factor de desarrollo incremental, corresponde al cociente dl total de los pagos acumulados en cada uno de los periodos de ocurrencia
+
+$Factor = (PAi,j+1)/PAi,j$
+
+Donde:
+
+$PAi,j$ Corresponde a los siniestros ocurridos en el perido $i$ y que se han pagado hasta el periodo de desarrollo $j$
+
+$i$ Corresponde al periodo de ocurrencia
+
+$j$ Corresponde al periodo de pago
+
+Los factores de desarrollo sirven para medir la evolución de cada periodo de
+ocurrencia desde un periodo de desarrollo al siguiente y se utilizan como base para proyectar las reclamaciones de los periodos de ocurrebcia imcompletos hasta su desarrollo final.
+
+```{r}
+# Determinamos en numero de columnas
+n <- ncol(Triangulo_cum)
+
+#determinamos los factores
+factores <- sapply(1:(n-1),
+                     function(i){
+                       sum(Triangulo_cum[c(1:(n-i)),i+1])/sum(Triangulo_cum[c(1:(n-i)),i])
+                     }
+  )
+factores
+```
+Para mayor facilidad en la operatividad,se crea un vector y se ponen los factores de desarrollo anteriormente calculados.
+```{r}
+
+factores <- as.data.frame(factores) 
+factores[10,] <-1
+factores<-as.data.frame(rev(t(factores)))
+names(factores)<-"factores"
+factores
+```
+
+Seguidamente se genera un Vector con los valores maximos encontrados en el triangulo acumulado, estos son, la ultima diagonal. 
+```{r}
+Triangulo_cum<-as.data.frame( Triangulo_cum)  
+Desarrollo_general<-Triangulo_cum%>%group_by(origin)%>%summarise(Conocidos=max(value,na.rm = TRUE))
+Desarrollo_general
+```
+De esta forma, calculo los desarrollos. 
+
+*cumprod()* es una función de R que calcula el producto acumulativo de un vector. Es decir, devuelve un vector en el que cada elemento es el producto de todos los elementos del vector original hasta esa posición. Por ejemplo, si el vector original es [1, 2, 3, 4], el vector resultante será [1, 2, 6, 24].
+```{r}
+Desarrollo_general<-cbind(Desarrollo_general,factores)
+Desarrollo_general$factor_total<-cumprod(Desarrollo_general$factores)
+Desarrollo_general
+
+```
+**Calculo de Ultimate e IBNR**
+
+El *ultimate* es aquel valor que se espera pagar cuando se desarrollen los siniestros, y el IBR es el monto que debemos tener en la reserva. por tanto el tenemos que:
+
+$IBNR = Ultimate - Montos Conocidos$
+```{r}
+
+Desarrollo_general$Ultimate<- Desarrollo_general$Conocidos*Desarrollo_general$factor_total
+Desarrollo_general$IBNR<- Desarrollo_general$Ultimate - Desarrollo_general$Conocidos
+Desarrollo_general<-Desarrollo_general%>%mutate(origin=as.numeric(origin))
+
+Desarrollo_general
+
+```
+# Resultados. 
+Los valores *ultimate* tienen sentido, de acuerdo con los desarrollo totales, (En este supuesto, los siniestros se desarrollan en una decada), dada la información hustorica del monto de los siniestros y el criterio actuarial, se deberá constituir las provisiones o reservas necesarias en cada periodo para garantizar el pago de los siniestros. 
+
+
+```
+
+
