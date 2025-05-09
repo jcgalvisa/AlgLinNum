@@ -9,9 +9,8 @@ begin
 	using PlutoUI
 	using HypertextLiteral
 	using LinearAlgebra
-	using DelimitedFiles
-	using Plots
 	using BenchmarkTools
+	using Plots
 end
 
 # ╔═╡ 7494046b-46d9-4233-b99a-adaedbd52f04
@@ -49,11 +48,45 @@ $$T=\begin{bmatrix} T_{11}&T_{12}\\ O& T_{22} \end{bmatrix}$$
 
 entonces $\lambda(A)=\lambda(T_{11})\cup \lambda(T_{22})$.
 
-**Lema 2:** Si $A\in\mathbb{C}^{n\times n}$, $B\in\mathbb{C}^{p\times p}$ y $X\in\mathbb{C}^{n\times p}$ son tales que satisfacen que $AX=XB$ y $rang(X)=p$ entonces existe una matriz $Q\in\mathbb{C}^{n\times n}$ unitaria tal que
+*Demostración:* Como $T\in\mathbb{C}^{n\times n}$, se puede encontrar a $x$ autovector y $\lambda$ autovalor asociado a dicho $x$, entonces 
+
+$$Tx=\begin{bmatrix}T_{11} & T_{12}\\ O & T_{22}\end{bmatrix}\begin{bmatrix}x_1\\x_2\end{bmatrix}=\begin{bmatrix}T_{11}x_1+T_{12}x_2\\O+T_{22}x_{2}\end{bmatrix}=\lambda\begin{bmatrix}x_1\\x_2\end{bmatrix}$$
+
+Con $x_1\in\mathbb{C}^{p}$ y $x_{2}\in\mathbb{C}^{q}$, luego
+* Si $x_2\neq 0 $ se sigue que $T_{22}x_2=\lambda x_2$ y así $\lambda \in\lambda(T_{11})\cup\lambda(T_{22})$.
+* Si $x_2=0$ se sigue que $T_{11}x_1=\lambda x_1$ y por tanto $\lambda\in\lambda(T_{11})\cup\lambda(T_{22})$.
+
+Por tanto, se tiene que $\lambda(T)\subset\lambda(T_{11})\cup\lambda(T_{22})$.
+
+Ahora, para demostrar la otra contenencia se sigue que 
+
+* Si $\lambda_1$ es autovalor de $T_{11}$ se sigue que existe $v_{1}$ autovector asociado a $\lambda_1$, luego tomando $v=\begin{bmatrix} v_{1}\\ O\end{bmatrix}$ se sigue que $Tv=\begin{bmatrix}T_{11} & T_{12}\\ O & T_{22}\end{bmatrix}\begin{bmatrix}v_1\\O\end{bmatrix}=\lambda_1\begin{bmatrix}v_1\\ O\end{bmatrix}$, de donde $\lambda_1\in \lambda(T)$.
+
+* Si $\lambda$ es autovalor de $T_{11}$ y de $T_{22}$ entonces escogiendo el mismo vector que en el ítem anterior se tiene que $\lambda\in\lambda(T)$.
+
+* Si $\lambda_2\in T_{22}$ y $\lambda_2\notin T_{11}$, se sigue que existe $v_2$ tal que $T_{22}v_2=\lambda_2 v_2$, entonces tomando a $v=\begin{bmatrix}v_{1}\\v_{2}\end{bmatrix}$, queremos que se cumpla $\begin{bmatrix}T_{11} & T_{12}\\ O & T_{22}\end{bmatrix}\begin{bmatrix}v_1\\v_2\end{bmatrix}=\begin{bmatrix}T_{11}v_1+ T_{12}v_2\\ T_{22}v_2\end{bmatrix}=\lambda_2\begin{bmatrix}v_1\\v_2\end{bmatrix}$ ahora, $|T_{11}-\lambda_2 I|\neq 0$ por tanto, existe $(T_{11}-\lambda_2 I)^{-1}$, y tomando $v_1=-(T_{11}-\lambda_2 I)^{-1}T_{12}v_2$ se cumple lo anteriormente dicho, de donde $\lambda_2\in\lambda(T)$.
+
+Así queda demostrado que $\lambda(T)=\lambda(T_{11})\cup\lambda(T_{22})$. $\Box$
+
+**Lema 2:** Si $A\in\mathbb{C}^{n\times n}$, $B\in\mathbb{C}^{p\times p}$ y $X\in\mathbb{C}^{n\times p}$ son tales que satisfacen que $AX=XB$ y $rank(X)=p$ entonces existe una matriz $Q\in\mathbb{C}^{n\times n}$ unitaria tal que
 
 $$Q^{H}AQ=T=\begin{bmatrix} T_{11}&T_{12}\\O &T_{22} \end{bmatrix}$$
 
 donde $\lambda(T_{11})=\lambda(A)\cap\lambda(B)$.
+
+*Demostración:*  Como $X$ es de rango completo se puede hallar su factorización $Q R$ em este caso se toma la factorización como:
+
+$$X=Q\begin{bmatrix}R_{1}\\O\end{bmatrix}$$
+
+donde $Q\in\mathbb{C}^{n\times n}$, $R_1\in\mathbb{C}^{p\times p}$, entoces por hipótesis como $AX=XB$ y $Q$ es unitaria se puede multiplicar a ambos lados por la adjunta de $Q$:
+
+$$Q^{H}AX=Q^{H}AQ\begin{bmatrix}R_{1}\\O\end{bmatrix}=Q^{H}XB=Q^{H}Q\begin{bmatrix}R_{1}\\O\end{bmatrix}B=\begin{bmatrix}R_{1}\\O\end{bmatrix}B$$
+
+Es decir, $Q^{H}AQ\begin{bmatrix}R_{1}\\O\end{bmatrix}=\begin{bmatrix}R_{1}\\O\end{bmatrix}B$ así tomando $Q^{H}AQ=\begin{bmatrix}T_{11}&T_{12}\\T_{21}&T_{22}\end{bmatrix}$ se sigue que
+
+$$Q^{H}AQ\begin{bmatrix}R_{1}\\O\end{bmatrix}=\begin{bmatrix}T_{11}&T_{12}\\T_{21}&T_{22}\end{bmatrix}\begin{bmatrix}R_{1}\\O\end{bmatrix}=\begin{bmatrix}T_{11}R_{1}\\T_{21}R_1\end{bmatrix}=\begin{bmatrix}R_{1}B\\O\end{bmatrix}$$
+
+Por tanto, como $R_1$ es no singular se sigue que $T_{21}=O$ y que además $R_{1}^{-1}T_{11} R_{1}=B$ de aquí que $\lambda(T_{11})=\lambda(B)$, por otro lado por el lema anterior se sigue que $\lambda(Q^{H}AQ)=\lambda(T_{11})\cup\lambda(T_{22})$, pero $\lambda(A)=\lambda(Q^{H}AQ)$, de donde $\lambda(T_{11})=\lambda(A)\cap\lambda(B)$.$\Box$
  """
 
 # ╔═╡ 9a24ac91-2b77-4bb5-b6e5-a070cabc8e35
@@ -71,21 +104,34 @@ en donde $T=D+N$ siendo $D=diag(\lambda_1,\lambda_2,...,\lambda_n)$ y $N$ es una
 md""" ### Demostración. """
 
 # ╔═╡ 589cce26-775d-4a13-b432-b4bd81ae855f
-md""" Se demostrará por inducción sobre $n$:
+md""" Se demostrará por inducción sobre $n$ (tamaño de la matriz $A$):
 
 * Para $n=1$ es evidente que se cumple la existencia de dicha descomposición.
 * Supongamos que toda matriz $A'$ en los complejos de tamaño $k$ para $1\leq k\leq n-1$ tiene una descomposición de Schur.
-* Sea $A\in \mathbb{C}^{n\times n}$  y sea $v$ un autovector de $A$, además sea $\lambda$ el autovalor asociado a $v$, usando el lema 2 para $B=\lambda$ se tiene que existe una $\hat{Q}$ unitaria tal que
+* Sea $A\in \mathbb{C}^{n\times n}$  y $v$ un autovector de $A$, además sea $\lambda$ el autovalor asociado a $v$, usando el lema 2 para $B=\lambda$ y $X=v$ se tiene que existe una $\hat{Q}$ unitaria tal que
 
-$$\hat{Q}^{H}A\hat{Q}=\begin{bmatrix} T_{11} &T_{12}\\O &T_{22}\end{bmatrix}$$
+$$\hat{Q}^{H}A\hat{Q}=\begin{bmatrix} T_{11} &T_{12}\\O &T_{22}\end{bmatrix}$$ 
 
-$\hspace{12mm}$ Pero $T_{11}=\lambda$ entonces realmente se tiene que
+Pero sabemos que $\lambda(T_{11})=\lambda$ entonces $T_{11}=\lambda$ y realmente se tiene que
 
 $$\hat{Q}^{H}A\hat{Q}=\begin{bmatrix} \lambda & w^{H}\\O & C\end{bmatrix}$$
 
-Con anterioridad sabemos que $C$ tiene una descomposición de schur, sea $\tilde{Q}$ unitaria tal que $\tilde{Q}^{H}C\tilde{Q}$ es triangular, por tanto se puede tomar $Q=\hat{Q}diag(1,\tilde{Q})$ y se sigue que $Q^{H}AQ$ es triangular superior.
+Por lo que $C$ tiene tamaño $n-1\times n-1$ y por hipótesis de inducción se sabe que  $C$ tiene una descomposición de schur, sea $\tilde{Q}$ unitaria tal que $\tilde{Q}^{H}C\tilde{Q}$ es triangular superior, por tanto se puede tomar $Q=\hat{Q}diag(1,\tilde{Q})$, al multiplicarla por $A$ se obtiene que:
 
-Así queda demostrada la existencia de una descomposición de schur para cualquier matriz cuadrada en los complejos.
+$$\begin{align}(\hat{Q}diag(1,\tilde{Q}))^{H}A\hat{Q}diag(1,\tilde{Q})&=diag(1,\tilde{Q}^{H})\hat{Q}^{H}A\hat{Q}diag(1,\tilde{Q})\\
+&= diag(1,\tilde{Q}^{H})\begin{bmatrix} \lambda & w^{H}\\O & C\end{bmatrix}diag(1,\tilde{Q}) \\
+&=\begin{bmatrix}1&O\\O&\tilde{Q}^{H}\end{bmatrix}\begin{bmatrix} \lambda & w^{H}\\O & C\end{bmatrix}\begin{bmatrix}1&O\\O&\tilde{Q}\end{bmatrix}\\
+&=\begin{bmatrix}\lambda & w^{H}\\ O & \tilde{Q}^{H}C\end{bmatrix}\begin{bmatrix}1&O\\O&\tilde{Q}\end{bmatrix}\\
+&=\begin{bmatrix}\lambda & w^{H}\tilde{Q}\\ O& \tilde{Q}^{H}T_{22}\tilde{Q}\end{bmatrix}
+\end{align}$$
+
+Así $w^{H}\tilde{Q}$ es de tamaño $1\times n-1$ y además $\tilde{Q}^{H}T_{22}\tilde{Q}$ es triangular superior por ser la descomposición de schur de $C$, luego $Q^{H}AQ$ es triangular superior.
+
+Adicionalmente, $Q$ es unitaria pues:
+
+$Q^{H}Q=(\hat{Q}diag(1,\tilde{Q}))^{H}\hat{Q}diag(1,\tilde{Q})=diag(1,\tilde{Q}^{H})\hat{Q}^{H}\hat{Q}diag(1,\tilde{Q})=I.$
+
+Luego, existe una matrix $Q$ unitaria tal que $Q^{H}AQ$ es triangular superior. Así, queda demostrada la existencia de una descomposición de schur para cualquier matriz cuadrada en los complejos.
 
 
 """
@@ -93,17 +139,55 @@ Así queda demostrada la existencia de una descomposición de schur para cualqui
 # ╔═╡ ef2798f3-0255-4039-aaa0-0a09b0f25f76
 md"""### Consecuencias.
 
-* Tomando $S_{k}=\langle q_1,q_2,...,q_k\rangle$ se puede ver que este subespacio es invariante con respecto a $A$.
+* Tomando el subespacio formado por $S_{k}=\langle q_1,q_2,...,q_k\rangle$ se puede ver que este subespacio es invariante con respecto a $A$.
 
-* De igual manera que en la diagonalización se puede hallar la potencia de una matriz de una manera mucho m¿as facil.
+*Demostración:*
 
+Tome $Q=\begin{bmatrix}|&|&\cdots&|\\ q_1&q_2&\cdots&q_{n}\\ |&|&\cdots&|\\\end{bmatrix}$, entonces como $Q$ es la matriz unitaria de la descomposición de Schur se tiene que $AQ=QT$ en donde $T$ es triangular superior, luego,se tiene que:
+
+$$A\begin{bmatrix}|&|&\cdots&|\\ q_1&q_2&\cdots&q_{n}\\ |&|&\cdots&|\\\end{bmatrix}=\begin{bmatrix}|&|&\cdots&|\\ q_1&q_2&\cdots&q_{n}\\ |&|&\cdots&|\\\end{bmatrix}\begin{bmatrix}\lambda_1&n_{12}&\cdots& n_{1n}\\0&\lambda_2&\cdots&n_{2n}\\0&0&\ddots&\vdots\\0&0&\cdots&\lambda_n\end{bmatrix}$$
+
+Entonces 
+
+$$\begin{bmatrix}Aq_1 &Aq_2&\cdots& Aq_n\end{bmatrix}=\begin{bmatrix}q_1\lambda_1 &q_1n_{12}+q_2\lambda_2&\cdots& q_1n_{1n}+\cdots+q_n\lambda_n\end{bmatrix}$$
+
+Por tanto, para $0\leq i\leq k$ se sigue que $Aq_i=q_i\lambda_+\sum_{j=0}^{i-1}q_{j}n_{ji}$, así $AS_{k}\subset S_{k}$, de donde el subespacio $S_{k}$ es invariante.
+
+* De igual manera que en la diagonalización se puede hallar la potencia de una matriz de una manera mucho más facil debido a la nilpotencia de la matriz $N$, pues como se mencionó anteriormente es estrictamente triangular superior.
+
+Por ejemplo, si $A\in\mathbb{C}^{n\times n}$ tiene una descomposición de Schur $Q^{H}AQ=T$ en donde $T$ es triangular superior, entonces $A^{k}=QT^{k}Q^{H}$, adicionalmente $T=(D+N)$ así $T^{k}=(D+N)^{k}$ y de esta operación por la nilpotencia de $N$ se tendrán varias operaciones que son $0$ facilitando así la obtención de $A^{k}$.
 """
 
 # ╔═╡ 6f12b4e3-4c3d-40d6-adec-7f78d7f1b04f
 md""" ### Algoritmo."""
 
 # ╔═╡ 01588361-4b3d-4ebe-91af-4d86de9c06b2
-md""" Para calcular la descomposición de Schur de una matriz es necesario realizar la factorización QR de la matriz, en cada iteración:"""
+md""" Para calcular la descomposición de Schur de una matriz es necesario realizar la factorización QR de la matriz, en cada iteración:
+
+Como tal el algoritmo es el siguiente: Teniendo como entrada a la matriz $A$ cuadrada en los complejos, se sigue que:
+
+* Tome $A_1=A$.
+* Halle la factorización $Q_1R_1$ de $A_1$.
+* Tome $A_2=R_1Q_1$.
+* Halle la factorización $Q_2R_2$ de $A_2$.
+* Tome $A_3=R_2Q_2$.
+
+Y así sucesivamente, se obtendrá en el paso $k$ que:
+
+$$\begin{align}A_{k}&=Q_{k}R_{k}\\
+&=Q_{k}R_{k}Q_{k}Q_{k}^{H}\\
+&=Q_{k}A_{k+1}Q_{k}^{H}\end{align}$$
+
+Así se espera que $A_{k+1}$ tienda a una matriz triangular en un número grande de iteraciones.
+
+Adicionalmente, la matriz $Q$ de la descomposición de schur se obtendrá de la siguiente forma:
+
+$$A_1=Q_{1}R_{1}=Q_{1}Q_{2}R_{2}Q_{1}^{H}=\cdots=Q_{1}Q_{2}\cdots Q_{k}A_{k+1}Q_{k}^{H}\cdots Q_{2}^{H}Q_{1}^{H}$$
+
+De donde, $Q=Q_{1}Q_{2}\cdots Q_{k}$.
+
+En el siguiente algoritmo se realizará la descomposición $QR$ con el método de Gram Schmidt.
+"""
 
 # ╔═╡ 80810067-023b-48e9-a4cf-fe458fd90189
 function QRCGS(A)
@@ -112,13 +196,14 @@ function QRCGS(A)
     R = zeros(sizeA[2],sizeA[2]) #(n,n)
     for i = 1:sizeA[2] #
         for j = 1:i-1
-            R[j,i] = Q[:,j]'A[:,i]
+            R[j,i] = adjoint(Q[:,j])*A[:,i] #Se coloca la transpuesta conjugada.
         end
-        p = A[:,i] - Q[:,1:i-1]*R[1:i-1,i]
+        p = A[:,i] - Q[:,1:i-1]*R[1:i-1,i] 
         R[i,i]=norm(p)
 #        if abs(R[i,i])<0.00000000001
 #            println("Rii cercano 0")
 #        end
+
         Q[:,i] = p/R[i,i]
     end
     return Q,R
@@ -129,46 +214,140 @@ md"""La descomposición de schur es:"""
 
 # ╔═╡ 06b62b7f-01a5-45c7-9abe-b86ac44f51ed
 begin
- function Schur(A,epsilon)
+ function Schur(A)
 	A₁=copy(A)
-	for i=1:100000
+	Q₁=UniformScaling(1);
+	for i=1:10000
 	Q,R=QRCGS(A₁)
-	Q₁=UniformScaling(1)*QRCGS(A₁)[1]
+	Q₁=Q₁*QRCGS(A₁)[1]
 	A₁=R*Q
-    if(opnorm(A-(Q₁*A₁*adjoint(Q₁)))<epsilon)
-		return A₁,Q₁
-	else 
-		print("El método no converge")
+#    if(opnorm(A-(Q₁*A₁*adjoint(Q₁)))<epsilon)
+#	else 
+#		print("El método no converge")
+#	end
 	end
-	end
+ 	return A₁,Q₁
  end
 end
 
 
 # ╔═╡ 892365bc-0464-4d5a-be36-6f938379c58f
-md""" por ejemplo, escojamos la siguiente matriz y hallemos su descomposición de Schur por medio del algoritmo:"""
+md""" por ejemplo, escojamos la siguiente matriz y hallemos su descomposición de Schur por medio del algoritmo, para una matriz de reales:"""
 
 # ╔═╡ 9f5b7c35-7a7d-4a50-9e20-3cae5c55eef1
 begin
-B=rand(100,100)
+B=rand(5,5)
+display(B)
 epsilon=1E-10
-A₂, Q₂ =Schur(B,epsilon); display(A₂)
+A₂,Q₂=Schur(B)
 end
 
+# ╔═╡ f02e8260-676c-47d0-8de9-4a58b63a2d3e
+display(A₂) #Matriz triangular.
+
 # ╔═╡ 6fcf1cdd-5780-430d-bdd2-6934370d4fcd
-display(Q₂)
+display(Q₂) #Matriz unitaria.
 
 # ╔═╡ c00dc9e0-9970-41ab-9aae-b39205df9f66
-md""" Se puede ver que el error de descomposición esta dado por lo siguiente:"""
+md""" Se puede ver que el residuo de descomposición esta dado por lo siguiente:"""
 
 # ╔═╡ 0cf97d60-8d02-48f8-94af-bbb91fee69d6
 opnorm(B-Q₂*A₂*adjoint(Q₂))
 
 # ╔═╡ 756ae63a-a811-4cd2-b888-5d946a1e9527
-md""" Además, el error sobre Q para ser una matriz unitaria es:"""
+md""" Además, el residuo sobre Q para ser una matriz unitaria es:"""
 
 # ╔═╡ 8d892dc3-81a3-467b-89fe-8640589451d7
 opnorm(UniformScaling(1)-Q₂*adjoint(Q₂))
+
+# ╔═╡ 2bd1ef04-64bf-40e4-8eca-b77145c1fba3
+md""" El error de triangulación es:"""
+
+# ╔═╡ 60121129-a77d-4df0-a50e-2dd79966c771
+opnorm((tril(A₂)-Diagonal(A₂))-tril(zeros(5,5)))
+
+# ╔═╡ 85d1caf8-3bc3-45b8-9cf6-7a5d9c630443
+md""" Veamos ahora un ejemplo con una matriz compleja:"""
+
+# ╔═╡ 64cf0ea0-9e00-4999-bb39-42872e040843
+begin
+#Este algortimo es una versión del anterior pero para matrices complejas.
+	
+function QRCGS2(A)
+    sizeA=size(A)
+    Q = Array{ComplexF64}(zeros(sizeA)) #(m,n)
+    R = Array{ComplexF64}(zeros(sizeA[2],sizeA[2])) #(n,n)
+    for i = 1:sizeA[2] #
+        for j = 1:i-1
+            R[j,i] = adjoint(Q[:,j])*A[:,i] #Se coloca la transpuesta conjugada.
+        end
+        p = A[:,i] - Q[:,1:i-1]*R[1:i-1,i] 
+        R[i,i]=norm(p)
+#        if abs(R[i,i])<0.00000000001
+#            println("Rii cercano 0")
+#        end
+        Q[:,i]=p/R[i,i]
+    end
+    return Q,R
+end
+ function Schur2(A)
+	A₁=copy(A)
+	Q₁=UniformScaling(1);
+	for i=1:10000
+	Q,R=QRCGS2(A₁)
+	Q₁=Q₁*QRCGS2(A₁)[1]
+	A₁=R*Q
+#    if(opnorm(A-(Q₁*A₁*adjoint(Q₁)))<epsilon)
+#	else 
+#		print("El método no converge")
+#	end
+	end
+ 	return A₁,Q₁
+ end
+end
+
+# ╔═╡ 307e996f-1a00-4c02-815e-ee8692a37b76
+begin	
+B₁=rand(ComplexF64, 3,3);
+display(B₁)
+A₅,Q₅=Schur2(B₁);
+end
+
+# ╔═╡ 1cf2901d-7d2c-4e75-95e5-7325c9a4c9ae
+display(A₅) #La matriz triangular.
+
+# ╔═╡ 774a3f0c-ab21-4f7c-a211-8a0287619f3a
+display(Q₅) #La matriz unitaria.
+
+# ╔═╡ cbc6490e-6f75-4d80-8ad7-b75d9c01eaf6
+md""" Veamos los residuos que esta nos da"""
+
+# ╔═╡ 9b4b1696-36d1-4202-a071-32b2842fb4fa
+md""" * Error de factorización """
+
+# ╔═╡ 4d2cf147-975c-4c31-815f-3111d4214acb
+opnorm(B₁-Q₅*A₅*adjoint(Q₅))
+
+# ╔═╡ 18b4674d-b576-444d-82ed-7e84b7b59081
+md""" * Residuo de ser Unitario"""
+
+# ╔═╡ 1672e782-e32c-4d9d-8e1a-3c8efca690cd
+opnorm(UniformScaling(1)-Q₅*adjoint(Q₅))
+
+# ╔═╡ 629e1915-b48a-4b2a-a09b-4a3fd26ef08a
+md""" * Residuo de triangularización """
+
+# ╔═╡ 8aa1de28-be5f-4153-840a-29a486965640
+opnorm((tril(A₅)-Diagonal(A₅))-tril(zeros(3,3)))
+
+# ╔═╡ 69a184be-527b-4868-ada3-5cebc42e05da
+md""" ¿Estan los valores propios de la matriz realmente en la matriz triangular en su diagonal? En efecto, se pueden encontrar explicitamente."""
+
+# ╔═╡ 1a704241-6957-4914-b1bd-3e818e0a93ff
+eigvals(B₁)
+
+# ╔═╡ 5092d909-bc6d-45b2-a6a6-4b216e093f07
+md""" ##### Algoritmo de Julia: """
 
 # ╔═╡ 5613492b-90fe-4f44-87bb-91e2edf9a960
 md""" En julia se encuentra implementada la siguiente función que realiza la descomposición, con ella se puede comparar que tan bueno es el resultado anteriormente obtenido."""
@@ -217,10 +396,47 @@ A₃^50
 md""" ### Casos Especiales."""
 
 # ╔═╡ f3685950-6a36-45c7-9b74-ff8004d1f41b
-md"""  **Teorema:** $A\in\mathbb{C}^{n\times n}$ es normal si y solo si existe una matriz unitaria $Q\in\mathbb{C}^{n\times n}$ tal que $Q^{H}AQ=diag(\lambda_1,\lambda_2,...,\lambda_n)$. """
+md"""  
+
+**Teorema:** 
+ Sea $A\in\mathbb{R}^{n\times n}$, si A es simétrica  y se tiene una matriz ortogonal $Q\in\mathbb{R}^{n\times n}$ tal que $Q^{H}AQ$ es su descomposición de Schur entonces $Q^{t}AQ=diag(\lambda_1,\lambda_2,...,\lambda_n).$
+
+*Demostración:*
+
+Sea $A$ una matriz cuadrada en los reales que además es simétrica, y sea $Q$ ortogonal tal que $Q^{t}AQ$ es la descomposición de Schur de $A$, es decir, existe $T$ triangular superior tal que $Q^{t}AQ=T$, ahora como $Q$ es ortogonal se tiene que $A=QTQ^{t}$ y además por hipótesis $A$ es simétrica, por tanto $A^{t}=QT^{t}Q^{t}=A$ así
+
+$$\begin{align}QT^{t}Q^{t}&=QTQ^{t}\\
+T^{t}&=T\end{align}$$
+
+Pero $T$ es una matriz triangular superior, y además concluimos que $T$ es simétrica, por tanto $T$ es una matriz diagonal.$\Box$
+
+**Teorema:** $A\in\mathbb{C}^{n\times n}$ es normal si y solo si existe una matriz unitaria $Q\in\mathbb{C}^{n\times n}$ tal que $Q^{H}AQ=diag(\lambda_1,\lambda_2,...,\lambda_n)$.
+
+*Demostración:*
+
+-->) Sea $A$ una matriz cuadrada en los complejos que además es normal y sea $Q$ la matriz unitaria de su descomposición de Schur, entonces existe $T$ triangular superior tales que $Q^{H}AQ=T$, ahora veamos que ocurre al realizar $T^{H}T$:
+
+$$\begin{align}T^{H}T&=Q^{H}A^{H}QQ^{H}AQ\\
+&=Q^{H}A^{H}AQ\\
+&= Q^{H}AA^{H}Q\\
+&= Q^{H}AQQ^{H}A^{H}Q\\
+&=TT^{H}\end{align}$$
+
+De donde se concluye que $T$ es normal, luego como $T$ es normal y triangular superior entonces $T$ es una matriz diagonal y por tanto $T=diag(\lambda_1,\lambda_2,...,\lambda_n)$.
+
+<-- Sea $A$ una matriz cuadrada para la cual existe $Q$ unitaria tal que $Q^{H}AQ=diag(\lambda_1,\lambda_2,...,\lambda_n)$, entonces veamos que $A$ es normal, para ello observe que se puede escribir $A$ como $A=Q^{H}DQ$.
+
+$$\begin{align} AA^{H}&=Q^{H}DQQ^{H}D^{H}Q\\
+&=Q^{H}DD^{H}Q\\
+&=Q^{H}D^{H}DQ\\
+&=Q^{H}D^{H}QQ^{H}DQ\\
+&=A^{H}A\end{align}$$
+
+Luego $A$ es normal y por tanto queda demostrado el teorema.$\Box$
+"""
 
 # ╔═╡ 036b12b9-897a-46c3-8b5c-32ebf4cd8855
-md""" El algoritmo anteriormente usado no es eficiente, se puede notar que al tener una matriz mucho más grande este se va a demorar demasiado, por tanto es util introducir un método que ayuda a hallar la descomposición de Schur de una manera más eficiente. Para ello se definirá una nueva versión de la descomposición de Schur. """
+md""" El algoritmo anteriormente usado no es eficiente, se puede notar que al tener una matriz mucho más grande este se va a demorar demasiado, por tanto es util introducir un método que ayuda a hallar la descomposición de Schur de una manera mejor. Este método se concentrará en las matrices de reales pues las aplicaciones que normalmente se realizan suelen ser sobre matrices de números reales. Para ello se definirá una nueva versión de la descomposición de Schur. """
 
 # ╔═╡ ee51dc26-d8fd-4d14-a1f1-b6665a6a3715
 md""" # Descomposición real de Schur."""
@@ -241,19 +457,23 @@ En donde $R_{ii}$ es una matriz $1\times 1$ o $2\times 2$ en donde se encuentran
 md""" ### Demostración."""
 
 # ╔═╡ a50265e1-5c47-4d53-8992-134a123ecb33
-md""" Los autovalores complejos de A vienen en pares, el y su conjugado. Sea $k$ el número de parejas de autovalores de $A$, este teorema se demostrará realizando inducción sobre $k$.
+md""" Como $A$ es una matriz en los reales se sabe que los autovalores complejos de A vienen en pares, pues el y su conjugado serán raices del polinomio caracteristico. Sea $k$ el número de parejas de autovalores complejos de $A$, este teorema se demostrará realizando inducción sobre $k$.
 
-* Si $k=0$ entonces se cumple.
+* Si $k=0$ entonces se cumple, pues en este caso no existen autovalores complejos y por tanto se tiene la descomposición de Schur del teorema anterior pues el Lema 1 y 2 no utilizan propiedades explicitas sobre los complejos y se pueden acotar a los reales.
 * Supongamos que para $1\leq k\leq n-1$ se tiene que existe tal descomposición real de schur para una matriz de cumpla dicha condición.
-* Sea $A\in \mathbb{R}^{n\times n}$ tal que $k=n$, entonces al menos existe un autovalor complejo, tómese $\lambda=a+bi$ y además observe que este autovalor tiene un autovector asociado dado por $v=x+iy$ con $x,y$ vectores en los números reales y $y\neq 0$, por esto mismo se tiene que
+* Sea $A\in \mathbb{R}^{n\times n}$ tal que $k=n$, entonces al menos existe un autovalor complejo, tómese este como $\lambda=a+bi$ y además observe que este autovalor tiene un autovector asociado dado por $v=x+iy$ con $x,y$ vectores en los números reales y $y\neq 0$ (pues si esto no fuese así $b\neq0$ no se cumpliría y el autovalor no seria complejo), por la definición de autovector se tiene que
 
 $$A[x\hspace{3mm} y]=(a+bi)[x\hspace{3mm} y]$$
 
-utilizando una versión del lema 2 para matrices reales se sigue que existe $\hat{Q}$ tal que 
+O lo que es equivalente a escribir 
 
-$$\hat{Q}^{T}A\hat{Q}=\begin{bmatrix}T_{11}&T_{12}\\O &T_{22}\end{bmatrix}$$ en donde $\lambda(T_{11})=\{\lambda,\bar{\lambda}\}$. Ahora $T_{22}$ es una matriz de tamaño $n-2$ y por tanto $k<n$, luego aplicamos hipótesis de inducción y llegamos a que existe $\tilde{Q}$ ortogonal, tales que $\tilde{Q}^{T}T_{22}\tilde{Q}$ es triangular superior. 
+$$A[x\hspace{3mm} y]=[x\hspace{3mm} y]\begin{bmatrix}a &b\\-b&a\end{bmatrix}$$
 
-Así, tomando $Q=\hat{Q}diag(I_{2},\tilde{Q})$ se obtiene lo buscado."""
+Por tanto, utilizando una versión del lema 2 para matrices reales con $B=\begin{bmatrix}a &b\\-b&a\end{bmatrix}$ y $X=[x\hspace{3mm} y]$ se sigue que existe $\hat{Q}$ tal que 
+
+$$\hat{Q}^{T}A\hat{Q}=\begin{bmatrix}T_{11}&T_{12}\\O &T_{22}\end{bmatrix}$$ en donde $\lambda(T_{11})=\{\lambda,\bar{\lambda}\}$ (pues recuerde que $\lambda(T_{11})=\lambda(B)$). Ahora $T_{22}$ es una matriz de tamaño $n-2\times n-2$ y por tanto  el número de pares complejos de autovalores es $k<n$, entonces aplicamos hipótesis de inducción y se llega a que existe $\tilde{Q}$ ortogonal, tales que $\tilde{Q}^{T}T_{22}\tilde{Q}$ es triangular superior (por bloques).
+
+Así, tomando $Q=\hat{Q}diag(I_{2},\tilde{Q})$ se obtiene la matriz ortogonal que completa la descomposición real de schur pues en su diagonal se encuentran los autovalores reales y bloques $2\times 2$ que representan a su autovalores complejos."""
 
 # ╔═╡ 23abd4e6-d32e-4937-a11f-592d7bee58de
 md""" Como se dijo anteriormente, el objetivo es optimizar el número de operaciones y hacer lo más eficiente posible la obtención de la descomposición, por tanto se hablará del siguiente método:"""
@@ -262,12 +482,13 @@ md""" Como se dijo anteriormente, el objetivo es optimizar el número de operaci
 # ╔═╡ 30e9ca21-7007-483b-8b0f-c6296606b653
 md"""### QR Hessenberg. """
 
-# ╔═╡ d3ae817e-481f-4dea-88bb-45fdb8d4231a
-md"""#### 1. Matriz de Hessenberg superior
+# ╔═╡ ea9cb1c7-8cab-4f1f-b7d7-fef68a5b0d89
+md""" Se desea buscar una matriz  $U_o$ tal que al realizar $U_o^{T}AU_{o}$ esto sea igual a una matriz de Hessenberg superior y despues aplicar factorización QR por medio del método de Givens. Lo cual agiliza en gran medida hallar la factorización $QR$ en cada paso del algoritmo de la descomposición de schur. """
 
-Se desea buscar una matriz  $U_o$ tal que al realizar $H=U_o^{T}AU_{o}$ esto sea igual a una matriz de Hessenberg superior.
+# ╔═╡ 2d6fcbe6-f8ac-474f-89e9-cbe125e18306
+md"
 
-Una matriz de Hessenberg es una matriz en la que todos los elementos por debajo de la primera subdiagonal (la diagonal justo debajo de la diagonal principal) son iguales a cero.
+Una matriz de Hessenberg es una matriz en la que todos los elementos por debajo de la primera subdiagonal (la diagonal justo debajo de la diagonal principal) son iguales a cero. En particular, una matriz de Hessenberg por bloques es de la forma
 
 $$H=U_o^{T}AU_{o}=\begin{bmatrix}R_{11}&R_{12}&R_{13}&\cdots&R_{1n}\\ R_{21}&R_{22}&R_{23}&\cdots& R_{2n}\\
 0&R_{32}&R_{33}&\cdots& R_{2n}\\
@@ -275,8 +496,13 @@ $$H=U_o^{T}AU_{o}=\begin{bmatrix}R_{11}&R_{12}&R_{13}&\cdots&R_{1n}\\ R_{21}&R_{
 
 Se dice que $H$ es casi triangular superior.
 
+ **¿Como se halla la matriz $U_o$?**
+
+
+Esta matriz se puede hallar por medio de multipliación de matrices Householder, para ello necesitaremos el algoritmo de householder que se encuentra a continuación.
+
 Para conseguir la matriz de Hessenberg superior podemos multiplicar por matrices Householder, con el siguiente algoritmo:
-"""
+"
 
 # ╔═╡ 51241163-7867-40f2-8c90-498aed295a3f
 begin
@@ -284,8 +510,7 @@ function Housev(x)
     n = length(x)
     v = ones(size(x))
     v[2:n] = x[2:n]
-    
-	σ = norm(x[2:n])^2
+    σ = norm(x[2:n])^2
     if σ == 0
         β = 0
     else 
@@ -303,7 +528,7 @@ end
 end
 
 # ╔═╡ aab2d571-e794-4c35-9ff1-c96415107bce
-md""" Al mutiplicar por las matrices de Householder a la matriz $A$ podemos "eliminar" bastantes elementos de una columna, en este caso se realiza convenientemente para eliminar los elementos necesarios y así llegar a una matriz hessenberg superior. Lo que se hace es que al aplicar Householder no se le pasa toda sino se pasa desde $k+1$, es por ello que precisamente la $U_o$ que buscamos será producto de matrices Householder. El siguiente algoritmo nos arroja la información sobre quien es la matriz de Hessenberg resultante y quien es la matriz $U_o$:"""
+md""" Sabemos que al aplicar matrices de Householder a la matriz $A$ podemos "eliminar" bastantes elementos de una columna, en este caso se realiza convenientemente para eliminar los elementos necesarios y así llegar a una matriz hessenberg superior, es por ello que precisamente la $U_o$ que buscamos será producto de matrices Householder. El siguiente algoritmo nos arroja la información sobre quien es la matriz de Hessenberg resultante y quien es la matriz $U_o$:"""
 
 # ╔═╡ 4d343352-9263-4a16-8de7-586ea478a3bc
 begin
@@ -312,12 +537,11 @@ begin
     H = copy(A)
     U = Matrix(1.0*I, n, n)
     for k = 1:n-2
-        v, β = Housev(H[k+1:n, k]) # Se usa k+1 para que quede hessenberg superior
+        v, β = Housev(H[k+1:n, k])
         H[k+1:n, k:n] = (I - β*v*v')*H[k+1:n, k:n]
         H[1:n, k+1:n] = H[1:n, k+1:n]*(I - β*v*v')
         
-        # U es necesaria para la verificar que la función devuelve los
-		# resultados correctos
+        #U es necesaria para la verificar que la función devuelve los resultados correctos
         U[1:n, k+1:n] = U[1:n, k+1:n]*(I - β*v*v') 
     end
     return H, U
@@ -329,18 +553,18 @@ md""" Por ejemplo continuando con la matriz inicial se tiene lo siguiente:"""
 
 # ╔═╡ 6b123991-0773-40f8-a0ac-6ea353ca0a3e
 begin
-BH =rand(5,5)
-H₁, U₁=HessenbergForm(BH)
-display(H₁)
+ H₁,U₁=HessenbergForm(B); display(H₁)
 end
 
 # ╔═╡ 88552670-04af-4b2a-858c-11519c5471b2
 display(U₁)
 
 # ╔═╡ 8113b9b7-c5b9-4e9a-a02b-5d87ed4f60df
-md"""#### 2. Factorización QR de una Hessenberg superior
+md""" 
+#### 2. Factorización QR de una Hessenberg superior
 
-Ahora, se tiene una matriz casi $H$ casi triangular, se deben reempalzar los valores de la subdiagonal principal por 0's. Dado que se tiene un gran numero de ceros debajo de la principal, se usa Givens:"""
+
+Ahora, se tiene una matriz $H$ casi triangular, luego solo necesitamos quitar los números de la primera subdiagonal principal y reemplazarlos por 0's. Esto como ya lo vimos se puede realizar con Givens:"""
 
 # ╔═╡ 040aeed9-4ed4-43c0-8c24-eecd73862ece
 function Givens(a,b)
@@ -391,11 +615,11 @@ end
 # ╔═╡ 27f987d7-7c82-47bc-a441-e9fc4469bc56
 begin
 	function RealSchur(A, iteraciones = 10000)
-    # H0 = A
+    H0 = A
     H1 = HessenbergForm(A)[1]
-    # δ = 10
+    δ = 10
     for k = 1:iteraciones
-        # H0 = H1
+        H0 = H1
         H1 = HessenbergQR(H1)
     end
     return H1
@@ -405,7 +629,7 @@ end
 
 # ╔═╡ ec201a3f-e323-49d9-8904-62241bb1434e
 begin
-H₂=RealSchur(BH)
+H₂=RealSchur(B)
 end
 
 # ╔═╡ 6e8930b1-2357-4a2e-bc72-388b7dd42258
@@ -413,25 +637,25 @@ md""" Veamos que ocurre con una matriz mucho más grande"""
 
 # ╔═╡ 0ed3770e-9909-4fcd-a190-ce71d05ef5bd
 begin 
-C=rand(1000,1000)
+C=rand(100,100)
 H₃=RealSchur(C)
 end
 
 # ╔═╡ 65d97516-3de2-47a8-b536-dc5430f622cc
-md""" Observamos que se demora un poco pero realiza todas las iteraciones correspondientes y arroja la matriz que nos interes, al contrario de lo que ocurriria si metieramos esta misma matriz en el algoritmo presentado con QR realizado con gram schmidt"""
+md""" Observamos que se demora un poco pero realiza todas las iteraciones correspondientes y arroja la matriz que nos interesa, al contrario de lo que ocurriria si metieramos esta misma matriz en el algoritmo presentado con QR realizado con gram schmidt"""
 
-# ╔═╡ 32e93261-8c8c-476f-a7c7-6e7cfffcfcd6
-md"""#### 3. Testeo contra Shur
+# ╔═╡ d6390612-3b4d-4598-aabf-52416b685d28
+md"""#### 3. Comparación Schur
 
 En primer lugar, se evaluarán los tiempos de ejecución de ambas metodologías:"""
 
-# ╔═╡ 7009b77e-7599-4db8-8618-021e4accb4e3
-@benchmark H=RealSchur(rand(100,100))
+# ╔═╡ fb10eb41-40ae-468d-b545-c566305f5f9d
+@benchmark H=RealSchur(rand(10,10))
 
-# ╔═╡ b70310a3-e78c-4408-8d73-9af14afd8fe8
-@benchmark H=schur(rand(100,100))
+# ╔═╡ 0d21dc37-a992-47a3-bdc2-4abd422e2696
+@benchmark H=schur(rand(10,10))
 
-# ╔═╡ 530f006d-eb1c-4212-8528-8fb9cea46e07
+# ╔═╡ 567242dd-f570-4f5b-9400-5e33b6491edb
 begin
 	TRS = []
 	for i in collect(2:10)
@@ -443,7 +667,7 @@ begin
 	end
 end
 
-# ╔═╡ 08fb0dac-54da-4393-b4d2-92384c1d3cee
+# ╔═╡ a619f10d-53cc-460b-aece-f69b7d48859c
 begin
 	TS = []
 	for i in collect(2:10)
@@ -455,8 +679,8 @@ begin
 	end
 end
 
-# ╔═╡ 0a4ae34d-221f-40b1-81c3-d84f835b74fe
-plot(collect(2:10),[TRS,TS], label=["Real Schure" "Schure"], title="Comparación en tiempo", xlabel="Orden matriz", ylabel="Tiempo en segundos")
+# ╔═╡ 80b9e409-3878-4948-9c0c-de292e41a117
+plot(collect(2:10),[TRS,TS], label=["Real Schur" "Schur"], title="Comparación en tiempo", xlabel="Orden matriz", ylabel="Tiempo en segundos")
 
 # ╔═╡ 9cc5da63-fdaf-4d94-8445-cd31fd0888c6
 md"""#### 4. Autovalores complejos
@@ -464,6 +688,8 @@ md"""#### 4. Autovalores complejos
 Por ultimo veamos una matriz real con autovalores complejos"""
 
 # ╔═╡ 7a84fc5c-d956-4187-98ba-87ed0e7641e2
+#Esta función nos muestra los autovalores complejos que vienen por pares:
+
 function autovComplejos(H)
     D = diag(H,-1)
     for k = 1:size(D)[1]
@@ -498,16 +724,15 @@ end
 PLUTO_PROJECT_TOML_CONTENTS = """
 [deps]
 BenchmarkTools = "6e4b80f9-dd63-53aa-95a3-0cdb28fa8baf"
-DelimitedFiles = "8bb1440f-4735-579b-a4ab-409b98df4dab"
 HypertextLiteral = "ac1192a8-f4b3-4bfe-ba22-af5b92cd3ab2"
 LinearAlgebra = "37e2e46d-f89d-539d-b4ee-838fcccc9c8e"
 Plots = "91a5bcdd-55d7-5caf-9e0b-520d859cae80"
 PlutoUI = "7f904dfe-b85e-4ff6-b463-dae2292396a8"
 
 [compat]
-BenchmarkTools = "~1.3.2"
+BenchmarkTools = "~1.6.0"
 HypertextLiteral = "~0.9.4"
-Plots = "~1.39.0"
+Plots = "~1.40.13"
 PlutoUI = "~0.7.52"
 """
 
@@ -540,16 +765,10 @@ uuid = "56f22d72-fd6d-98f1-02f0-08ddc0907c33"
 uuid = "2a0f44e3-6c83-55bd-87e4-b1978d98bd5f"
 
 [[deps.BenchmarkTools]]
-deps = ["JSON", "Logging", "Printf", "Profile", "Statistics", "UUIDs"]
-git-tree-sha1 = "d9a9701b899b30332bbcb3e1679c41cce81fb0e8"
+deps = ["Compat", "JSON", "Logging", "Printf", "Profile", "Statistics", "UUIDs"]
+git-tree-sha1 = "e38fbc49a620f5d0b660d7f543db1009fe0f8336"
 uuid = "6e4b80f9-dd63-53aa-95a3-0cdb28fa8baf"
-version = "1.3.2"
-
-[[deps.BinaryProvider]]
-deps = ["Libdl", "Logging", "SHA"]
-git-tree-sha1 = "ecdec412a9abc8db54c0efc5548c64dfce072058"
-uuid = "b99e7846-7c00-51b0-8f62-c81ae34c0232"
-version = "0.5.10"
+version = "1.6.0"
 
 [[deps.BitFlags]]
 git-tree-sha1 = "0691e34b3bb8be9307330f88d1a3c3f25466c24d"
@@ -564,9 +783,9 @@ version = "1.0.9+0"
 
 [[deps.Cairo_jll]]
 deps = ["Artifacts", "Bzip2_jll", "CompilerSupportLibraries_jll", "Fontconfig_jll", "FreeType2_jll", "Glib_jll", "JLLWrappers", "LZO_jll", "Libdl", "Pixman_jll", "Xorg_libXext_jll", "Xorg_libXrender_jll", "Zlib_jll", "libpng_jll"]
-git-tree-sha1 = "009060c9a6168704143100f36ab08f06c2af4642"
+git-tree-sha1 = "2ac646d71d0d24b44f3f8c84da8c9f4d70fb67df"
 uuid = "83423d85-b0ee-5818-9007-b63ccbeb887a"
-version = "1.18.2+1"
+version = "1.18.4+0"
 
 [[deps.ChainRulesCore]]
 deps = ["Compat", "LinearAlgebra", "SparseArrays"]
@@ -576,9 +795,9 @@ version = "1.25.1"
 
 [[deps.ChangesOfVariables]]
 deps = ["InverseFunctions", "LinearAlgebra", "Test"]
-git-tree-sha1 = "799b25ca3a8a24936ae7b5c52ad194685fc3e6ef"
+git-tree-sha1 = "3aa4bf1532aa2e14e0374c4fd72bed9a9d0d0f6c"
 uuid = "9e997f8a-9a97-42d5-a9f1-ce6bfc15e2c0"
-version = "0.1.9"
+version = "0.1.10"
 
 [[deps.CodecZlib]]
 deps = ["TranscodingStreams", "Zlib_jll"]
@@ -644,9 +863,9 @@ version = "1.16.0"
 
 [[deps.DataStructures]]
 deps = ["Compat", "InteractiveUtils", "OrderedCollections"]
-git-tree-sha1 = "1d0a14036acb104d9e89698bd408f63ab58cdc82"
+git-tree-sha1 = "4e1fe97fdaed23e9dc21d4d664bea76b65fc50a0"
 uuid = "864edb3b-99cc-5e75-8d2d-829cb0a9cfe8"
-version = "0.18.20"
+version = "0.18.22"
 
 [[deps.Dates]]
 deps = ["Printf"]
@@ -654,19 +873,18 @@ uuid = "ade2ca70-3891-5945-98fb-dc099432e06a"
 
 [[deps.Dbus_jll]]
 deps = ["Artifacts", "Expat_jll", "JLLWrappers", "Libdl"]
-git-tree-sha1 = "fc173b380865f70627d7dd1190dc2fce6cc105af"
+git-tree-sha1 = "473e9afc9cf30814eb67ffa5f2db7df82c3ad9fd"
 uuid = "ee1fde0b-3d02-5ea6-8484-8dfef6360eab"
-version = "1.14.10+0"
+version = "1.16.2+0"
 
 [[deps.DelimitedFiles]]
 deps = ["Mmap"]
 uuid = "8bb1440f-4735-579b-a4ab-409b98df4dab"
 
 [[deps.DocStringExtensions]]
-deps = ["LibGit2"]
-git-tree-sha1 = "2fb1e02f2b635d0845df5d7c167fec4dd739b00d"
+git-tree-sha1 = "e7b7e6f178525d17c720ab9c081e4ef04429f860"
 uuid = "ffbed154-4ef7-542d-bbb7-c09d3a79fcae"
-version = "0.9.3"
+version = "0.9.4"
 
 [[deps.Downloads]]
 deps = ["ArgTools", "LibCURL", "NetworkOptions"]
@@ -691,16 +909,16 @@ uuid = "2e619515-83b5-522b-bb60-26c02a35a201"
 version = "2.6.5+0"
 
 [[deps.FFMPEG]]
-deps = ["BinaryProvider", "Libdl"]
-git-tree-sha1 = "9143266ba77d3313a4cf61d8333a1970e8c5d8b6"
+deps = ["FFMPEG_jll"]
+git-tree-sha1 = "53ebe7511fa11d33bec688a9178fac4e49eeee00"
 uuid = "c87230d0-a227-11e9-1b43-d7ebe4e7570a"
-version = "0.2.4"
+version = "0.4.2"
 
 [[deps.FFMPEG_jll]]
 deps = ["Artifacts", "Bzip2_jll", "FreeType2_jll", "FriBidi_jll", "JLLWrappers", "LAME_jll", "Libdl", "Ogg_jll", "OpenSSL_jll", "Opus_jll", "PCRE2_jll", "Zlib_jll", "libaom_jll", "libass_jll", "libfdk_aac_jll", "libvorbis_jll", "x264_jll", "x265_jll"]
-git-tree-sha1 = "4ed71abe245cebde5443a18c9eb952bcabd5a573"
+git-tree-sha1 = "466d45dc38e15794ec7d5d63ec03d776a9aff36e"
 uuid = "b22a6f82-2f65-5046-a5b2-351ab43fb4e5"
-version = "7.1.0+0"
+version = "4.4.4+1"
 
 [[deps.FixedPointNumbers]]
 deps = ["Statistics"]
@@ -710,9 +928,9 @@ version = "0.8.5"
 
 [[deps.Fontconfig_jll]]
 deps = ["Artifacts", "Bzip2_jll", "Expat_jll", "FreeType2_jll", "JLLWrappers", "Libdl", "Libuuid_jll", "Zlib_jll"]
-git-tree-sha1 = "21fac3c77d7b5a9fc03b0ec503aa1a6392c34d2b"
+git-tree-sha1 = "301b5d5d731a0654825f1f2e906990f7141a106b"
 uuid = "a3f928ae-7b40-5064-980b-68af3947d34b"
-version = "2.15.0+0"
+version = "2.16.0+0"
 
 [[deps.Format]]
 git-tree-sha1 = "9c68794ef81b08086aeb32eeaf33531668d5f5fc"
@@ -721,15 +939,15 @@ version = "1.3.7"
 
 [[deps.FreeType2_jll]]
 deps = ["Artifacts", "Bzip2_jll", "JLLWrappers", "Libdl", "Zlib_jll"]
-git-tree-sha1 = "786e968a8d2fb167f2e4880baba62e0e26bd8e4e"
+git-tree-sha1 = "2c5512e11c791d1baed2049c5652441b28fc6a31"
 uuid = "d7e528f0-a631-5988-bf34-fe36492bcfd7"
-version = "2.13.3+1"
+version = "2.13.4+0"
 
 [[deps.FriBidi_jll]]
 deps = ["Artifacts", "JLLWrappers", "Libdl"]
-git-tree-sha1 = "846f7026a9decf3679419122b49f8a1fdb48d2d5"
+git-tree-sha1 = "7a214fdac5ed5f59a22c2d9a885a16da1c74bbc7"
 uuid = "559328eb-81f9-559d-9380-de523a88c83c"
-version = "1.0.16+0"
+version = "1.0.17+0"
 
 [[deps.GLFW_jll]]
 deps = ["Artifacts", "JLLWrappers", "Libdl", "Libglvnd_jll", "Xorg_libXcursor_jll", "Xorg_libXi_jll", "Xorg_libXinerama_jll", "Xorg_libXrandr_jll", "libdecor_jll", "xkbcommon_jll"]
@@ -738,16 +956,16 @@ uuid = "0656b61e-2033-5cc2-a64a-77c0f6c09b89"
 version = "3.4.0+2"
 
 [[deps.GR]]
-deps = ["Artifacts", "Base64", "DelimitedFiles", "Downloads", "GR_jll", "HTTP", "JSON", "Libdl", "LinearAlgebra", "Pkg", "Preferences", "Printf", "Random", "Serialization", "Sockets", "TOML", "Tar", "Test", "UUIDs", "p7zip_jll"]
-git-tree-sha1 = "27442171f28c952804dede8ff72828a96f2bfc1f"
+deps = ["Artifacts", "Base64", "DelimitedFiles", "Downloads", "GR_jll", "HTTP", "JSON", "Libdl", "LinearAlgebra", "Preferences", "Printf", "Qt6Wayland_jll", "Random", "Serialization", "Sockets", "TOML", "Tar", "Test", "p7zip_jll"]
+git-tree-sha1 = "7ffa4049937aeba2e5e1242274dc052b0362157a"
 uuid = "28b8d3ca-fb5f-59d9-8090-bfdbd6d07a71"
-version = "0.72.10"
+version = "0.73.14"
 
 [[deps.GR_jll]]
 deps = ["Artifacts", "Bzip2_jll", "Cairo_jll", "FFMPEG_jll", "Fontconfig_jll", "FreeType2_jll", "GLFW_jll", "JLLWrappers", "JpegTurbo_jll", "Libdl", "Libtiff_jll", "Pixman_jll", "Qt6Base_jll", "Zlib_jll", "libpng_jll"]
-git-tree-sha1 = "025d171a2847f616becc0f84c8dc62fe18f0f6dd"
+git-tree-sha1 = "98fc192b4e4b938775ecd276ce88f539bcec358e"
 uuid = "d2c73de3-f751-5644-a686-071e5b155ba9"
-version = "0.72.10+0"
+version = "0.73.14+0"
 
 [[deps.Gettext_jll]]
 deps = ["Artifacts", "CompilerSupportLibraries_jll", "JLLWrappers", "Libdl", "Libiconv_jll", "Pkg", "XML2_jll"]
@@ -762,10 +980,10 @@ uuid = "7746bdde-850d-59dc-9ae8-88ece973131d"
 version = "2.82.4+0"
 
 [[deps.Graphite2_jll]]
-deps = ["Artifacts", "JLLWrappers", "Libdl", "Pkg"]
-git-tree-sha1 = "01979f9b37367603e2848ea225918a3b3861b606"
+deps = ["Artifacts", "JLLWrappers", "Libdl"]
+git-tree-sha1 = "8a6dbda1fd736d60cc477d99f2e7a042acfa46e8"
 uuid = "3b182d85-2403-5c21-9c21-1e1f0cc25472"
-version = "1.3.14+1"
+version = "1.3.15+0"
 
 [[deps.Grisu]]
 git-tree-sha1 = "53bb909d1151e57e2484c3d1b53e19552b887fb2"
@@ -774,9 +992,9 @@ version = "1.0.2"
 
 [[deps.HTTP]]
 deps = ["Base64", "CodecZlib", "ConcurrentUtilities", "Dates", "ExceptionUnwrapping", "Logging", "LoggingExtras", "MbedTLS", "NetworkOptions", "OpenSSL", "PrecompileTools", "Random", "SimpleBufferStream", "Sockets", "URIs", "UUIDs"]
-git-tree-sha1 = "c67b33b085f6e2faf8bf79a61962e7339a81129c"
+git-tree-sha1 = "f93655dc73d7a0b4a368e3c0bce296ae035ad76e"
 uuid = "cd3eb016-35fb-5094-929b-558a96fad6f3"
-version = "1.10.15"
+version = "1.10.16"
 
 [[deps.HarfBuzz_jll]]
 deps = ["Artifacts", "Cairo_jll", "Fontconfig_jll", "FreeType2_jll", "Glib_jll", "Graphite2_jll", "JLLWrappers", "Libdl", "Libffi_jll"]
@@ -818,10 +1036,10 @@ uuid = "92d709cd-6900-40b7-9082-c6be49f344b6"
 version = "0.2.4"
 
 [[deps.JLFzf]]
-deps = ["Pipe", "REPL", "Random", "fzf_jll"]
-git-tree-sha1 = "71b48d857e86bf7a1838c4736545699974ce79a2"
+deps = ["REPL", "Random", "fzf_jll"]
+git-tree-sha1 = "82f7acdc599b65e0f8ccd270ffa1467c21cb647b"
 uuid = "1019f520-868f-41f5-a6de-eb00f4b6a39c"
-version = "0.1.9"
+version = "0.1.11"
 
 [[deps.JLLWrappers]]
 deps = ["Artifacts", "Preferences"]
@@ -848,16 +1066,16 @@ uuid = "c1c5ebd0-6772-5130-a774-d5fcae4a789d"
 version = "3.100.2+0"
 
 [[deps.LERC_jll]]
-deps = ["Artifacts", "JLLWrappers", "Libdl", "Pkg"]
-git-tree-sha1 = "bf36f528eec6634efc60d7ec062008f171071434"
+deps = ["Artifacts", "JLLWrappers", "Libdl"]
+git-tree-sha1 = "aaafe88dccbd957a8d82f7d05be9b69172e0cee3"
 uuid = "88015f11-f218-50d7-93a8-a6af411a945d"
-version = "3.0.0+1"
+version = "4.0.1+0"
 
 [[deps.LLVMOpenMP_jll]]
 deps = ["Artifacts", "JLLWrappers", "Libdl"]
-git-tree-sha1 = "78211fb6cbc872f77cad3fc0b6cf647d923f4929"
+git-tree-sha1 = "eb62a3deb62fc6d8822c0c4bef73e4412419c5d8"
 uuid = "1d63c593-3942-5779-bab2-d838dc0a180e"
-version = "18.1.7+0"
+version = "18.1.8+0"
 
 [[deps.LZO_jll]]
 deps = ["Artifacts", "JLLWrappers", "Libdl"]
@@ -872,9 +1090,9 @@ version = "1.4.0"
 
 [[deps.Latexify]]
 deps = ["Format", "InteractiveUtils", "LaTeXStrings", "MacroTools", "Markdown", "OrderedCollections", "Requires"]
-git-tree-sha1 = "cd714447457c660382fe634710fb56eb255ee42e"
+git-tree-sha1 = "cd10d2cc78d34c0e2a3a36420ab607b611debfbb"
 uuid = "23fbe1c1-3f47-55db-b15f-69d7ec21a316"
-version = "0.16.6"
+version = "0.16.7"
 
 [[deps.LibCURL]]
 deps = ["LibCURL_jll", "MozillaCACerts_jll"]
@@ -901,23 +1119,11 @@ git-tree-sha1 = "27ecae93dd25ee0909666e6835051dd684cc035e"
 uuid = "e9f186c6-92d2-5b65-8a66-fee21dc1b490"
 version = "3.2.2+2"
 
-[[deps.Libgcrypt_jll]]
-deps = ["Artifacts", "JLLWrappers", "Libdl", "Libgpg_error_jll"]
-git-tree-sha1 = "8be878062e0ffa2c3f67bb58a595375eda5de80b"
-uuid = "d4300ac3-e22c-5743-9152-c294e39db1e4"
-version = "1.11.0+0"
-
 [[deps.Libglvnd_jll]]
 deps = ["Artifacts", "JLLWrappers", "Libdl", "Xorg_libX11_jll", "Xorg_libXext_jll"]
-git-tree-sha1 = "ff3b4b9d35de638936a525ecd36e86a8bb919d11"
+git-tree-sha1 = "d36c21b9e7c172a44a10484125024495e2625ac0"
 uuid = "7e76a0d4-f3c7-5321-8279-8d96eeed0f29"
-version = "1.7.0+0"
-
-[[deps.Libgpg_error_jll]]
-deps = ["Artifacts", "JLLWrappers", "Libdl"]
-git-tree-sha1 = "df37206100d39f79b3376afb6b9cee4970041c61"
-uuid = "7add5ba3-2f88-524e-9cd5-f83b8a55f7b8"
-version = "1.51.1+0"
+version = "1.7.1+1"
 
 [[deps.Libiconv_jll]]
 deps = ["Artifacts", "JLLWrappers", "Libdl"]
@@ -927,21 +1133,21 @@ version = "1.18.0+0"
 
 [[deps.Libmount_jll]]
 deps = ["Artifacts", "JLLWrappers", "Libdl"]
-git-tree-sha1 = "89211ea35d9df5831fca5d33552c02bd33878419"
+git-tree-sha1 = "a31572773ac1b745e0343fe5e2c8ddda7a37e997"
 uuid = "4b2f31a3-9ecc-558c-b454-b3730dcb73e9"
-version = "2.40.3+0"
+version = "2.41.0+0"
 
 [[deps.Libtiff_jll]]
 deps = ["Artifacts", "JLLWrappers", "JpegTurbo_jll", "LERC_jll", "Libdl", "XZ_jll", "Zlib_jll", "Zstd_jll"]
-git-tree-sha1 = "2da088d113af58221c52828a80378e16be7d037a"
+git-tree-sha1 = "4ab7581296671007fc33f07a721631b8855f4b1d"
 uuid = "89763e89-9b03-5906-acba-b20f662cd828"
-version = "4.5.1+1"
+version = "4.7.1+0"
 
 [[deps.Libuuid_jll]]
 deps = ["Artifacts", "JLLWrappers", "Libdl"]
-git-tree-sha1 = "e888ad02ce716b319e6bdb985d2ef300e7089889"
+git-tree-sha1 = "321ccef73a96ba828cd51f2ab5b9f917fa73945a"
 uuid = "38a345b3-de98-5d2b-a5d3-14cd9215e700"
-version = "2.40.3+0"
+version = "2.41.0+0"
 
 [[deps.LinearAlgebra]]
 deps = ["Libdl", "libblastrampoline_jll"]
@@ -968,9 +1174,9 @@ uuid = "6c6e2e6c-3030-632d-7369-2d6c69616d65"
 version = "1.0.0"
 
 [[deps.MacroTools]]
-git-tree-sha1 = "72aebe0b5051e5143a079a4685a46da330a40472"
+git-tree-sha1 = "1e0228a030642014fe5cfe68c2c0a818f9e3f522"
 uuid = "1914dd2f-81c6-5fcd-8719-6d5c9610ff09"
-version = "0.5.15"
+version = "0.5.16"
 
 [[deps.Markdown]]
 deps = ["Base64"]
@@ -1034,9 +1240,9 @@ version = "1.4.3"
 
 [[deps.OpenSSL_jll]]
 deps = ["Artifacts", "JLLWrappers", "Libdl"]
-git-tree-sha1 = "a9697f1d06cc3eb3fb3ad49cc67f2cfabaac31ea"
+git-tree-sha1 = "9216a80ff3682833ac4b733caa8c00390620ba5d"
 uuid = "458c3c95-2e84-50aa-8efc-19380b2a3a95"
-version = "3.0.16+0"
+version = "3.5.0+0"
 
 [[deps.Opus_jll]]
 deps = ["Artifacts", "JLLWrappers", "Libdl"]
@@ -1065,16 +1271,11 @@ git-tree-sha1 = "8489905bcdbcfac64d1daa51ca07c0d8f0283821"
 uuid = "69de0a69-1ddd-5017-9359-2bf0b02dc9f0"
 version = "2.8.1"
 
-[[deps.Pipe]]
-git-tree-sha1 = "6842804e7867b115ca9de748a0cf6b364523c16d"
-uuid = "b98c9c47-44ae-5843-9183-064241ee97a0"
-version = "1.3.0"
-
 [[deps.Pixman_jll]]
 deps = ["Artifacts", "CompilerSupportLibraries_jll", "JLLWrappers", "LLVMOpenMP_jll", "Libdl"]
-git-tree-sha1 = "35621f10a7531bc8fa58f74610b1bfb70a3cfc6b"
+git-tree-sha1 = "db76b1ecd5e9715f3d043cec13b2ec93ce015d53"
 uuid = "30392449-352a-5448-841d-b1acce4e97dc"
-version = "0.43.4+0"
+version = "0.44.2+0"
 
 [[deps.Pkg]]
 deps = ["Artifacts", "Dates", "Downloads", "LibGit2", "Libdl", "Logging", "Markdown", "Printf", "REPL", "Random", "SHA", "Serialization", "TOML", "Tar", "UUIDs", "p7zip_jll"]
@@ -1093,10 +1294,10 @@ uuid = "995b91a9-d308-5afd-9ec6-746e21dbc043"
 version = "1.4.3"
 
 [[deps.Plots]]
-deps = ["Base64", "Contour", "Dates", "Downloads", "FFMPEG", "FixedPointNumbers", "GR", "JLFzf", "JSON", "LaTeXStrings", "Latexify", "LinearAlgebra", "Measures", "NaNMath", "Pkg", "PlotThemes", "PlotUtils", "PrecompileTools", "Preferences", "Printf", "REPL", "Random", "RecipesBase", "RecipesPipeline", "Reexport", "RelocatableFolders", "Requires", "Scratch", "Showoff", "SparseArrays", "Statistics", "StatsBase", "UUIDs", "UnicodeFun", "UnitfulLatexify", "Unzip"]
-git-tree-sha1 = "ccee59c6e48e6f2edf8a5b64dc817b6729f99eb5"
+deps = ["Base64", "Contour", "Dates", "Downloads", "FFMPEG", "FixedPointNumbers", "GR", "JLFzf", "JSON", "LaTeXStrings", "Latexify", "LinearAlgebra", "Measures", "NaNMath", "Pkg", "PlotThemes", "PlotUtils", "PrecompileTools", "Printf", "REPL", "Random", "RecipesBase", "RecipesPipeline", "Reexport", "RelocatableFolders", "Requires", "Scratch", "Showoff", "SparseArrays", "Statistics", "StatsBase", "TOML", "UUIDs", "UnicodeFun", "UnitfulLatexify", "Unzip"]
+git-tree-sha1 = "809ba625a00c605f8d00cd2a9ae19ce34fc24d68"
 uuid = "91a5bcdd-55d7-5caf-9e0b-520d859cae80"
-version = "1.39.0"
+version = "1.40.13"
 
 [[deps.PlutoUI]]
 deps = ["AbstractPlutoDingetjes", "Base64", "ColorTypes", "Dates", "FixedPointNumbers", "Hyperscript", "HypertextLiteral", "IOCapture", "InteractiveUtils", "JSON", "Logging", "MIMEs", "Markdown", "Random", "Reexport", "URIs", "UUIDs"]
@@ -1131,9 +1332,27 @@ version = "1.3.0"
 
 [[deps.Qt6Base_jll]]
 deps = ["Artifacts", "CompilerSupportLibraries_jll", "Fontconfig_jll", "Glib_jll", "JLLWrappers", "Libdl", "Libglvnd_jll", "OpenSSL_jll", "Vulkan_Loader_jll", "Xorg_libSM_jll", "Xorg_libXext_jll", "Xorg_libXrender_jll", "Xorg_libxcb_jll", "Xorg_xcb_util_cursor_jll", "Xorg_xcb_util_image_jll", "Xorg_xcb_util_keysyms_jll", "Xorg_xcb_util_renderutil_jll", "Xorg_xcb_util_wm_jll", "Zlib_jll", "libinput_jll", "xkbcommon_jll"]
-git-tree-sha1 = "37b7bb7aabf9a085e0044307e1717436117f2b3b"
+git-tree-sha1 = "492601870742dcd38f233b23c3ec629628c1d724"
 uuid = "c0090381-4147-56d7-9ebc-da0b1113ec56"
-version = "6.5.3+1"
+version = "6.7.1+1"
+
+[[deps.Qt6Declarative_jll]]
+deps = ["Artifacts", "JLLWrappers", "Libdl", "Qt6Base_jll", "Qt6ShaderTools_jll"]
+git-tree-sha1 = "e5dd466bf2569fe08c91a2cc29c1003f4797ac3b"
+uuid = "629bc702-f1f5-5709-abd5-49b8460ea067"
+version = "6.7.1+2"
+
+[[deps.Qt6ShaderTools_jll]]
+deps = ["Artifacts", "JLLWrappers", "Libdl", "Qt6Base_jll"]
+git-tree-sha1 = "1a180aeced866700d4bebc3120ea1451201f16bc"
+uuid = "ce943373-25bb-56aa-8eca-768745ed7b5a"
+version = "6.7.1+1"
+
+[[deps.Qt6Wayland_jll]]
+deps = ["Artifacts", "JLLWrappers", "Libdl", "Qt6Base_jll", "Qt6Declarative_jll"]
+git-tree-sha1 = "729927532d48cf79f49070341e1d918a65aba6b0"
+uuid = "e99dba38-086e-5de3-a5b1-6e4c66e897c3"
+version = "6.7.1+1"
 
 [[deps.REPL]]
 deps = ["InteractiveUtils", "Markdown", "Sockets", "Unicode"]
@@ -1210,9 +1429,9 @@ uuid = "2f01184e-e22b-5df5-ae63-d93ebab69eaf"
 
 [[deps.StableRNGs]]
 deps = ["Random"]
-git-tree-sha1 = "83e6cce8324d49dfaf9ef059227f91ed4441a8e5"
+git-tree-sha1 = "95af145932c2ed859b63329952ce8d633719f091"
 uuid = "860ef19b-820b-49d6-a774-d7a799459cd3"
-version = "1.0.2"
+version = "1.0.3"
 
 [[deps.Statistics]]
 deps = ["LinearAlgebra", "SparseArrays"]
@@ -1317,107 +1536,95 @@ git-tree-sha1 = "b8b243e47228b4a3877f1dd6aee0c5d56db7fcf4"
 uuid = "02c8fc9c-b97f-50b9-bbe4-9be30ff0a78a"
 version = "2.13.6+1"
 
-[[deps.XSLT_jll]]
-deps = ["Artifacts", "JLLWrappers", "Libdl", "Libgcrypt_jll", "Libgpg_error_jll", "Libiconv_jll", "XML2_jll", "Zlib_jll"]
-git-tree-sha1 = "7d1671acbe47ac88e981868a078bd6b4e27c5191"
-uuid = "aed1982a-8fda-507f-9586-7b0439959a61"
-version = "1.1.42+0"
-
 [[deps.XZ_jll]]
 deps = ["Artifacts", "JLLWrappers", "Libdl"]
-git-tree-sha1 = "56c6604ec8b2d82cc4cfe01aa03b00426aac7e1f"
+git-tree-sha1 = "fee71455b0aaa3440dfdd54a9a36ccef829be7d4"
 uuid = "ffd25f8a-64ca-5728-b0f7-c24cf3aae800"
-version = "5.6.4+1"
+version = "5.8.1+0"
 
 [[deps.Xorg_libICE_jll]]
 deps = ["Artifacts", "JLLWrappers", "Libdl"]
-git-tree-sha1 = "326b4fea307b0b39892b3e85fa451692eda8d46c"
+git-tree-sha1 = "a3ea76ee3f4facd7a64684f9af25310825ee3668"
 uuid = "f67eecfb-183a-506d-b269-f58e52b52d7c"
-version = "1.1.1+0"
+version = "1.1.2+0"
 
 [[deps.Xorg_libSM_jll]]
 deps = ["Artifacts", "JLLWrappers", "Libdl", "Xorg_libICE_jll"]
-git-tree-sha1 = "3796722887072218eabafb494a13c963209754ce"
+git-tree-sha1 = "9c7ad99c629a44f81e7799eb05ec2746abb5d588"
 uuid = "c834827a-8449-5923-a945-d239c165b7dd"
-version = "1.2.4+0"
+version = "1.2.6+0"
 
 [[deps.Xorg_libX11_jll]]
 deps = ["Artifacts", "JLLWrappers", "Libdl", "Xorg_libxcb_jll", "Xorg_xtrans_jll"]
-git-tree-sha1 = "9dafcee1d24c4f024e7edc92603cedba72118283"
+git-tree-sha1 = "b5899b25d17bf1889d25906fb9deed5da0c15b3b"
 uuid = "4f6342f7-b3d2-589e-9d20-edeb45f2b2bc"
-version = "1.8.6+3"
+version = "1.8.12+0"
 
 [[deps.Xorg_libXau_jll]]
 deps = ["Artifacts", "JLLWrappers", "Libdl"]
-git-tree-sha1 = "e9216fdcd8514b7072b43653874fd688e4c6c003"
+git-tree-sha1 = "aa1261ebbac3ccc8d16558ae6799524c450ed16b"
 uuid = "0c0b7dd1-d40b-584c-a123-a41640f87eec"
-version = "1.0.12+0"
+version = "1.0.13+0"
 
 [[deps.Xorg_libXcursor_jll]]
 deps = ["Artifacts", "JLLWrappers", "Libdl", "Xorg_libXfixes_jll", "Xorg_libXrender_jll"]
-git-tree-sha1 = "807c226eaf3651e7b2c468f687ac788291f9a89b"
+git-tree-sha1 = "6c74ca84bbabc18c4547014765d194ff0b4dc9da"
 uuid = "935fb764-8cf2-53bf-bb30-45bb1f8bf724"
-version = "1.2.3+0"
+version = "1.2.4+0"
 
 [[deps.Xorg_libXdmcp_jll]]
 deps = ["Artifacts", "JLLWrappers", "Libdl"]
-git-tree-sha1 = "89799ae67c17caa5b3b5a19b8469eeee474377db"
+git-tree-sha1 = "52858d64353db33a56e13c341d7bf44cd0d7b309"
 uuid = "a3789734-cfe1-5b06-b2d0-1dd0d9d62d05"
-version = "1.1.5+0"
+version = "1.1.6+0"
 
 [[deps.Xorg_libXext_jll]]
 deps = ["Artifacts", "JLLWrappers", "Libdl", "Xorg_libX11_jll"]
-git-tree-sha1 = "d7155fea91a4123ef59f42c4afb5ab3b4ca95058"
+git-tree-sha1 = "a4c0ee07ad36bf8bbce1c3bb52d21fb1e0b987fb"
 uuid = "1082639a-0dae-5f34-9b06-72781eeb8cb3"
-version = "1.3.6+3"
+version = "1.3.7+0"
 
 [[deps.Xorg_libXfixes_jll]]
 deps = ["Artifacts", "JLLWrappers", "Libdl", "Xorg_libX11_jll"]
-git-tree-sha1 = "6fcc21d5aea1a0b7cce6cab3e62246abd1949b86"
+git-tree-sha1 = "9caba99d38404b285db8801d5c45ef4f4f425a6d"
 uuid = "d091e8ba-531a-589c-9de9-94069b037ed8"
-version = "6.0.0+0"
+version = "6.0.1+0"
 
 [[deps.Xorg_libXi_jll]]
 deps = ["Artifacts", "JLLWrappers", "Libdl", "Xorg_libXext_jll", "Xorg_libXfixes_jll"]
-git-tree-sha1 = "984b313b049c89739075b8e2a94407076de17449"
+git-tree-sha1 = "a376af5c7ae60d29825164db40787f15c80c7c54"
 uuid = "a51aa0fd-4e3c-5386-b890-e753decda492"
-version = "1.8.2+0"
+version = "1.8.3+0"
 
 [[deps.Xorg_libXinerama_jll]]
 deps = ["Artifacts", "JLLWrappers", "Libdl", "Xorg_libXext_jll"]
-git-tree-sha1 = "a1a7eaf6c3b5b05cb903e35e8372049b107ac729"
+git-tree-sha1 = "a5bc75478d323358a90dc36766f3c99ba7feb024"
 uuid = "d1454406-59df-5ea1-beac-c340f2130bc3"
-version = "1.1.5+0"
+version = "1.1.6+0"
 
 [[deps.Xorg_libXrandr_jll]]
 deps = ["Artifacts", "JLLWrappers", "Libdl", "Xorg_libXext_jll", "Xorg_libXrender_jll"]
-git-tree-sha1 = "b6f664b7b2f6a39689d822a6300b14df4668f0f4"
+git-tree-sha1 = "aff463c82a773cb86061bce8d53a0d976854923e"
 uuid = "ec84b674-ba8e-5d96-8ba1-2a689ba10484"
-version = "1.5.4+0"
+version = "1.5.5+0"
 
 [[deps.Xorg_libXrender_jll]]
 deps = ["Artifacts", "JLLWrappers", "Libdl", "Xorg_libX11_jll"]
-git-tree-sha1 = "a490c6212a0e90d2d55111ac956f7c4fa9c277a6"
+git-tree-sha1 = "7ed9347888fac59a618302ee38216dd0379c480d"
 uuid = "ea2f1a96-1ddc-540d-b46f-429655e07cfa"
-version = "0.9.11+1"
-
-[[deps.Xorg_libpthread_stubs_jll]]
-deps = ["Artifacts", "JLLWrappers", "Libdl"]
-git-tree-sha1 = "c57201109a9e4c0585b208bb408bc41d205ac4e9"
-uuid = "14d82f49-176c-5ed1-bb49-ad3f5cbd8c74"
-version = "0.1.2+0"
+version = "0.9.12+0"
 
 [[deps.Xorg_libxcb_jll]]
-deps = ["Artifacts", "JLLWrappers", "Libdl", "XSLT_jll", "Xorg_libXau_jll", "Xorg_libXdmcp_jll", "Xorg_libpthread_stubs_jll"]
-git-tree-sha1 = "1a74296303b6524a0472a8cb12d3d87a78eb3612"
+deps = ["Artifacts", "JLLWrappers", "Libdl", "Xorg_libXau_jll", "Xorg_libXdmcp_jll"]
+git-tree-sha1 = "bfcaf7ec088eaba362093393fe11aa141fa15422"
 uuid = "c7cfdc94-dc32-55de-ac96-5a1b8d977c5b"
-version = "1.17.0+3"
+version = "1.17.1+0"
 
 [[deps.Xorg_libxkbfile_jll]]
 deps = ["Artifacts", "JLLWrappers", "Libdl", "Xorg_libX11_jll"]
-git-tree-sha1 = "dbc53e4cf7701c6c7047c51e17d6e64df55dca94"
+git-tree-sha1 = "e3150c7400c41e207012b41659591f083f3ef795"
 uuid = "cc61e674-0454-545c-8b26-ed2c68acab7a"
-version = "1.1.2+1"
+version = "1.1.3+0"
 
 [[deps.Xorg_xcb_util_cursor_jll]]
 deps = ["Artifacts", "JLLWrappers", "Libdl", "Xorg_xcb_util_image_jll", "Xorg_xcb_util_jll", "Xorg_xcb_util_renderutil_jll"]
@@ -1457,21 +1664,21 @@ version = "0.4.1+1"
 
 [[deps.Xorg_xkbcomp_jll]]
 deps = ["Artifacts", "JLLWrappers", "Libdl", "Xorg_libxkbfile_jll"]
-git-tree-sha1 = "ab2221d309eda71020cdda67a973aa582aa85d69"
+git-tree-sha1 = "801a858fc9fb90c11ffddee1801bb06a738bda9b"
 uuid = "35661453-b289-5fab-8a00-3d9160c6a3a4"
-version = "1.4.6+1"
+version = "1.4.7+0"
 
 [[deps.Xorg_xkeyboard_config_jll]]
 deps = ["Artifacts", "JLLWrappers", "Libdl", "Xorg_xkbcomp_jll"]
-git-tree-sha1 = "691634e5453ad362044e2ad653e79f3ee3bb98c3"
+git-tree-sha1 = "00af7ebdc563c9217ecc67776d1bbf037dbcebf4"
 uuid = "33bec58e-1273-512f-9401-5d533626f822"
-version = "2.39.0+0"
+version = "2.44.0+0"
 
 [[deps.Xorg_xtrans_jll]]
 deps = ["Artifacts", "JLLWrappers", "Libdl"]
-git-tree-sha1 = "6dba04dbfb72ae3ebe5418ba33d087ba8aa8cb00"
+git-tree-sha1 = "a63799ff68005991f9d9491b6e95bd3478d783cb"
 uuid = "c5fb5394-a638-5e4d-96e5-b29de1b5cf10"
-version = "1.5.1+0"
+version = "1.6.0+0"
 
 [[deps.Zlib_jll]]
 deps = ["Libdl"]
@@ -1491,9 +1698,9 @@ version = "3.2.9+0"
 
 [[deps.fzf_jll]]
 deps = ["Artifacts", "JLLWrappers", "Libdl"]
-git-tree-sha1 = "6e50f145003024df4f5cb96c7fce79466741d601"
+git-tree-sha1 = "b6a34e0e0960190ac2a4363a1bd003504772d631"
 uuid = "214eeab7-80f7-51ab-84ad-2988db7cef09"
-version = "0.56.3+0"
+version = "0.61.1+0"
 
 [[deps.gperf_jll]]
 deps = ["Artifacts", "JLLWrappers", "Libdl", "Pkg"]
@@ -1568,22 +1775,22 @@ deps = ["Artifacts", "Libdl"]
 uuid = "3f19e933-33d8-53b3-aaab-bd5110c3b7a0"
 
 [[deps.x264_jll]]
-deps = ["Artifacts", "JLLWrappers", "Libdl"]
-git-tree-sha1 = "14cc7083fc6dff3cc44f2bc435ee96d06ed79aa7"
+deps = ["Artifacts", "JLLWrappers", "Libdl", "Pkg"]
+git-tree-sha1 = "4fea590b89e6ec504593146bf8b988b2c00922b2"
 uuid = "1270edf5-f2f9-52d2-97e9-ab00b5d0237a"
-version = "10164.0.1+0"
+version = "2021.5.5+0"
 
 [[deps.x265_jll]]
-deps = ["Artifacts", "JLLWrappers", "Libdl"]
-git-tree-sha1 = "e7b67590c14d487e734dcb925924c5dc43ec85f3"
+deps = ["Artifacts", "JLLWrappers", "Libdl", "Pkg"]
+git-tree-sha1 = "ee567a171cce03570d77ad3a43e90218e38937a9"
 uuid = "dfaa095f-4041-5dcd-9319-2fabd8486b76"
-version = "4.1.0+0"
+version = "3.5.0+0"
 
 [[deps.xkbcommon_jll]]
-deps = ["Artifacts", "JLLWrappers", "Libdl", "Pkg", "Wayland_jll", "Wayland_protocols_jll", "Xorg_libxcb_jll", "Xorg_xkeyboard_config_jll"]
-git-tree-sha1 = "63406453ed9b33a0df95d570816d5366c92b7809"
+deps = ["Artifacts", "JLLWrappers", "Libdl", "Wayland_jll", "Wayland_protocols_jll", "Xorg_libxcb_jll", "Xorg_xkeyboard_config_jll"]
+git-tree-sha1 = "c950ae0a3577aec97bfccf3381f66666bc416729"
 uuid = "d8fb68d0-12a3-5cfd-a85a-d49703b185fd"
-version = "1.4.1+2"
+version = "1.8.1+0"
 """
 
 # ╔═╡ Cell order:
@@ -1604,11 +1811,29 @@ version = "1.4.1+2"
 # ╠═06b62b7f-01a5-45c7-9abe-b86ac44f51ed
 # ╟─892365bc-0464-4d5a-be36-6f938379c58f
 # ╠═9f5b7c35-7a7d-4a50-9e20-3cae5c55eef1
+# ╠═f02e8260-676c-47d0-8de9-4a58b63a2d3e
 # ╠═6fcf1cdd-5780-430d-bdd2-6934370d4fcd
 # ╟─c00dc9e0-9970-41ab-9aae-b39205df9f66
 # ╠═0cf97d60-8d02-48f8-94af-bbb91fee69d6
 # ╟─756ae63a-a811-4cd2-b888-5d946a1e9527
 # ╠═8d892dc3-81a3-467b-89fe-8640589451d7
+# ╟─2bd1ef04-64bf-40e4-8eca-b77145c1fba3
+# ╠═60121129-a77d-4df0-a50e-2dd79966c771
+# ╟─85d1caf8-3bc3-45b8-9cf6-7a5d9c630443
+# ╠═64cf0ea0-9e00-4999-bb39-42872e040843
+# ╠═307e996f-1a00-4c02-815e-ee8692a37b76
+# ╠═1cf2901d-7d2c-4e75-95e5-7325c9a4c9ae
+# ╠═774a3f0c-ab21-4f7c-a211-8a0287619f3a
+# ╟─cbc6490e-6f75-4d80-8ad7-b75d9c01eaf6
+# ╟─9b4b1696-36d1-4202-a071-32b2842fb4fa
+# ╠═4d2cf147-975c-4c31-815f-3111d4214acb
+# ╟─18b4674d-b576-444d-82ed-7e84b7b59081
+# ╠═1672e782-e32c-4d9d-8e1a-3c8efca690cd
+# ╟─629e1915-b48a-4b2a-a09b-4a3fd26ef08a
+# ╠═8aa1de28-be5f-4153-840a-29a486965640
+# ╟─69a184be-527b-4868-ada3-5cebc42e05da
+# ╠═1a704241-6957-4914-b1bd-3e818e0a93ff
+# ╟─5092d909-bc6d-45b2-a6a6-4b216e093f07
 # ╟─5613492b-90fe-4f44-87bb-91e2edf9a960
 # ╠═1869882b-95fd-417e-9c53-961abc175cc6
 # ╟─8edcd362-5eac-4e6d-bdec-85b7d71479f4
@@ -1631,7 +1856,8 @@ version = "1.4.1+2"
 # ╟─a50265e1-5c47-4d53-8992-134a123ecb33
 # ╟─23abd4e6-d32e-4937-a11f-592d7bee58de
 # ╟─30e9ca21-7007-483b-8b0f-c6296606b653
-# ╟─d3ae817e-481f-4dea-88bb-45fdb8d4231a
+# ╟─ea9cb1c7-8cab-4f1f-b7d7-fef68a5b0d89
+# ╟─2d6fcbe6-f8ac-474f-89e9-cbe125e18306
 # ╠═51241163-7867-40f2-8c90-498aed295a3f
 # ╟─aab2d571-e794-4c35-9ff1-c96415107bce
 # ╠═4d343352-9263-4a16-8de7-586ea478a3bc
@@ -1646,14 +1872,14 @@ version = "1.4.1+2"
 # ╠═ec201a3f-e323-49d9-8904-62241bb1434e
 # ╟─6e8930b1-2357-4a2e-bc72-388b7dd42258
 # ╠═0ed3770e-9909-4fcd-a190-ce71d05ef5bd
-# ╟─65d97516-3de2-47a8-b536-dc5430f622cc
-# ╟─32e93261-8c8c-476f-a7c7-6e7cfffcfcd6
-# ╠═7009b77e-7599-4db8-8618-021e4accb4e3
-# ╠═b70310a3-e78c-4408-8d73-9af14afd8fe8
-# ╠═530f006d-eb1c-4212-8528-8fb9cea46e07
-# ╠═08fb0dac-54da-4393-b4d2-92384c1d3cee
-# ╠═0a4ae34d-221f-40b1-81c3-d84f835b74fe
-# ╟─9cc5da63-fdaf-4d94-8445-cd31fd0888c6
+# ╠═65d97516-3de2-47a8-b536-dc5430f622cc
+# ╠═d6390612-3b4d-4598-aabf-52416b685d28
+# ╠═fb10eb41-40ae-468d-b545-c566305f5f9d
+# ╠═0d21dc37-a992-47a3-bdc2-4abd422e2696
+# ╠═567242dd-f570-4f5b-9400-5e33b6491edb
+# ╠═a619f10d-53cc-460b-aece-f69b7d48859c
+# ╠═80b9e409-3878-4948-9c0c-de292e41a117
+# ╠═9cc5da63-fdaf-4d94-8445-cd31fd0888c6
 # ╠═7a84fc5c-d956-4187-98ba-87ed0e7641e2
 # ╠═cf6667a8-e033-4ef6-a7a3-2d788de8b6ae
 # ╠═e6246548-4164-4f55-bfd4-cd7d36564eee
