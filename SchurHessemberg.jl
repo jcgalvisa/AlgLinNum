@@ -1,5 +1,9 @@
 ### A Pluto.jl notebook ###
+<<<<<<< Updated upstream
 # v0.19.45
+=======
+# v0.20.4
+>>>>>>> Stashed changes
 
 using Markdown
 using InteractiveUtils
