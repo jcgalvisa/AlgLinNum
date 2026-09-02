@@ -21,6 +21,8 @@ Repositorio de materiales, cuadernos computacionales y aportes del curso de Álg
 7. Descomposición en valores singulares y mínimos cuadrados.
 8. Método de elementos finitos para problemas de Poisson/Laplace.
 
+El Bloque 0 incluye además una presentación HTML interactiva sobre las interpretaciones de los productos matriz-vector y matriz-matriz, representación binaria, redondeo y aritmética de máquina.
+
 ## Convención de nombres
 
 Los archivos usan nombres descriptivos en español, minúsculas y `snake_case`. Los números iniciales indican el orden temático aproximado. Cuando existen varias versiones, el nombre incluye la fecha histórica en formato `AAAA-MM-DD`, una descripción del contenido y el identificador `v1`, `v2`, etc.

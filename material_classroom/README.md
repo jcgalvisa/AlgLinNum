@@ -4,7 +4,7 @@ Selección curada de materiales de la carpeta compartida del curso. Los nombres 
 
 ## Cuadernos incorporados
 
-- `00_repaso/`: repaso computacional de álgebra lineal.
+- `00_repaso/`: repaso computacional de álgebra lineal y una presentación interactiva del Bloque 0 sobre productos matriciales y aritmética de punto flotante.
 - `01_aritmetica/`: ejemplo de precisión múltiple y mixta.
 - `ortogonalizacion/pluto/`: versión del tema de ortogonalización preparada para Pluto.jl.
 - `ortogonalizacion/colab/`: secuencia de Gram-Schmidt, Householder, Givens, Fast Givens y Householder por bloques.
@@ -26,4 +26,3 @@ Acceso: [carpeta compartida del curso](https://drive.google.com/drive/folders/14
 ## Procedencia
 
 Estos archivos conservan el contenido educativo del Classroom. El repositorio solo normaliza sus nombres y los agrupa por unidad temática.
-

@@ -1,0 +1,1193 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1"/>
+<title>Álgebra Lineal Numérica — Bloque 0 · v2</title>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.css">
+<script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.js"></script>
+<script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/contrib/auto-render.min.js"></script>
+<style>
+:root{
+ --ink:#172033;--muted:#657286;--accent:#2357d8;--accent2:#0f766e;--warm:#b45309;
+ --danger:#b42318;--purple:#6d3fc0;--bg:#f7f9fc;--card:#fff;--line:#dbe2ea;
+ --shadow:0 12px 34px rgba(23,32,51,.09)
+}
+*{box-sizing:border-box}
+html,body{margin:0;height:100%;overflow:hidden;background:var(--bg);color:var(--ink);
+font-family:Inter,ui-sans-serif,system-ui,-apple-system,Segoe UI,Roboto,Arial,sans-serif}
+a{color:var(--accent);text-decoration:none;border-bottom:1px dotted currentColor}
+a:hover{border-bottom-style:solid}
+#deck{height:100vh;width:100vw;position:relative}
+.slide{display:none;height:100vh;width:100vw;padding:4.2vh 5vw 8.2vh;overflow:hidden}
+.slide.active{display:flex;flex-direction:column}
+.kicker{font-size:clamp(12px,1.12vw,17px);font-weight:850;letter-spacing:.12em;text-transform:uppercase;color:var(--accent)}
+h1{font-size:clamp(35px,5vw,75px);line-height:1.01;margin:.18em 0 .28em;letter-spacing:-.045em}
+h2{font-size:clamp(26px,3vw,45px);line-height:1.08;margin:.08em 0 .48em;letter-spacing:-.028em}
+h3{font-size:clamp(17px,1.55vw,24px);margin:0 0 .42em}
+p,li{font-size:clamp(14px,1.24vw,20px);line-height:1.38}
+ul{margin:.4em 0;padding-left:1.25em}
+.lead{font-size:clamp(18px,1.75vw,28px);color:#3b4759;max-width:1050px}
+.grid2{display:grid;grid-template-columns:1fr 1fr;gap:1.25vw;align-items:stretch;min-height:0}
+.grid3{display:grid;grid-template-columns:repeat(3,1fr);gap:1.05vw;min-height:0}
+.grid4{display:grid;grid-template-columns:repeat(4,1fr);gap:.9vw;min-height:0}
+.card{background:var(--card);border:1px solid var(--line);border-radius:17px;padding:clamp(12px,1.3vw,21px);box-shadow:var(--shadow);min-height:0}
+.card.blue{border-top:5px solid var(--accent)}.card.green{border-top:5px solid var(--accent2)}
+.card.orange{border-top:5px solid var(--warm)}.card.red{border-top:5px solid var(--danger)}
+.card.purple{border-top:5px solid var(--purple)}
+.mathbig{font-size:clamp(21px,2.05vw,34px);text-align:center;margin:.45em 0}
+.mathmed{font-size:clamp(18px,1.62vw,27px);text-align:center;margin:.38em 0}
+.muted{color:var(--muted)}.small{font-size:clamp(11px,.96vw,15px)}.tiny{font-size:clamp(10px,.84vw,13px)}
+.tag{display:inline-block;padding:.22em .58em;border-radius:999px;background:#e9efff;color:#234fb5;font-weight:800;font-size:clamp(10px,.88vw,14px)}
+.hero{margin:auto 0}.rule{height:1px;background:var(--line);margin:1em 0}
+.controls{display:flex;gap:.55em;flex-wrap:wrap;align-items:center}
+.controls label{font-size:clamp(11px,.98vw,15px);font-weight:750}
+.controls input,.controls select{font:inherit;padding:.4em .5em;border:1px solid #bfc9d6;border-radius:9px;background:white;max-width:180px}
+button{border:1px solid #c7d0dc;background:#fff;color:var(--ink);border-radius:9px;padding:.48em .72em;font-weight:760;cursor:pointer}
+button:hover{border-color:var(--accent);color:var(--accent)}
+.presentBtn{font-size:clamp(15px,1.25vw,19px);padding:.72em 1.05em;background:var(--accent);color:white;border-color:var(--accent);box-shadow:var(--shadow)}
+.presentBtn:hover{color:white;filter:brightness(.95)}
+.mathleft{text-align:left!important}
+.mathstack{display:flex;flex-direction:column;gap:.45em;align-items:flex-start}
+.mathstack .katex-display{margin:.12em 0;text-align:left}
+.clickable{cursor:pointer;transition:.18s}
+.clickable:hover{transform:translateY(-2px);border-color:var(--accent)}
+.clickable.selected{outline:3px solid var(--accent);background:#eef3ff}
+.detailPane{margin-top:.7em;border:1px solid var(--line);border-left:5px solid var(--accent);background:white;border-radius:12px;padding:.65em .85em}
+.bitline{font-family:ui-monospace,SFMono-Regular,Menlo,monospace;word-break:break-all;letter-spacing:.08em;font-size:clamp(12px,1vw,16px);line-height:1.7}
+.formatTable td,.formatTable th{padding:.32em .42em}
+
+canvas,svg{max-width:100%;display:block}.plot{width:100%;height:min(37vh,315px);border-radius:13px;background:#fff}
+.bits{display:flex;gap:5px;flex-wrap:wrap}.bit{width:29px;height:29px;border-radius:7px;display:grid;place-items:center;background:#edf1f7;border:1px solid #cdd5df;font-weight:800}.bit.on{background:#243b67;color:#fff}
+table{border-collapse:collapse;width:100%;font-size:clamp(11px,.96vw,15px)}
+th,td{border-bottom:1px solid var(--line);padding:.38em .48em;text-align:left;vertical-align:middle}
+th{color:#42506a}
+.matrix{border-collapse:separate;border-spacing:4px;margin:.35em auto;font-family:ui-monospace,SFMono-Regular,Menlo,monospace}
+.matrix td{border:0;background:#f0f3f8;border-radius:6px;padding:.45em .62em;text-align:center;min-width:34px;font-size:clamp(13px,1.1vw,17px)}
+.matrix td.hlrow{background:#ffe8bd}.matrix td.hlcol{background:#dce8ff}.matrix td.hlboth{background:#b8d3ff;outline:2px solid #245bd8}
+.matrixInput{border-collapse:separate;border-spacing:4px;margin:.3em auto}
+.matrixInput input{width:44px;text-align:center;padding:.35em .25em;border:1px solid #cbd3de;border-radius:6px;font-weight:700}
+.callout{border-left:5px solid var(--accent);padding:.65em .9em;background:#eef3ff;border-radius:0 11px 11px 0}
+.warn{border-left-color:var(--danger);background:#fff0ee}.good{border-left-color:var(--accent2);background:#ecfbf7}
+.source-note{font-size:clamp(10px,.8vw,13px);color:var(--muted);margin-top:auto;padding-top:.4em}
+.libgrid a{display:block;margin:.28em 0;font-size:clamp(11px,.93vw,14px)}
+#chrome{position:fixed;left:0;right:0;bottom:0;height:6.2vh;min-height:46px;background:rgba(247,249,252,.95);backdrop-filter:blur(9px);border-top:1px solid var(--line);display:flex;align-items:center;gap:11px;padding:0 2.2vw;z-index:20}
+#progress{height:4px;background:var(--accent);position:absolute;left:0;top:-1px;transition:width .2s}
+.navbtn{padding:.32em .62em}.section{font-size:12px;font-weight:800;color:var(--muted);white-space:nowrap}.counter{margin-left:auto;font-variant-numeric:tabular-nums;font-size:12px;font-weight:800}
+#menu{position:fixed;right:2vw;top:2vh;z-index:30}#menu select{max-width:270px;padding:.42em;border-radius:9px;border:1px solid var(--line);background:#fff}
+.big-message{font-size:clamp(28px,4vw,60px);line-height:1.1;font-weight:820;letter-spacing:-.03em;max-width:1100px}
+.pillrow{display:flex;gap:.5em;flex-wrap:wrap}.pill{padding:.28em .62em;border-radius:999px;background:#eef2f7;font-size:clamp(10px,.9vw,14px);font-weight:750}
+
+.resultbox{background:#edf7f4;border:2px solid #0f766e;border-radius:12px;padding:.6em .8em;margin-top:.55em}
+.termgrid{display:grid;grid-template-columns:repeat(3,1fr);gap:.55em;align-items:start}
+.termmini{border:1px solid #dbe2ea;border-radius:10px;padding:.35em;background:#fff}
+.blockM{border-collapse:separate;border-spacing:0;margin:.4em auto;font-family:ui-monospace,monospace}
+.blockM td{padding:.42em .62em;text-align:center;border:0;background:#f3f5f8}
+.blockM td:nth-child(2){border-right:3px solid #657286}
+.blockM tr:nth-child(2) td{border-bottom:3px solid #657286}
+
+@media(max-height:760px){.slide{padding-top:2.7vh}.card{padding:11px}p,li{line-height:1.28}.plot{height:32vh}.mathbig{margin:.3em 0}}
+</style>
+</head>
+<body>
+<div id="deck">
+
+<!-- 1 -->
+<section class="slide" data-section="Inicio"><div class="hero">
+<div class="kicker">Álgebra Lineal Numérica · Bloque 0</div>
+<h1>Repaso matricial<br><span style="color:var(--accent)">+</span> aritmética de punto flotante</h1>
+<p class="lead">Antes de algoritmos sofisticados: entender qué significa una multiplicación matricial y qué significa calcularla en una máquina finita.</p>
+<div class="rule"></div>
+<div class="controls"><button id="presentModeBtn" class="presentBtn">⛶ Entrar en modo presentación</button></div>
+<p class="muted">Juan Galvis · Universidad Nacional de Colombia</p>
+</div></section>
+
+<!-- 2 -->
+<section class="slide" data-section="Mapa"><div class="kicker">Mapa</div><h2>Dos capas de una misma disciplina</h2>
+<div class="grid2">
+<div class="card blue"><h3>1. Álgebra matricial</h3><p>Construimos el significado de los productos a partir de vectores: interno, externo, matriz–vector, fila–matriz y finalmente matriz–matriz.</p><div class="mathbig">\(AB\)</div></div>
+<div class="card green"><h3>2. Aritmética de máquina</h3><p>Representación binaria, enteros, punto flotante, redondeo, rango, precisión y hardware moderno.</p><div class="mathbig">\(\mathrm{fl}(x)=x(1+\delta)\)</div></div>
+</div></section>
+
+<!-- 3 -->
+<section class="slide" data-section="Álgebra matricial"><div class="kicker">Objetos</div><h2>Escalar → vector → matriz</h2>
+<div class="grid3">
+<div class="card"><span class="tag">nivel 1</span><div class="mathbig">\(a\in\mathbb R\)</div><p>Un escalar.</p></div>
+<div class="card"><span class="tag">nivel 2</span><div class="mathbig">\(x=(x_i)\)</div><p>Un vector: fila o columna según el contexto.</p></div>
+<div class="card"><span class="tag">nivel 3</span><div class="mathbig">\(A=(A_{ij})\)</div><p>Una matriz: colección de filas o de columnas.</p></div>
+</div>
+<div class="callout" style="margin-top:1em"><b>Idea guía:</b> una matriz puede leerse como una colección de <b>columnas</b> o como una colección de <b>filas</b>. Esa dualidad genera las interpretaciones del producto.</div>
+</section>
+
+<!-- 4 -->
+<section class="slide" data-section="Álgebra matricial"><div class="kicker">Operaciones básicas</div><h2>Transpuesta, suma y multiplicación escalar · interactivo</h2>
+<div class="grid3">
+<div class="card blue"><h3>Transpuesta</h3><div class="mathmed">\((A^T)_{ij}=A_{ji}\)</div><div id="opAT"></div></div>
+<div class="card green"><h3>Suma</h3><div class="mathmed">\((A+B)_{ij}=A_{ij}+B_{ij}\)</div><div id="opSUM"></div></div>
+<div class="card orange"><h3>Escalar</h3><div class="mathmed">\((\alpha A)_{ij}=\alpha A_{ij}\)</div><div id="opSC"></div></div>
+</div>
+<div class="controls" style="margin-top:.65em"><label>α <input id="alphaOp" type="number" value="2" style="width:70px"></label><button id="opsRand">entradas aleatorias</button></div>
+<div class="card" style="margin-top:.55em"><p class="small"><b>Digite A y B:</b></p><div class="grid2"><div id="opAIn"></div><div id="opBIn"></div></div></div>
+</section>
+
+<!-- 5 -->
+<section class="slide" data-section="Productos de vectores"><div class="kicker">Primero: vectores</div><h2>Producto interno y producto externo</h2>
+<div class="grid2">
+<div class="card blue"><h3>Producto interno · el más “popular”</h3>
+<div class="mathbig">\(x^Ty=\sum_{i=1}^{n}x_i y_i\in\mathbb R\)</div>
+<p><b>Requisito esencial:</b> \(x\) e \(y\) deben tener <b>la misma dimensión</b>.</p>
+<p>Contrae dos vectores a un escalar: longitud, ángulo, ortogonalidad, proyecciones y energía.</p>
+</div>
+<div class="card green"><h3>Producto externo</h3>
+<div class="mathbig">\(xy^T=(x_i y_j)\in\mathbb R^{m\times n}\)</div>
+<p><b>No exige la misma dimensión:</b></p><div class="mathmed">\[x\in\mathbb R^m,\qquad y\in\mathbb R^n,\qquad xy^T\in\mathbb R^{m\times n}.\]</div>
+<p>Expande dos vectores a una matriz de rango a lo sumo uno.</p>
+</div></div>
+<div class="card" style="margin-top:.65em">
+<div class="controls">
+<label>x <input id="vxa" value="1,2,-1"></label>
+<label>y <input id="vya" value="3,-2,4"></label>
+<button id="vrand">generar aleatorios</button>
+</div>
+<p class="small muted"><b>Entrada manual:</b> escribe listas separadas por comas. <b>Aleatorio:</b> el botón puede generar dimensiones distintas a propósito. El producto externo siempre está definido; el producto interno solo si ambas dimensiones coinciden.</p>
+<div class="grid2"><div id="innerOut"></div><div id="outerOut"></div></div>
+</div>
+</section>
+
+<!-- 6 -->
+<section class="slide" data-section="Productos"><div class="kicker">Matriz × columna</div><h2>Dos interpretaciones de \(Ax\)</h2>
+<div class="grid2">
+<div class="card blue"><h3>Interpretación 1 · por filas</h3>
+<div class="mathbig">\((Ax)_i=F_i(A)x\)</div>
+<p>Cada entrada del resultado es el <b>producto interno</b> de una fila de \(A\) con \(x\).</p>
+</div>
+<div class="card green"><h3>Interpretación 2 · por columnas</h3>
+<div class="mathbig">\(Ax=x_1C_1(A)+\cdots+x_nC_n(A)\)</div>
+<p>El resultado es una <b>combinación lineal de las columnas</b> de \(A\).</p>
+</div></div>
+<div class="card" style="margin-top:.8em"><div class="controls"><button id="mvrand">nueva matriz/vector entero</button></div>
+<div class="grid2"><div id="mvData"></div><div id="mvExplain"></div></div></div>
+</section>
+
+<!-- 7 -->
+<section class="slide" data-section="Productos"><div class="kicker">Fila × matriz</div><h2>Dos interpretaciones de \(u^TA\)</h2>
+<div class="grid2">
+<div class="card blue"><h3>Interpretación 1 · por columnas</h3>
+<div class="mathbig">\((u^TA)_j=u^TC_j(A)\)</div>
+<p>Cada entrada es un <b>producto interno</b> de \(u\) con una columna de \(A\).</p>
+</div>
+<div class="card green"><h3>Interpretación 2 · por filas</h3>
+<div class="mathbig">\(u^TA=u_1F_1(A)+\cdots+u_mF_m(A)\)</div>
+<p>El resultado es una <b>combinación lineal de las filas</b> de \(A\).</p>
+</div></div>
+<div class="card" style="margin-top:.8em"><div class="controls"><button id="rmrand">nuevo ejemplo entero</button></div><div class="grid2"><div id="rmData"></div><div id="rmExplain"></div></div></div>
+</section>
+
+<!-- 8 -->
+<section class="slide" data-section="Producto matricial"><div class="kicker">Ahora sí: matriz × matriz</div><h2>Las cuatro interpretaciones de \(AB\)</h2>
+<div class="mathmed">⬆️ Interpretaciones que construyen <b>columnas</b> y <b>filas</b> completas ⬆️</div><div class="grid4">
+<div class="card blue"><h3>1 · Por columnas</h3><div class="mathmed">\(AB=[AC_1(B)\ \cdots\ AC_p(B)]\)</div><p class="small">Aplicar \(A\) a cada columna de \(B\).</p></div>
+<div class="card green"><h3>2 · Por filas</h3><div class="mathmed">\(AB=\begin{bmatrix}F_1(A)B\\ \vdots\\ F_m(A)B\end{bmatrix}\)</div><p class="small">Multiplicar cada fila de \(A\) por \(B\).</p></div>
+<div class="card orange"><h3>3 · Entrada a entrada</h3><div class="mathmed">\((AB)_{ij}=F_i(A)C_j(B)\)</div><p class="small">Producto interno fila–columna.</p></div>
+<div class="card purple"><h3>4 · Rango uno</h3><div class="mathmed">\(AB=\sum_k C_k(A)F_k(B)\)</div><p class="small">Suma de productos externos.</p></div>
+</div><div class="mathmed">⬇️ Interpretaciones que construyen <b>entradas</b> y sumas de <b>rango uno</b> ⬇️</div>
+</section>
+
+<!-- 9a -->
+<section class="slide" data-section="Producto matricial"><div class="kicker">Interpretación 1 · por columnas</div><h2>Construir \(C=AB\) columna por columna</h2>
+<div class="grid2">
+<div class="card">
+<div class="controls"><label>columna \(j\) de \(B\)
+<select id="colIntSel"><option>1</option><option>2</option><option>3</option><option>4</option></select></label>
+<button id="colIntRand">nuevos enteros</button></div>
+<div id="colIntMats"></div>
+</div>
+<div class="card blue"><h3>La columna seleccionada viaja por \(A\)</h3>
+<div id="colIntCalc"></div>
+<p class="small muted">La columna \(j\) del producto \(C=AB\) es exactamente \(A\,C_j(B)\). Se resaltan simultáneamente la columna de entrada y la columna resultante.</p>
+</div>
+</div>
+</section>
+<!-- 9b -->
+<section class="slide" data-section="Producto matricial"><div class="kicker">Interpretación 2 · por filas</div><h2>Construir \(C=AB\) fila por fila</h2>
+<div class="grid2">
+<div class="card">
+<div class="controls"><label>fila \(i\) de \(A\)
+<select id="rowIntSel"><option>1</option><option>2</option><option>3</option></select></label>
+<button id="rowIntRand">nuevos enteros</button></div>
+<div id="rowIntMats"></div>
+</div>
+<div class="card green"><h3>La fila seleccionada actúa sobre \(B\)</h3>
+<div id="rowIntCalc"></div>
+<p class="small muted">La fila \(i\) del producto \(C=AB\) es exactamente \(F_i(A)B\). Se resaltan la fila de entrada y la fila resultante.</p>
+</div>
+</div>
+</section>
+<!-- 9 -->
+<section class="slide" data-section="Producto matricial"><div class="kicker">Interpretación 3 · fila × columna</div><h2>\(A_{3\times3}B_{3\times4}\): una entrada de \(C=AB\)</h2>
+<div class="grid2">
+<div class="card"><div class="controls"><label>fila \(i\) <select id="selRow"><option>1</option><option>2</option><option>3</option></select></label>
+<label>columna \(j\) <select id="selCol"><option>1</option><option>2</option><option>3</option><option>4</option></select></label>
+<button id="mmrand">nuevos enteros</button></div><div id="mmMatrices"></div></div>
+<div class="card blue"><h3>Fila resaltada × columna resaltada</h3>
+<div id="mmCalc" class="mathstack mathleft"></div>
+<p class="muted">Cada ecuación desarrolla un paso del cálculo. La entrada resultante queda resaltada en \(C=AB\).</p></div>
+</div>
+</section>
+
+<!-- 10 -->
+<section class="slide" data-section="Producto matricial"><div class="kicker">Interpretación 4 · suma de rango uno</div><h2>\(AB\) como suma de todos los productos externos</h2>
+<div class="grid2">
+<div class="card blue">
+<div class="mathmed">\(AB=C_1(A)F_1(B)+C_2(A)F_2(B)+C_3(A)F_3(B)\)</div>
+<div class="controls"><button id="outerRand">nuevos enteros</button></div>
+<div id="outerMatrices"></div>
+<p class="small muted">Haz clic sobre \(R_1,R_2\) o \(R_3\): se resaltarán la columna de \(A\) y la fila de \(B\) que generan esa matriz de rango uno.</p>
+</div>
+<div class="card green"><h3>Las tres matrices de rango uno</h3>
+<div id="outerTerm"></div>
+<div class="rule"></div>
+<div id="outerSum"></div>
+</div>
+</div>
+</section>
+
+<!-- 11 -->
+<section class="slide" data-section="Bloques"><div class="kicker">Matrices por bloques</div><h2>La misma álgebra con bloques compatibles</h2>
+<div class="grid2">
+<div class="card blue">
+<div class="mathmed">\[
+M=\begin{bmatrix}M_{11}&M_{12}\\M_{21}&M_{22}\end{bmatrix},
+\qquad
+z=\begin{bmatrix}x\\y\end{bmatrix}.
+\]</div>
+<div class="mathmed">\[
+Mz=
+\begin{bmatrix}
+M_{11}x+M_{12}y\\
+M_{21}x+M_{22}y
+\end{bmatrix}.
+\]</div>
+<p>La regla es la de una matriz \(2\times2\), pero cada “entrada” representa ahora un bloque.</p>
+</div>
+<div class="card"><h3>Ejemplo numérico entero</h3>
+<div id="blockMatrixExample"></div>
+<div class="mathmed">\[
+x=\begin{bmatrix}1\\-1\end{bmatrix},
+\qquad
+y=\begin{bmatrix}2\\1\end{bmatrix}.
+\]</div>
+<div id="blockCalc" class="mathstack mathleft"></div>
+</div>
+</div>
+</section>
+
+<!-- 12 -->
+<section class="slide" data-section="Sistemas"><div class="kicker">Sistemas lineales</div><h2>La inversa existe, pero no es el algoritmo</h2>
+<div class="grid2">
+<div class="card"><p>Si \(A\) es cuadrada e invertible,</p><div class="mathbig">\(Ax=b\Longleftrightarrow x=A^{-1}b.\)</div><p>Esta es una identidad matemática.</p></div>
+<div class="card red"><h3>Práctica numérica</h3><p>Para resolver \(Ax=b\), normalmente <b>no calculamos explícitamente</b> \(A^{-1}\).</p><div class="mathbig">factorización / método iterativo</div><p>La implementación debe explotar estructura, costo y estabilidad.</p></div>
+</div>
+</section>
+
+<!-- 13 -->
+<section class="slide" data-section="Computación"><div class="kicker">Costo</div><h2>¿Dónde se va el tiempo de cómputo?</h2>
+<div class="grid2">
+<div class="card blue"><ul><li>productos vectoriales;</li><li>matriz–vector;</li><li>matriz–matriz;</li><li>factorizaciones;</li><li>sustituciones triangulares;</li></ul></div>
+<div class="card"><ul><li>métodos iterativos;</li><li>FFT y transformaciones;</li><li>movimiento de datos en memoria;</li><li>comunicación entre núcleos, GPUs o nodos.</li></ul><div class="callout good"><b>Hoy:</b> contar FLOPs no basta; también importa cuánto dato movemos.</div></div>
+</div>
+</section>
+
+<!-- 14 -->
+<section class="slide" data-section="Bibliotecas"><div class="kicker">BLAS</div><h2>BLAS: filosóficamente de nivel 3 → 2 → 1</h2>
+<div class="grid3">
+<div class="card purple"><h3>Nivel 3 · \(O(n^3)\)</h3><p><b>Matriz–matriz.</b> Mucho reúso de datos y alta intensidad aritmética.</p><div class="mathmed">\(C\leftarrow \alpha AB+\beta C\)</div><p class="small">Es el nivel que mejor puede aprovechar cachés, SIMD y paralelismo masivo.</p></div>
+<div class="card blue"><h3>Nivel 2 · \(O(n^2)\)</h3><p><b>Matriz–vector.</b> Menos reúso; suele estar más limitado por ancho de banda de memoria.</p><div class="mathmed">\(y\leftarrow \alpha Ax+\beta y\)</div></div>
+<div class="card green"><h3>Nivel 1 · \(O(n)\)</h3><p><b>Vector–vector.</b> Operaciones elementales: dot, axpy, norma, escalamiento.</p><div class="mathmed">\(x^Ty,\quad y\leftarrow\alpha x+y\)</div></div>
+</div>
+<p class="source-note">Referencia: <a href="https://www.netlib.org/blas/" target="_blank">Netlib BLAS</a>. En las notas la clasificación aparece 1→2→3; aquí se presenta 3→2→1 para enfatizar la jerarquía computacional.</p>
+</section>
+
+<!-- 15 -->
+<section class="slide" data-section="Bibliotecas"><div class="kicker">LAPACK + sparse</div><h2>Del kernel elemental al algoritmo de álgebra lineal</h2>
+<div class="grid2">
+<div class="card blue"><h3><a href="https://www.netlib.org/lapack/" target="_blank">LAPACK</a> — factorizaciones densas, eigen/SVD</h3><p>Factorizaciones y problemas densos: LU, Cholesky, \(LDL^T\), QR, valores propios, SVD.</p><p>Construido para usar BLAS eficientemente.</p></div>
+<div class="card green"><h3>Dispersas</h3><div class="pillrow">
+<span class="pill"><a href="https://github.com/DrTimothyAldenDavis/SuiteSparse" target="_blank">SuiteSparse</a> — factorizaciones y métodos sparse</span>
+<span class="pill"><a href="https://portal.nersc.gov/project/sparse/superlu/" target="_blank">SuperLU</a> — LU sparse directo</span>
+<span class="pill"><a href="https://scipy.org/" target="_blank">SciPy</a> — solvers dense/sparse y métodos científicos</span>
+<span class="pill"><a href="https://petsc.org/" target="_blank">PETSc</a> — solvers iterativos y PDE a gran escala</span>
+<span class="pill"><a href="https://icl.utk.edu/sparse/" target="_blank">Sparse LAPACK / sparse linear algebra resources</a></span>
+</div><p>En matrices grandes, almacenar y operar solo con entradas no nulas cambia radicalmente el costo.</p></div>
+</div>
+</section>
+
+<!-- 16 -->
+<section class="slide" data-section="Punto flotante"><div class="hero"><div class="kicker">Segunda parte</div><h1>Aritmética de<br>punto flotante</h1><p class="lead">Los números reales son infinitos; la máquina dispone de una colección finita de patrones de bits.</p></div></section>
+
+<!-- 17 -->
+<section class="slide" data-section="Punto flotante"><div class="kicker">Sistemas numéricos</div><h2>Base 10 y base 2</h2>
+<div class="grid2">
+<div class="card"><h3>Decimal</h3><div class="mathbig">\((d_k\cdots d_0.d_{-1}\cdots)_{10}=\sum_i d_i10^i\)</div></div>
+<div class="card blue"><h3>Binario</h3><div class="mathbig">\((b_k\cdots b_0.b_{-1}\cdots)_2=\sum_i b_i2^i\)</div></div>
+</div></section>
+
+<!-- 18 -->
+<section class="slide" data-section="Enteros"><div class="kicker">Enteros sin signo</div><h2>UInt8, UInt16, UInt32 y UInt64</h2>
+<div class="card blue">
+<table class="formatTable"><tr><th>Formato</th><th>bits</th><th>rango exacto</th></tr>
+<tr><td>UInt8</td><td>8</td><td>\(0\le n\le2^8-1=255\)</td></tr>
+<tr><td>UInt16</td><td>16</td><td>\(0\le n\le2^{16}-1=65\,535\)</td></tr>
+<tr><td>UInt32</td><td>32</td><td>\(0\le n\le2^{32}-1=4\,294\,967\,295\)</td></tr>
+<tr><td>UInt64</td><td>64</td><td>\(0\le n\le2^{64}-1=18\,446\,744\,073\,709\,551\,615\)</td></tr>
+</table>
+</div>
+<div class="card" style="margin-top:.65em">
+<h3>Demostración numérica</h3>
+<div class="controls">
+<label>formato <select id="uintFmt"><option>UInt8</option><option>UInt16</option><option>UInt32</option><option>UInt64</option></select></label>
+<label>n <input id="uintn" type="text" value="25"></label>
+<button id="uintRand">aleatorio</button>
+</div>
+<div id="uintStatus" class="small muted"></div>
+<div id="uintbits" class="bitline"></div>
+<div id="uinttxt" class="mathmed mathleft"></div>
+</div>
+</section>
+
+<!-- 19 -->
+<section class="slide" data-section="Enteros"><div class="kicker">Enteros con signo</div><h2>Int8, Int16, Int32 y Int64 · complemento a dos</h2>
+<div class="card blue">
+<table class="formatTable"><tr><th>Formato</th><th>bits</th><th>rango exacto</th></tr>
+<tr><td>Int8</td><td>8</td><td>\(-2^7\le n\le2^7-1\)</td></tr>
+<tr><td>Int16</td><td>16</td><td>\(-2^{15}\le n\le2^{15}-1\)</td></tr>
+<tr><td>Int32</td><td>32</td><td>\(-2^{31}\le n\le2^{31}-1\)</td></tr>
+<tr><td>Int64</td><td>64</td><td>\(-2^{63}\le n\le2^{63}-1\)</td></tr>
+</table>
+</div>
+<div class="card" style="margin-top:.65em">
+<h3>Escribe el valor y observa sus bits</h3>
+<div class="controls">
+<label>formato <select id="intFmt"><option>Int8</option><option>Int16</option><option>Int32</option><option>Int64</option></select></label>
+<label>magnitud <input id="intMag" type="text" value="85"></label>
+<label><input id="intNeg" type="checkbox"> convertir a negativo</label>
+<button id="intRand">aleatorio</button>
+</div>
+<div id="intStatus" class="small muted"></div>
+<div id="intbits" class="bitline"></div>
+<div id="intExplain"></div>
+</div>
+</section>
+
+<!-- 20 -->
+<section class="slide" data-section="Exactitud"><div class="kicker">Más allá del tamaño fijo</div><h2>BigInt y Rational: exactitud sin ancho fijo</h2>
+<div class="grid2">
+<div class="card green"><h3>BigInt en Julia</h3>
+<p><code>BigInt</code> representa enteros arbitrariamente grandes y Julia usa <a href="https://gmplib.org/" target="_blank">GMP</a> internamente.</p>
+<p><b>No existe una cadena fija de 8/16/32/64 bits:</b> conceptualmente el valor tiene signo + los bits de su magnitud; internamente GMP lo guarda en palabras (“limbs”) cuyo número crece según sea necesario.</p>
+<div class="controls"><label>entero <input id="bigIntInput" type="text" value="-12345678901234567890"></label></div>
+<div id="bigIntBits" class="bitline"></div>
+</div>
+<div class="card blue"><h3>Rational{T} en Julia</h3>
+<p>Un racional se almacena matemáticamente como un par normalizado \((p,q)\) con \(q>0\):</p>
+<div class="mathmed">\(\displaystyle r=\frac{p}{q}\)</div>
+<p>No tiene un “bitstring IEEE” único: se almacenan <b>dos enteros</b>. Si \(T=\mathrm{BigInt}\), numerador y denominador son arbitrariamente grandes.</p>
+<div class="controls"><label>p <input id="ratP" type="text" value="-22"></label><label>q <input id="ratQ" type="text" value="7"></label></div>
+<div id="ratBits"></div>
+</div>
+</div>
+<div class="callout" style="margin-top:.65em"><b>Otros lenguajes:</b> la idea es similar. Python tiene <code>int</code> arbitrario y <code>fractions.Fraction</code>; Java tiene <code>BigInteger</code>; C++ suele usar bibliotecas como Boost.Multiprecision/GMP. El detalle binario interno depende de la implementación, no de un estándar como IEEE 754.</div>
+</section>
+
+<!-- 21 -->
+<section class="slide" data-section="Conversión"><div class="kicker">Conversión exacta</div><h2>Una fracción decimal puede ser infinita en base 2</h2>
+<div class="grid2"><div class="card"><p>Los pesos fraccionarios binarios son</p><div class="mathbig">\(2^{-1},2^{-2},2^{-3},\ldots\)</div><p>\(0.1_{10}\) y \(1/5\), por ejemplo, tienen expansión binaria infinita periódica.</p></div>
+<div class="card blue"><div class="controls"><label>decimal <input id="decstr" value="0.1"></label><label>bits <input id="nbits" type="number" min="4" max="52" value="28"></label></div><p id="binfrac" style="font-family:ui-monospace,monospace;font-size:clamp(14px,1.25vw,20px);word-break:break-all"></p><p class="small muted">Se conserva la entrada como cadena y se usa aritmética entera exacta.</p></div></div>
+</section>
+
+<!-- 22 -->
+<section class="slide" data-section="Conversión"><div class="kicker">Base 2</div><h2>Intervalos binarios anidados</h2>
+<div class="grid2"><div class="card blue"><div class="mathbig">\(a_n=(0.q_1\cdots q_n)_2,\qquad b_n=a_n+2^{-n}\)</div><div class="mathbig">\(a_n\le q\le b_n\)</div><p>Cada nuevo bit reduce a la mitad el intervalo compatible con la información conocida.</p></div>
+<div class="card"><canvas id="intervalCanvas" class="plot"></canvas><div class="controls"><label>q <input id="qrange" type="range" min="1" max="999" value="370"></label><label>nivel <input id="qlevel" type="range" min="1" max="8" value="5"></label></div></div></div>
+</section>
+
+<!-- 23 -->
+<section class="slide" data-section="Error"><div class="kicker">Aproximación</div><h2>Error absoluto y error relativo</h2>
+<div class="grid2">
+<div class="card"><h3>Error absoluto</h3><div class="mathbig">\(|x-\widehat x|\)</div><p>Distancia en la escala original.</p>
+<div class="callout"><b>Ejemplo:</b> \(x=1000\), \(\widehat x=999\): error absoluto \(=1\).</div></div>
+<div class="card blue"><h3>Error relativo</h3><div class="mathbig">\(\frac{|x-\widehat x|}{|x|},\quad x\ne0\)</div><p>Compara el error con el tamaño del dato.</p>
+<div class="callout good"><b>Mismo ejemplo:</b> error relativo \(=10^{-3}=0.1\%\).</div></div>
+</div>
+<div class="card" style="margin-top:.65em"><div class="controls">
+<label>x <input id="errX" type="number" step="any" value="0.001"></label>
+<label>\(\widehat x\) <input id="errXh" type="number" step="any" value="0.002"></label>
+</div><div id="errOut" class="mathmed"></div>
+<p class="small muted">Un error absoluto pequeño puede ser enorme en términos relativos cuando \(x\) es pequeño.</p></div>
+</section>
+
+<!-- 24 -->
+<section class="slide" data-section="Punto flotante"><div class="kicker">Notación científica</div><h2>Representación binaria normalizada</h2>
+<div class="grid2">
+<div class="card blue">
+<div class="mathbig">\[
+x=\pm q\,2^m,\qquad 1\le q<2.
+\]</div>
+<p>\(q\): significand (mantisa en las notas); \(2\): base; \(m\): exponente.</p>
+<div class="callout"><b>Normalizar</b> significa mover el punto binario hasta dejar exactamente un dígito \(1\) antes del punto.</div>
+</div>
+<div class="card"><h3>Demostración interactiva</h3>
+<div class="controls"><label>x <input id="normInput" type="text" value="-13.25"></label><label>bits fracc. <input id="normBits" type="number" min="6" max="40" value="16"></label></div>
+<div id="normOut" class="mathstack mathleft"></div>
+<p class="small muted">Puedes digitar un número positivo o negativo, con o sin parte decimal.</p>
+</div>
+</div>
+</section>
+
+<!-- 25 -->
+<section class="slide" data-section="IEEE 754"><div class="kicker">IEEE 754</div><h2>Un lenguaje común para la aritmética finita</h2>
+<div class="grid2"><div class="card"><h3>1985</h3><p>El estándar IEEE 754 redujo la fragmentación de formatos incompatibles entre fabricantes.</p><p>Precisión simple y doble se volvieron referencias comunes.</p></div>
+<div class="card blue"><h3>2008 y después</h3><p>Revisiones posteriores ampliaron formatos y reglas. Paralelamente, AI/HPC impulsaron formatos de baja precisión y formatos específicos de hardware.</p><p class="small"><b>Estándar vigente:</b> <a href="https://standards.ieee.org/ieee/754/6210/" target="_blank">IEEE 754-2019 — IEEE Standard for Floating-Point Arithmetic ↗</a><br> <a href="https://sinews.siam.org/Details-Page/low-precision-floating-point-formats-the-wild-west-of-computer-arithmetic" target="_blank">SIAM News: low precision</a></p></div></div>
+</section>
+
+<!-- 26 -->
+<section class="slide" data-section="IEEE 754"><div class="kicker">Precisión simple</div><h2>Float32: signo, significand, sesgo y límites</h2>
+<div class="grid2">
+<div class="card blue">
+<ul><li>1 bit de signo</li><li>8 bits de exponente almacenado \(E\)</li><li>23 bits de fracción + 1 bit implícito en números normales</li></ul>
+<div class="mathmed">\(x=(-1)^s(1.f)_2\,2^e,\qquad e=E-127\)</div>
+<p><b>Sesgo:</b> \(127\). Guardamos \(E=e+127\).</p>
+<table><tr><th>cantidad</th><th>Float32</th></tr>
+<tr><td>mínimo positivo normal</td><td>\(2^{-126}\approx1.17549435\times10^{-38}\)</td></tr>
+<tr><td>mínimo positivo subnormal</td><td>\(2^{-149}\approx1.40129846\times10^{-45}\)</td></tr>
+<tr><td>máximo finito</td><td>\((2-2^{-23})2^{127}\approx3.40282347\times10^{38}\)</td></tr>
+<tr><td>precisión decimal garantizada</td><td>6 cifras significativas</td></tr>
+</table>
+</div>
+<div class="card"><h3>Ejemplos del sesgo</h3>
+<table><tr><th>exponente real \(e\)</th><th>almacenado \(E=e+127\)</th></tr>
+<tr><td>-2</td><td>125 = <code>01111101</code></td></tr>
+<tr><td>0</td><td>127 = <code>01111111</code></td></tr>
+<tr><td>5</td><td>132 = <code>10000100</code></td></tr></table>
+<p class="small"><b>Especiales:</b> \(E=0\) se reserva para cero/subnormales; \(E=255\) para \(\pm\infty\) y NaN. Para normales, \(1\le E\le254\), así que \(-126\le e\le127\).</p>
+</div>
+</div>
+</section>
+<section class="slide" data-section="IEEE 754"><div class="kicker">Precisión doble</div><h2>Float64: estructura análoga a Float32</h2>
+<div class="grid2">
+<div class="card blue">
+<ul><li>1 bit de signo</li><li>11 bits de exponente almacenado \(E\)</li><li>52 bits de fracción + 1 bit implícito en números normales</li></ul>
+<div class="mathmed">\(x=(-1)^s(1.f)_2\,2^e,\qquad e=E-1023\)</div>
+<p><b>Sesgo:</b> \(1023\).</p>
+<table><tr><th>cantidad</th><th>Float64</th></tr>
+<tr><td>mínimo positivo normal</td><td>\(2^{-1022}\approx2.2250738585072014\times10^{-308}\)</td></tr>
+<tr><td>mínimo positivo subnormal</td><td>\(2^{-1074}\approx4.9406564584124654\times10^{-324}\)</td></tr>
+<tr><td>máximo finito</td><td>\((2-2^{-52})2^{1023}\approx1.7976931348623157\times10^{308}\)</td></tr>
+<tr><td>precisión decimal garantizada</td><td>15 cifras significativas</td></tr>
+</table>
+</div>
+<div class="card"><h3>Ejemplos del sesgo</h3>
+<table><tr><th>exponente real \(e\)</th><th>almacenado \(E=e+1023\)</th></tr>
+<tr><td>-2</td><td>1021</td></tr>
+<tr><td>0</td><td>1023</td></tr>
+<tr><td>5</td><td>1028</td></tr></table>
+<p class="small"><b>Especiales:</b> \(E=0\) se usa para cero/subnormales; \(E=2047\) para \(\pm\infty\) y NaN. Para normales, \(-1022\le e\le1023\).</p>
+</div>
+</div>
+</section>
+
+
+<!-- 27 -->
+<section class="slide" data-section="Minifloats"><div class="kicker">Baja precisión</div><h2>Minifloats: estructura, límites y precisión</h2>
+<table class="formatTable">
+<tr><th>Formato</th><th>s/e/f</th><th>significand efectivo \(p\)</th><th>mínimo normal positivo</th><th>máximo finito</th><th>precisión decimal aprox.</th></tr>
+<tr><td>FP16 / binary16</td><td>1 / 5 / 10</td><td>11 bits</td><td>\(2^{-14}\approx6.10\times10^{-5}\)</td><td>65504</td><td>≈ 3 cifras</td></tr>
+<tr><td>bfloat16</td><td>1 / 8 / 7</td><td>8 bits</td><td>\(2^{-126}\approx1.18\times10^{-38}\)</td><td>\(\approx3.39\times10^{38}\)</td><td>≈ 2 cifras</td></tr>
+<tr><td>FP8 E4M3</td><td>1 / 4 / 3</td><td>4 bits</td><td>depende de la variante</td><td>≈ \(10^2\)–\(10^3\)</td><td>≈ 1 cifra</td></tr>
+<tr><td>FP8 E5M2</td><td>1 / 5 / 2</td><td>3 bits</td><td>depende de la variante</td><td>≈ \(10^4\)–\(10^5\)</td><td>≈ 0–1 cifra</td></tr>
+</table>
+<div class="callout" style="margin-top:.75em"><b>Lectura:</b> más bits de exponente amplían el rango; más bits de significand mejoran la precisión. Por eso bfloat16 conserva un rango tipo Float32, mientras FP16 ofrece más precisión relativa pero menor rango.</div>
+<p class="source-note">Para FP8 existen variantes y convenciones dependientes de arquitectura; los límites exactos deben consultarse en la especificación del hardware/biblioteca.</p>
+</section>
+
+<!-- 28 -->
+<section class="slide" data-section="Minifloats"><div class="kicker">¿Dónde los encontramos?</div><h2>Minifloats en hardware actual</h2>
+<div class="grid2">
+<div class="card blue"><h3>Centro de datos / HPC</h3><ul>
+<li><a href="https://www.nvidia.com/en-us/data-center/technologies/hopper-architecture/" target="_blank">NVIDIA Hopper H100/H200</a>: Tensor Cores con FP8 y FP16/BF16.</li>
+<li><a href="https://www.amd.com/en/products/accelerators/instinct/mi300.html" target="_blank">AMD Instinct MI300</a>: FP8, FP16/BF16, FP32 y FP64.</li>
+<li>TPUs y otros aceleradores han popularizado <b>bfloat16</b> en aprendizaje automático.</li>
+</ul></div>
+<div class="card green"><h3>Edge / robótica</h3><ul>
+<li><a href="https://www.nvidia.com/en-us/autonomous-machines/embedded-systems/jetson-thor/" target="_blank">NVIDIA Jetson Thor</a>: Blackwell y cómputo FP4 para AI física.</li>
+<li>NPUs integradas en PCs y SoCs usan formatos reducidos o enteros cuantizados según el motor.</li>
+</ul><p class="small muted">La disponibilidad exacta de operaciones y acumuladores depende de la arquitectura y biblioteca.</p></div>
+</div>
+</section>
+
+<!-- 29 -->
+<section class="slide" data-section="Punto flotante"><div class="kicker">Geometría de máquina</div><h2>Los números de máquina no están uniformemente espaciados en \(\mathbb R\)</h2>
+<div class="grid2"><div class="card"><p>Dentro de \([2^m,2^{m+1})\), un formato binario normalizado tiene espaciamiento absoluto constante.</p><p>Al pasar a la siguiente “binade”, el espaciamiento se duplica.</p><div class="mathbig">\(\Delta_m\propto2^m\)</div></div>
+<div class="card blue"><canvas id="floatCanvas" class="plot"></canvas><div class="controls"><label>bits de fracción <input id="pbits" type="range" min="2" max="6" value="3"></label></div></div></div>
+</section>
+
+<!-- 30 -->
+<section class="slide" data-section="Overflow"><div class="kicker">Rango finito</div><h2>Overflow, underflow y subnormales</h2>
+<div class="grid3">
+<div class="card red"><h3>Overflow</h3><p>El resultado excede el mayor número finito.</p><p class="small">Float32: \(x_{\max}\approx3.40\times10^{38}\). Por ejemplo, \((3\times10^{38})\cdot 2\to+\infty\).</p></div>
+<div class="card orange"><h3>Underflow</h3><p>El resultado cae por debajo de la escala de los números normales.</p><p class="small">Float32: mínimo normal \(\approx1.175\times10^{-38}\). Valores menores entran en la zona de underflow.</p></div>
+<div class="card blue"><h3>Subnormales</h3><p>Rellenan gradualmente la región entre el mínimo normal y cero.</p><p class="small">Float32: mínimo subnormal positivo \(\approx1.401\times10^{-45}\). Debajo de él, redondeamos a cero.</p></div>
+</div>
+<div class="card" style="margin-top:.55em"><canvas id="ufCanvas" class="plot"></canvas></div>
+</section>
+
+<!-- 31 -->
+<section class="slide" data-section="Overflow"><div class="kicker">Ejemplo</div><h2>Softmax: misma matemática, distinta estabilidad</h2>
+<div class="grid2"><div class="card"><div class="mathbig">\(\displaystyle s_i(x)=\frac{e^{x_i}}{\sum_j e^{x_j}}\)</div><p>La evaluación directa puede generar \(\infty/\infty\).</p></div>
+<div class="card green"><h3>Restar el máximo</h3><div class="mathbig">\(\displaystyle s_i(x)=\frac{e^{x_i-m}}{\sum_j e^{x_j-m}},\ m=\max_jx_j\)</div>
+<div class="controls"><label>x <input id="softx" value="1000,1001,999"></label></div><p id="softout" class="small"></p></div></div>
+</section>
+
+<!-- 32 -->
+<section class="slide" data-section="Redondeo"><div class="kicker">Modelo fundamental</div><h2>Redondeo relativo y precisión por formato</h2>
+<div class="grid2"><div class="card blue"><div class="mathbig">\(\boxed{\mathrm{fl}(x)=x(1+\delta)}\)</div><div class="mathbig">\(|\delta|\le\varepsilon\)</div><p>\(\varepsilon\): redondeo unitario del modelo.</p></div>
+<div class="card"><table><tr><th>Formato</th><th>\(p\) efectivo</th><th>\(\varepsilon\approx2^{-p}\)</th><th>cifras decimales garantizadas</th></tr>
+<tr><td>FP16</td><td>11</td><td>\(2^{-11}\approx4.88\times10^{-4}\)</td><td>3</td></tr>
+<tr><td>bfloat16</td><td>8</td><td>\(2^{-8}\approx3.91\times10^{-3}\)</td><td>2</td></tr>
+<tr><td>Float32</td><td>24</td><td>\(2^{-24}\approx5.96\times10^{-8}\)</td><td>6</td></tr>
+<tr><td>Float64</td><td>53</td><td>\(2^{-53}\approx1.11\times10^{-16}\)</td><td>15</td></tr>
+</table></div></div>
+</section>
+
+<!-- 33 -->
+<section class="slide" data-section="Exactitud"><div class="kicker">Representación exacta vs. flotante</div><h2>Escoge o digita un número y compara formatos</h2>
+<div class="grid2">
+<div class="card blue"><div class="controls">
+<label>ejemplo <select id="repSelect">
+<option value="half">1/2</option><option value="pi">π</option><option value="dec01">0.1</option><option value="fifth">1/5</option><option value="e">e</option><option value="custom">digitar…</option>
+</select></label>
+<label>valor <input id="repCustom" type="text" value="1.23456789"></label>
+</div><div id="repExact" class="mathbig"></div><p id="repDesc"></p>
+<div id="repFloat"></div></div>
+<div class="card green"><h3>¿Qué aproximación guarda cada formato?</h3>
+<div id="repFormats"></div>
+<p class="tiny muted">“Cifras decimales garantizadas” usa \(\lfloor(p-1)\log_{10}2\rfloor\). La última columna no recorta a ese número de cifras: muestra en decimal el valor efectivamente cuantizado por cada formato.</p></div>
+</div>
+</section>
+
+<!-- 34 -->
+<section class="slide" data-section="Redondeo"><div class="kicker">Experimento</div><h2>El espaciamiento absoluto crece con la escala</h2>
+<div class="grid2"><div class="card"><div class="controls"><label>exponente m <input id="mexp" type="range" min="-8" max="8" value="0"></label><label>bits p <input id="pprec" type="range" min="3" max="12" value="6"></label></div><div id="roundtxt"></div></div>
+<div class="card blue"><canvas id="roundCanvas" class="plot"></canvas></div></div>
+</section>
+
+<!-- 35 -->
+<section class="slide" data-section="Precisión"><div class="kicker">Formatos</div><h2>Rango, límites y precisión</h2>
+<table>
+<tr><th>Formato</th><th>bits</th><th>exp.</th><th>frac.</th><th>mín. normal positivo</th><th>máx. finito</th><th>cifras garantizadas</th></tr>
+<tr><td>FP16</td><td>16</td><td>5</td><td>10</td><td>\(\approx6.10\times10^{-5}\)</td><td>65504</td><td>3</td></tr>
+<tr><td>bfloat16</td><td>16</td><td>8</td><td>7</td><td>\(\approx1.18\times10^{-38}\)</td><td>\(\approx3.39\times10^{38}\)</td><td>2</td></tr>
+<tr><td>Float32</td><td>32</td><td>8</td><td>23</td><td>\(\approx1.175\times10^{-38}\)</td><td>\(\approx3.403\times10^{38}\)</td><td>6</td></tr>
+<tr><td>Float64</td><td>64</td><td>11</td><td>52</td><td>\(\approx2.225\times10^{-308}\)</td><td>\(\approx1.798\times10^{308}\)</td><td>15</td></tr>
+<tr><td>binary128</td><td>128</td><td>15</td><td>112</td><td>\(\approx3.362\times10^{-4932}\)</td><td>\(\approx1.190\times10^{4932}\)</td><td>33</td></tr>
+</table>
+<div class="callout" style="margin-top:.8em"><b>BigFloat:</b> precisión ajustable y rango dependiente de la biblioteca/implementación; no debe confundirse con un formato IEEE fijo.</div>
+</section>
+
+<!-- 36 -->
+<section class="slide" data-section="Precisión"><div class="kicker">Precisión múltiple y mixta</div><h2>No hay que usar la misma precisión para todo</h2>
+<div class="grid2">
+<div class="card blue"><h3>Precisión múltiple</h3><p>Un programa dispone de varios formatos y escoge el apropiado según la etapa: Float16/32/64, BigFloat, etc.</p><ul><li>más precisión para pasos sensibles;</li><li>menos precisión para ahorrar tiempo/memoria;</li><li>verificación con precisión superior.</li></ul></div>
+<div class="card green"><h3>Precisión mixta</h3><p>Una <b>misma operación o algoritmo</b> combina precisiones diferentes.</p><ul><li>almacenar en baja precisión;</li><li>multiplicar en baja/media precisión;</li><li>acumular o corregir en mayor precisión.</li></ul></div>
+</div>
+<div class="callout good" style="margin-top:.8em"><b>Ejemplo de Álgebra Lineal Numérica:</b> factorizar aproximadamente en baja precisión y usar <b>refinamiento iterativo</b> con residuales calculados en mayor precisión.</div>
+</section>
+
+<!-- 37 -->
+<section class="slide" data-section="Paralelismo"><div class="kicker">Computación paralela</div><h2>Cuatro niveles de paralelismo en Álgebra Lineal</h2>
+<div class="grid4">
+<div class="card clickable selected" data-par="simd"><h3>SIMD</h3><p class="small"><b>Single Instruction, Multiple Data.</b> Una instrucción vectorial opera simultáneamente sobre varias entradas.</p></div>
+<div class="card blue clickable" data-par="threads"><h3>Multihilo</h3><p class="small">Varios núcleos de una CPU comparten memoria y cooperan sobre bloques del problema.</p></div>
+<div class="card green clickable" data-par="gpu"><h3>GPU / manycore</h3><p class="small">Miles de hilos ligeros y unidades matriciales: alto throughput para operaciones regulares.</p></div>
+<div class="card purple clickable" data-par="dist"><h3>Distribuido</h3><p class="small">Matriz y vectores se reparten entre nodos conectados por una red.</p></div>
+</div>
+<div id="parDetail" class="detailPane"></div>
+<div class="callout" style="margin-top:.55em"><b>Energía:</b> para una tarea fija, \(E\approx P\,t\). Un dispositivo puede consumir más potencia instantánea y aun gastar menos energía si termina mucho antes. En problemas de álgebra lineal, mover datos entre memoria y unidades de cómputo —o entre nodos— puede ser más costoso que una operación aritmética; por eso la localidad y el reúso de datos son esenciales.</div>
+</section>
+
+<!-- 38 -->
+<section class="slide" data-section="Paralelismo"><div class="kicker">Paralelo + precisión mixta</div><h2>Tensor / Matrix Cores: productos matriciales especializados</h2>
+<div class="grid2">
+<div class="card blue"><h3>Qué calculan</h3>
+<div class="mathbig">\(D=A\,B+C\)</div>
+<p>El hardware ejecuta pequeños productos matriciales y acumulaciones como un bloque. Según la arquitectura, las entradas pueden ser FP16, BF16, FP8, TF32 u otros formatos y la acumulación puede realizarse con mayor precisión.</p>
+<p><b>API</b> = <i>Application Programming Interface</i>: el conjunto de funciones y reglas con las que el programa solicita una operación al sistema/biblioteca. Ejemplos: <a href="https://developer.nvidia.com/cublas" target="_blank">cuBLAS</a>, <a href="https://rocm.docs.amd.com/projects/rocBLAS/" target="_blank">rocBLAS</a>.</p>
+</div>
+<div class="card green"><h3>Por qué puede ser más eficiente</h3>
+<ul><li><b>Más operaciones por instrucción:</b> unidades especializadas explotan paralelismo matricial.</li>
+<li><b>Menos bytes por dato:</b> FP16/FP8 reducen almacenamiento y tráfico respecto a FP32/64.</li>
+<li><b>Más reúso local:</b> trabajar por bloques permite mantener datos cerca de las unidades de cómputo.</li>
+<li><b>Control del error:</b> escalamiento, acumulación superior, refinamiento y algoritmos mixtos compensan la menor precisión.</li></ul>
+<p class="small"><b>Energía:</b> la ventaja no proviene de que “un FLOP pequeño no cueste energía”, sino de mover menos bits y aprovechar mejor el hardware. La ganancia real en joules por solución depende del algoritmo, tamaño, memoria, ocupación y plataforma.</p>
+</div>
+</div>
+<p class="source-note"><a href="https://www.nvidia.com/en-us/data-center/technologies/hopper-architecture/" target="_blank">NVIDIA Hopper ↗</a> · <a href="https://www.amd.com/en/technologies/cdna.html" target="_blank">AMD CDNA/MI300 ↗</a></p>
+</section>
+
+<!-- 39 -->
+<section class="slide" data-section="Hardware"><div class="kicker">APU y dispositivos heterogéneos</div><h2>CPU, GPU, NPU y memoria cada vez están más integrados</h2>
+<div class="grid4">
+<div class="card blue"><h3>AMD MI300A · APU</h3><p class="small">24 núcleos CPU Zen 4 + 228 unidades de cómputo GPU CDNA 3 + 128 GB HBM3 en un espacio de direcciones compartido. Orientada a HPC/AI.</p><a class="small" href="https://www.amd.com/en/products/accelerators/instinct/mi300/mi300a.html" target="_blank">AMD MI300A ↗</a></div>
+<div class="card green"><h3>Intel Core Ultra</h3><p class="small">Integra CPU, GPU y NPU. Intel presenta la NPU como motor de menor potencia para cargas AI sostenidas y la CPU para respuesta de baja latencia.</p><a class="small" href="https://www.intel.com/content/www/us/en/products/docs/processors/core-ultra/core-ultra-desktop-processors-series-2-brief.html" target="_blank">Intel Core Ultra ↗</a></div>
+<div class="card orange"><h3>Apple Silicon SoC</h3><p class="small">CPU, GPU, Neural Engine y controlador de memoria unificada dentro del SoC; varios motores acceden a una memoria común.</p><a class="small" href="https://www.apple.com/newsroom/2026/03/apple-debuts-m5-pro-and-m5-max-to-supercharge-the-most-demanding-pro-workflows/" target="_blank">Apple Silicon ↗</a></div>
+<div class="card purple"><h3>NVIDIA Jetson</h3><p class="small">Módulos edge con CPU Arm + GPU + aceleración AI para robótica y sistemas autónomos, donde energía y tamaño físico importan especialmente.</p><a class="small" href="https://www.nvidia.com/en-us/autonomous-machines/embedded-systems/" target="_blank">NVIDIA Jetson ↗</a></div>
+</div>
+<div class="card" style="margin-top:.55em">
+<h3>¿Qué es una APU? · contexto histórico y significado numérico</h3>
+<div class="grid3">
+<div><p class="small"><b>APU = Accelerated Processing Unit.</b> AMD popularizó el término con la familia <b>Fusion</b>: en enero de 2011 lanzó procesadores que combinaban CPU x86 y GPU/parallel engine en un mismo chip.</p></div>
+<div><p class="small"><b>Objetivo:</b> acercar procesamiento serial y paralelo, reducir transferencias entre dispositivos separados y compartir mejor recursos del sistema. Integración no implica automáticamente que todo sea más rápido: depende del acceso a memoria y de la carga.</p></div>
+<div><p class="small"><b>APU moderna para HPC:</b> MI300A lleva la idea mucho más lejos: CPU y GPU chiplets en un paquete coherente con HBM3 compartida. AMD reporta 550 W TDP y hasta 760 W pico; la métrica útil es rendimiento/energía para la tarea, no solo watts.</p></div>
+</div>
+<p class="tiny"><a href="https://ir.amd.com/news-events/press-releases/detail/168/amd-fusion-apu-era-begins" target="_blank">AMD Fusion APU Era Begins (2011) ↗</a> · <a href="https://www.amd.com/en/products/accelerators/instinct/mi300/mi300a.html" target="_blank">MI300A actual ↗</a></p>
+</div>
+<div class="pillrow" style="margin-top:.4em"><span class="pill"><b>CPU</b>: Central Processing Unit</span><span class="pill"><b>GPU</b>: Graphics Processing Unit</span><span class="pill"><b>NPU</b>: Neural Processing Unit</span><span class="pill"><b>APU</b>: Accelerated Processing Unit</span><span class="pill"><b>SoC</b>: System on a Chip</span><span class="pill"><b>HBM</b>: High Bandwidth Memory</span></div>
+</section>
+
+<!-- 40 -->
+<section class="slide" data-section="Exactitud"><div class="kicker">Cálculo exacto vs. aproximado</div><h2>Simbólico, racional, alta precisión y flotante: no son competidores, son herramientas</h2>
+<div class="grid4">
+<div class="card"><h3>Simbólico</h3><p class="small">Manipula estructuras exactas: \(x^2-1\), \(\pi\), \(e\), raíces, derivadas.</p></div>
+<div class="card blue"><h3>Racional exacto</h3><p class="small">\(\frac pq\) se mantiene exacto mientras los enteros puedan almacenarse.</p></div>
+<div class="card green"><h3>BigFloat</h3><p class="small">Aproximación numérica con precisión seleccionable; útil para validar y estudiar sensibilidad.</p></div>
+<div class="card orange"><h3>Hardware float</h3><p class="small">Float32/64 y minifloats: velocidad, vectorización y aceleradores dedicados.</p></div>
+</div>
+<div class="callout good" style="margin-top:.8em"><b>Principio:</b> “más precisión” no arregla automáticamente un algoritmo inestable; y “exacto” no implica computacionalmente barato.</div>
+</section>
+
+<!-- 41 -->
+<section class="slide" data-section="Bibliotecas"><div class="kicker">Mapa de software</div><h2>Bibliotecas importantes para Álgebra Lineal Numérica</h2>
+<div class="grid4 libgrid">
+<div class="card blue"><h3>Dense / CPU</h3>
+<a href="https://www.netlib.org/blas/" target="_blank">BLAS</a> — kernels básicos vector/matriz
+<a href="https://www.netlib.org/lapack/" target="_blank">LAPACK</a> — factorizaciones densas, eigen/SVD
+<a href="https://github.com/OpenMathLib/OpenBLAS" target="_blank">OpenBLAS</a> — implementación BLAS optimizada
+<a href="https://github.com/flame/blis" target="_blank">BLIS</a> — framework BLAS portable y optimizado
+<a href="https://www.intel.com/content/www/us/en/developer/tools/oneapi/onemkl.html" target="_blank">Intel oneMKL</a> — BLAS/LAPACK/FFT optimizados Intel
+<a href="https://www.amd.com/en/developer/aocl.html" target="_blank">AMD AOCL</a> — librerías numéricas optimizadas AMD
+</div>
+<div class="card green"><h3>Sparse / solvers</h3>
+<a href="https://github.com/DrTimothyAldenDavis/SuiteSparse" target="_blank">SuiteSparse</a> — factorizaciones y métodos sparse
+<a href="https://portal.nersc.gov/project/sparse/superlu/" target="_blank">SuperLU</a> — LU sparse directo
+<a href="https://mumps-solver.org/" target="_blank">MUMPS</a> — solver sparse paralelo multifrontal
+<a href="https://hypre.readthedocs.io/" target="_blank">hypre</a> — precondicionadores y AMG paralelo
+<a href="https://petsc.org/" target="_blank">PETSc</a> — solvers iterativos y PDE a gran escala
+<a href="https://trilinos.github.io/" target="_blank">Trilinos</a> — ecosistema HPC de álgebra lineal
+</div>
+<div class="card orange"><h3>GPU / aceleradores</h3>
+<a href="https://developer.nvidia.com/cublas" target="_blank">cuBLAS</a> — BLAS en GPU NVIDIA
+<a href="https://developer.nvidia.com/cusolver" target="_blank">cuSOLVER</a> — factorizaciones/eigen en NVIDIA
+<a href="https://rocm.docs.amd.com/projects/rocBLAS/" target="_blank">rocBLAS</a> — BLAS en GPU AMD
+<a href="https://rocm.docs.amd.com/projects/rocSOLVER/" target="_blank">rocSOLVER</a> — solvers/factorizaciones GPU AMD
+<a href="https://icl.utk.edu/magma/" target="_blank">MAGMA</a> — álgebra lineal híbrida CPU+GPU
+<a href="https://icl.utk.edu/slate/" target="_blank">SLATE</a> — álgebra lineal densa distribuida GPU-ready
+</div>
+<div class="card purple"><h3>Lenguajes / alto nivel</h3>
+<a href="https://docs.julialang.org/en/v1/stdlib/LinearAlgebra/" target="_blank">Julia LinearAlgebra</a> — interfaz de álgebra lineal en Julia
+<a href="https://sparsearrays.juliasparse.org/" target="_blank">Julia SparseArrays</a> — matrices dispersas en Julia
+<a href="https://cuda.juliagpu.org/" target="_blank">CUDA.jl</a> — computación NVIDIA desde Julia
+<a href="https://amdgpu.juliagpu.org/" target="_blank">AMDGPU.jl</a> — computación AMD GPU desde Julia
+<a href="https://numpy.org/" target="_blank">NumPy</a> — arrays y álgebra lineal Python
+<a href="https://scipy.org/" target="_blank">SciPy</a> — solvers dense/sparse y métodos científicos
+</div>
+</div>
+</section>
+
+<!-- 42 -->
+<section class="slide" data-section="Cierre"><div class="hero">
+<div class="kicker">Mensajes para llevar</div>
+<div id="mainMessage" class="big-message"></div>
+<div class="rule"></div>
+<div class="controls"><button id="newMessage">otro mensaje</button><span class="muted small">Los mensajes cambian automáticamente cada 3 segundos y forman un ciclo continuo.</span></div>
+</div></section>
+
+</div>
+
+<div id="menu"><select id="sectionSelect"></select></div>
+<div id="chrome"><div id="progress"></div><button class="navbtn" id="prev">←</button><button class="navbtn" id="next">→</button><span class="section" id="sectxt"></span><span class="counter" id="counter"></span></div>
+
+<script>
+const slides=[...document.querySelectorAll('.slide')];let idx=0;
+const presentModeBtn=document.getElementById('presentModeBtn');
+if(presentModeBtn){
+ presentModeBtn.onclick=async()=>{
+   try{
+     if(!document.fullscreenElement){await document.documentElement.requestFullscreen();}
+     if(slides[0].classList.contains('active')) show(1);
+   }catch(e){ console.warn('Fullscreen no disponible:',e); }
+ };
+}
+
+function renderMath(root=document.body){
+ if(window.renderMathInElement) renderMathInElement(root,{delimiters:[
+ {left:'$$',right:'$$',display:true},{left:'\\(',right:'\\)',display:false},{left:'\\[',right:'\\]',display:true}
+ ],throwOnError:false});
+}
+function show(n){
+ idx=Math.max(0,Math.min(slides.length-1,n));
+ slides.forEach((s,i)=>s.classList.toggle('active',i===idx));
+ counter.textContent=`${idx+1} / ${slides.length}`;sectxt.textContent=slides[idx].dataset.section;
+ progress.style.width=((idx+1)/slides.length*100)+'%';sectionSelect.value=slides[idx].dataset.section;
+ requestAnimationFrame(drawAll);
+}
+function advance(){show(idx+1)}
+document.addEventListener('keydown',e=>{
+ if(['ArrowRight','PageDown',' '].includes(e.key)){e.preventDefault();advance()}
+ if(['ArrowLeft','PageUp'].includes(e.key)){e.preventDefault();show(idx-1)}
+ if(e.key==='Home')show(0); if(e.key==='End')show(slides.length-1);
+});
+prev.onclick=()=>show(idx-1);next.onclick=advance;
+const sections=[...new Set(slides.map(s=>s.dataset.section))];
+sections.forEach(x=>{let o=document.createElement('option');o.value=x;o.textContent=x;sectionSelect.appendChild(o)});
+sectionSelect.onchange=()=>show(slides.findIndex(s=>s.dataset.section===sectionSelect.value));
+
+const rint=(a=-3,b=4)=>Math.floor(Math.random()*(b-a+1))+a;
+const vec=n=>Array.from({length:n},()=>rint());
+const mat=(m,n)=>Array.from({length:m},()=>vec(n));
+const dot=(a,b)=>a.reduce((s,x,i)=>s+x*b[i],0);
+const mv=(A,x)=>A.map(r=>dot(r,x));
+const rm=(u,A)=>A[0].map((_,j)=>u.reduce((s,x,i)=>s+x*A[i][j],0));
+const mm=(A,B)=>A.map(r=>B[0].map((_,j)=>r.reduce((s,x,k)=>s+x*B[k][j],0)));
+const addM=(A,B)=>A.map((r,i)=>r.map((x,j)=>x+B[i][j]));
+const outer=(x,y)=>x.map(a=>y.map(b=>a*b));
+function nums(s){return s.split(',').map(Number).filter(Number.isFinite)}
+function latexVec(x,row=false){return `\\begin{bmatrix}${x.join(row?'&':'\\\\')}\\end{bmatrix}`}
+function latexMat(A){return `\\begin{bmatrix}${A.map(r=>r.join('&')).join('\\\\')}\\end{bmatrix}`}
+function htmlMat(A,clsFn=()=>'',label=''){
+ let t='<table class="matrix">'+A.map((r,i)=>'<tr>'+r.map((v,j)=>`<td class="${clsFn(i,j)}">${v}</td>`).join('')+'</tr>').join('')+'</table>';
+ return label?`<div class="small muted">${label}</div>${t}`:t;
+}
+function rerender(el){renderMath(el)}
+
+/* slide 4 interactive operations */
+let OPA=[[1,2],[3,-1]], OPB=[[2,-1],[0,4]];
+function inputMatrixHtml(M,prefix){return '<table class="matrixInput">'+M.map((r,i)=>'<tr>'+r.map((v,j)=>`<td><input data-${prefix}="${i},${j}" value="${v}"></td>`).join('')+'</tr>').join('')+'</table>'}
+function readOpInputs(prefix,M){document.querySelectorAll(`[data-${prefix}]`).forEach(inp=>{let [i,j]=inp.getAttribute(`data-${prefix}`).split(',').map(Number);let v=Number(inp.value);if(Number.isFinite(v))M[i][j]=v})}
+function opRender(){
+ opAIn.innerHTML='<b>A</b>'+inputMatrixHtml(OPA,'opa');opBIn.innerHTML='<b>B</b>'+inputMatrixHtml(OPB,'opb');
+ const T=[[OPA[0][0],OPA[1][0]],[OPA[0][1],OPA[1][1]]],S=addM(OPA,OPB),a=Number(alphaOp.value)||0,SC=OPA.map(r=>r.map(x=>a*x));
+ opAT.innerHTML=htmlMat(T);opSUM.innerHTML=htmlMat(S);opSC.innerHTML=htmlMat(SC);
+ document.querySelectorAll('[data-opa],[data-opb]').forEach(inp=>inp.oninput=()=>{readOpInputs('opa',OPA);readOpInputs('opb',OPB);opRender()});
+}
+opsRand.onclick=()=>{OPA=mat(2,2);OPB=mat(2,2);opRender()};alphaOp.oninput=opRender;
+
+/* slide 5 */
+function vectorProducts(){
+ let x=nums(vxa.value),y=nums(vya.value);
+ if(!x.length||!y.length){innerOut.innerHTML='<p class="warn callout">Digite al menos una entrada en cada vector.</p>';outerOut.innerHTML='';return;}
+ if(x.length===y.length){
+   let terms=x.map((a,i)=>`${a}\\cdot${y[i]}`);
+   innerOut.innerHTML=`<div class="resultbox"><b>Producto interno:</b><div class="mathmed">\\(x^Ty=${terms.join('+')}=${dot(x,y)}\\)</div><p class="small">Dimensiones compatibles: ${x.length} = ${y.length}.</p></div>`;
+   rerender(innerOut);
+ }else{
+   innerOut.innerHTML=`<div class="callout warn"><b>Producto interno no definido:</b> \\(x\\in\\mathbb R^{${x.length}}\\) y \\(y\\in\\mathbb R^{${y.length}}\\). Deben tener la misma dimensión.</div>`;
+   rerender(innerOut);
+ }
+ let O=outer(x,y);
+ outerOut.innerHTML=`<div class="resultbox"><b>Producto externo:</b><p class="small">\\(x\\in\\mathbb R^{${x.length}}\\), \\(y\\in\\mathbb R^{${y.length}},  xy^T\\in\\mathbb R^{${x.length}\\times${y.length}}\\)</p>${htmlMat(O,()=>'',`xyᵀ · rango ≤ 1`)}</div>`;
+ rerender(outerOut);
+}
+vxa.oninput=vya.oninput=vectorProducts;
+vrand.onclick=()=>{let nx=rint(2,4),ny=rint(2,4),x=vec(nx),y=vec(ny);vxa.value=x.join(',');vya.value=y.join(',');vectorProducts()};
+
+/* slide 6 */
+let MVA=mat(3,3),MVx=vec(3);
+function matrixVector(){
+ let y=mv(MVA,MVx);
+ mvData.innerHTML=htmlMat(MVA,()=>'', 'A')+`<div class="mathmed">\\(x=${latexVec(MVx)}\\)</div>`;
+ mvExplain.innerHTML=`<div class="mathmed">\\(Ax=${latexVec(y)}\\)</div>
+ <p class="small"><b>Por filas:</b> ${MVA.map((r,i)=>`F_${i+1}(A)x=${dot(r,MVx)}`).join(' · ')}</p>
+ <p class="small"><b>Por columnas:</b> \\(${MVx.map((a,i)=>`${a}${latexVec(MVA.map(r=>r[i]))}`).join('+')}=${latexVec(y)}\\)</p>`;
+ rerender(mvData);rerender(mvExplain);
+}
+mvrand.onclick=()=>{MVA=mat(3,3);MVx=vec(3);matrixVector()};
+
+/* slide 7 */
+let RMA=mat(3,4),RMu=vec(3);
+function rowMatrix(){
+ let y=rm(RMu,RMA);
+ rmData.innerHTML=`<div class="mathmed">\\(u^T=${latexVec(RMu,true)}\\)</div>`+htmlMat(RMA,()=>'', 'A');
+ rmExplain.innerHTML=`<div class="mathmed">\\(u^TA=${latexVec(y,true)}\\)</div>
+ <p class="small"><b>Por columnas:</b> ${y.map((z,j)=>`u^TC_${j+1}(A)=${z}`).join(' · ')}</p>
+ <p class="small"><b>Por filas:</b> \\(${RMu.map((a,i)=>`${a}${latexVec(RMA[i],true)}`).join('+')}=${latexVec(y,true)}\\)</p>`;
+ rerender(rmData);rerender(rmExplain);
+}
+rmrand.onclick=()=>{RMA=mat(3,4);RMu=vec(3);rowMatrix()};
+
+/* column interpretation */
+let CIA=mat(3,3),CIB=mat(3,4);
+function colInterpret(){
+ let C=mm(CIA,CIB),j=+colIntSel.value-1;
+ colIntMats.innerHTML=`<div class="grid3">
+ <div>${htmlMat(CIA,()=>'', 'A')}</div>
+ <div>${htmlMat(CIB,(r,c)=>c===j?'hlcol':'',`B · columna ${j+1} seleccionada`)}</div>
+ <div>${htmlMat(C,(r,c)=>c===j?'hlcol':'',`C=AB · columna ${j+1} resultante`)}</div>
+ </div>`;
+ let bj=CIB.map(r=>r[j]),cj=C.map(r=>r[j]);
+ colIntCalc.innerHTML=`<div class="mathmed">\\(C_{${j+1}}(C)=A\\,C_{${j+1}}(B)\\)</div>
+ <div class="mathmed">\\(${latexMat(CIA)}${latexVec(bj)}=${latexVec(cj)}\\)</div>
+ <div class="resultbox"><b>Resultado:</b> la columna resaltada de \\(C\\) es ${cj.join(', ')}.</div>`;
+ rerender(colIntCalc);
+}
+colIntSel.onchange=colInterpret;
+colIntRand.onclick=()=>{CIA=mat(3,3);CIB=mat(3,4);colInterpret()};
+/* row interpretation */
+let RIA=mat(3,3),RIB=mat(3,4);
+function rowInterpret(){
+ let C=mm(RIA,RIB),i=+rowIntSel.value-1;
+ rowIntMats.innerHTML=`<div class="grid3">
+ <div>${htmlMat(RIA,(r,c)=>r===i?'hlrow':'',`A · fila ${i+1} seleccionada`)}</div>
+ <div>${htmlMat(RIB,()=>'', 'B')}</div>
+ <div>${htmlMat(C,(r,c)=>r===i?'hlrow':'',`C=AB · fila ${i+1} resultante`)}</div>
+ </div>`;
+ let ai=RIA[i],ci=C[i];
+ rowIntCalc.innerHTML=`<div class="mathmed">\\(F_{${i+1}}(C)=F_{${i+1}}(A)B\\)</div>
+ <div class="mathmed">\\(${latexVec(ai,true)}${latexMat(RIB)}=${latexVec(ci,true)}\\)</div>
+ <div class="resultbox"><b>Resultado:</b> la fila resaltada de \\(C\\) es ${ci.join(', ')}.</div>`;
+ rerender(rowIntCalc);
+}
+rowIntSel.onchange=rowInterpret;
+rowIntRand.onclick=()=>{RIA=mat(3,3);RIB=mat(3,4);rowInterpret()};
+/* slide 9 */
+let MMA=mat(3,3),MMB=mat(3,4);
+function matrixMatrixEntry(){
+ let i=+selRow.value-1,j=+selCol.value-1,C=mm(MMA,MMB);
+ mmMatrices.innerHTML=`<div class="grid3">
+ <div>${htmlMat(MMA,(r,c)=>r===i?'hlrow':'',`A · fila ${i+1}`)}</div>
+ <div>${htmlMat(MMB,(r,c)=>c===j?'hlcol':'',`B · columna ${j+1}`)}</div>
+ <div>${htmlMat(C,(r,c)=>r===i&&c===j?'hlboth':'',`C=AB · entrada (${i+1},${j+1})`)}</div>
+ </div>`;
+ let row=MMA[i],col=MMB.map(r=>r[j]),products=row.map((a,k)=>a*col[k]);
+ mmCalc.innerHTML=`
+ <div class="mathmed mathleft">\\(C_{${i+1},${j+1}}=F_${i+1}(A)\\,C_${j+1}(B)\\)</div>
+ <div class="mathmed mathleft">\\(=${latexVec(row,true)}\\,${latexVec(col)}\\)</div>
+ <div class="mathmed mathleft">\\(=${row[0]}(${col[0]})+${row[1]}(${col[1]})+${row[2]}(${col[2]})\\)</div>
+ <div class="mathmed mathleft">\\(=${products[0]}+${products[1]}+${products[2]}=${C[i][j]}\\)</div>
+ <div class="resultbox"><b>Resultado:</b> \\(C_{${i+1},${j+1}}=${C[i][j]}\\).</div>`;
+ rerender(mmCalc);
+}
+selRow.onchange=selCol.onchange=matrixMatrixEntry;mmrand.onclick=()=>{MMA=mat(3,3);MMB=mat(3,4);matrixMatrixEntry()};
+
+/* slide 12: rank-one decomposition */
+let OUA=mat(3,3),OUB=mat(3,3),selectedRank=0;
+function selectRank(k){selectedRank=k;outerDecomp();}
+window.selectRank=selectRank;
+function outerDecomp(){
+ let C=mm(OUA,OUB);
+ outerMatrices.innerHTML=`<div class="grid2">
+ <div>${htmlMat(OUA,(i,j)=>j===selectedRank?'hlcol':'',`A · columna ${selectedRank+1} resaltada`)}</div>
+ <div>${htmlMat(OUB,(i,j)=>i===selectedRank?'hlrow':'',`B · fila ${selectedRank+1} resaltada`)}</div>
+ </div>`;
+ let terms=[];
+ for(let k=0;k<3;k++){
+   let col=OUA.map(r=>r[k]),row=OUB[k],T=outer(col,row);terms.push(T);
+ }
+ outerTerm.innerHTML=`<div class="termgrid">${terms.map((T,k)=>`
+ <div class="termmini clickable ${k===selectedRank?'selected':''}" onclick="selectRank(${k})">
+   <div class="small"><b>\\(R_${k+1}=C_${k+1}(A)F_${k+1}(B)\\)</b></div>
+   ${htmlMat(T)}
+ </div>`).join('')}</div>`;
+ let S=terms.reduce((acc,T)=>addM(acc,T),[[0,0,0],[0,0,0],[0,0,0]]);
+ outerSum.innerHTML=`<div class="mathmed">\\(R_1+R_2+R_3=${latexMat(S)}=AB\\)</div>
+ ${htmlMat(C,()=>'', 'Producto directo AB')}
+ <p class="small muted">Haz clic en cualquiera de los tres sumandos para identificar geométricamente qué columna y qué fila lo generan.</p>`;
+ rerender(outerTerm);rerender(outerSum);
+}
+outerRand.onclick=()=>{OUA=mat(3,3);OUB=mat(3,3);selectedRank=0;outerDecomp()};
+
+
+function blockExample(){
+ const M=[[1,2,-1,0],[3,1,2,1],[0,2,1,-2],[1,0,3,1]];
+ const x=[1,-1],y=[2,1],z=[...x,...y],r=mv(M,z);
+ const M11=[[1,2],[3,1]],M12=[[-1,0],[2,1]],M21=[[0,2],[1,0]],M22=[[1,-2],[3,1]];
+ const top1=mv(M11,x),top2=mv(M12,y),bot1=mv(M21,x),bot2=mv(M22,y);
+ const top=top1.map((v,i)=>v+top2[i]),bot=bot1.map((v,i)=>v+bot2[i]);
+ blockMatrixExample.innerHTML='<table class="blockM">'+M.map(row=>'<tr>'+row.map(v=>`<td>${v}</td>`).join('')+'</tr>').join('')+'</table>';
+ blockCalc.innerHTML=`
+ <div class="mathmed mathleft">\\(M_{11}x=${latexVec(top1)},\\quad M_{12}y=${latexVec(top2)}\\)</div>
+ <div class="mathmed mathleft">\\(M_{11}x+M_{12}y=${latexVec(top)}\\)</div>
+ <div class="mathmed mathleft">\\(M_{21}x=${latexVec(bot1)},\\quad M_{22}y=${latexVec(bot2)}\\)</div>
+ <div class="mathmed mathleft">\\(M_{21}x+M_{22}y=${latexVec(bot)}\\)</div>
+ <div class="resultbox"><div class="mathmed mathleft">\\(Mz=${latexVec(r)}\\)</div></div>`;
+ rerender(blockCalc);
+}
+
+/* UInt */
+const uintBitsMap={UInt8:8,UInt16:16,UInt32:32,UInt64:64};
+function groupBits(str){return str.match(/.{1,8}/g).join(' ')}
+function uint(){
+ let bits=uintBitsMap[uintFmt.value],max=(1n<<BigInt(bits))-1n,n;
+ try{n=BigInt(uintn.value.trim())}catch{uintStatus.textContent='Entrada inválida';uintbits.textContent='';uinttxt.innerHTML='';return;}
+ if(n<0n||n>max){uintStatus.textContent=`Fuera de rango para ${uintFmt.value}: 0 ≤ n ≤ ${max}`;uintbits.textContent='';uinttxt.innerHTML='';return;}
+ let b=n.toString(2).padStart(bits,'0');
+ uintStatus.textContent=`${uintFmt.value}: ${bits} bits · rango válido`;
+ uintbits.textContent=groupBits(b);
+ uinttxt.innerHTML=`\\(${n.toString()}_{10}=(${b})_2\\)`;
+ rerender(uinttxt);
+}
+uintn.oninput=uint;uintFmt.onchange=uint;
+uintRand.onclick=()=>{let bits=uintBitsMap[uintFmt.value];let lim=bits<=16?(1<<bits)-1:1000000;uintn.value=String(Math.floor(Math.random()*(lim+1)));uint()};
+
+
+
+function errorExample(){
+ let x=Number(errX.value),xh=Number(errXh.value);
+ if(!Number.isFinite(x)||!Number.isFinite(xh)){errOut.textContent='Entradas inválidas';return;}
+ let ea=Math.abs(x-xh);
+ let er=x===0?null:ea/Math.abs(x);
+ errOut.innerHTML=er===null
+   ? `\\(|x-\\widehat x|=${ea};\\quad\\) error relativo no definido para \\(x=0\\)`
+   : `\\(|x-\\widehat x|=${ea};\\qquad \\frac{|x-\\widehat x|}{|x|}=${er.toExponential(4)}=${(100*er).toPrecision(4)}\\%\\)`;
+ rerender(errOut);
+}
+errX.oninput=errXh.oninput=errorExample;
+
+
+const intBitsMap={Int8:8,Int16:16,Int32:32,Int64:64};
+function intDemo(){
+ let bits=intBitsMap[intFmt.value],mag;
+ try{mag=BigInt(intMag.value.trim())}catch{intStatus.textContent='Magnitud inválida';intbits.textContent='';intExplain.innerHTML='';return;}
+ if(mag<0n)mag=-mag;
+ let n=intNeg.checked?-mag:mag,min=-(1n<<(BigInt(bits)-1n)),max=(1n<<(BigInt(bits)-1n))-1n;
+ if(n<min||n>max){intStatus.textContent=`Fuera de rango para ${intFmt.value}: ${min} ≤ n ≤ ${max}`;intbits.textContent='';intExplain.innerHTML='';return;}
+ let mod=1n<<BigInt(bits),u=n<0n?mod+n:n,b=u.toString(2).padStart(bits,'0');
+ intStatus.textContent=`${intFmt.value}: ${bits} bits · complemento a dos`;
+ intbits.textContent=groupBits(b);
+ if(n<0n){
+   let pos=mag.toString(2).padStart(bits,'0'),inv=[...pos].map(c=>c==='0'?'1':'0').join('');
+   intExplain.innerHTML=`<div class="mathmed mathleft">\\(+${mag}=(${pos})_2\\)</div>
+   <div class="mathmed mathleft">\\(\\text{invertir bits}: ${inv}\\)</div>
+   <div class="mathmed mathleft">\\(\\text{sumar 1}: ${b}\\Rightarrow ${n.toString()}\\)</div>`;
+ }else intExplain.innerHTML=`<div class="mathmed mathleft">\\(${n.toString()}_{10}=(${b})_2\\)</div>`;
+ rerender(intExplain);
+}
+intMag.oninput=intNeg.onchange=intFmt.onchange=intDemo;
+intRand.onclick=()=>{let bits=intBitsMap[intFmt.value],lim=bits<=16?2**(bits-1)-1:1000000;intMag.value=String(Math.floor(Math.random()*(lim+1)));intNeg.checked=Math.random()<.5;intDemo()};
+
+
+function bigRatDemo(){
+ try{
+   let n=BigInt(bigIntInput.value.trim()),sign=n<0n?'-':'+',mag=n<0n?-n:n,b=mag.toString(2);
+   bigIntBits.innerHTML=`<p><b>Signo:</b> ${sign}</p><p><b>magnitud en binario (${b.length} bits):</b></p><div class="bitline">${groupBits(b.padStart(Math.ceil(b.length/8)*8,'0'))}</div>
+   <p class="tiny muted">Esto describe el <em>valor binario</em>. El layout exacto de memoria de GMP usa limbs y metadatos; no es un formato fijo tipo UInt64.</p>`;
+ }catch{bigIntBits.textContent='BigInt inválido';}
+ try{
+   let p=BigInt(ratP.value.trim()),q=BigInt(ratQ.value.trim());if(q===0n)throw new Error();
+   if(q<0n){p=-p;q=-q}
+   function gcd(a,b){a=a<0n?-a:a;b=b<0n?-b:b;while(b){let t=a%b;a=b;b=t}return a}
+   let g=gcd(p,q);p/=g;q/=g;
+   let pb=(p<0n?-p:p).toString(2),qb=q.toString(2);
+   ratBits.innerHTML=`<div class="mathmed">\\(r=${p.toString()}/${q.toString()}\\)</div>
+   <p class="small"><b>Numerador:</b> signo ${p<0n?'-':'+'}, magnitud binaria <code>${pb}</code></p>
+   <p class="small"><b>Denominador:</b> positivo, magnitud binaria <code>${qb}</code></p>
+   <p class="tiny muted">Rational almacena conceptualmente el par normalizado de enteros; no existe un único bitstring flotante para el racional completo.</p>`;
+   rerender(ratBits);
+ }catch{ratBits.textContent='Racional inválido (q debe ser distinto de 0)';}
+}
+bigIntInput.oninput=ratP.oninput=ratQ.oninput=bigRatDemo;
+
+/* exact decimal to binary */
+function decimalFractionToBinary(str,nb){
+ let s=str.trim(),neg=s.startsWith('-');if(neg)s=s.slice(1);
+ if(!/^\d*(\.\d*)?$/.test(s))return 'entrada inválida';
+ let [ip='0',fp='']=s.split('.');ip=ip||'0';let den=10n**BigInt(fp.length);let num=BigInt(ip)*den+BigInt(fp||'0');
+ let int=num/den,rem=num%den,ib=int.toString(2),bits='';
+ for(let k=0;k<nb;k++){rem*=2n;if(rem>=den){bits+='1';rem-=den}else bits+='0'}
+ return `${neg?'-':''}${ib}.${bits}${rem!==0n?'…':''}`;
+}
+function binconv(){binfrac.textContent=`${decstr.value}₁₀ = ${decimalFractionToBinary(decstr.value,+nbits.value)}₂`}
+decstr.oninput=nbits.oninput=binconv;
+
+function setupCanvas(c){let dpr=devicePixelRatio||1,r=c.getBoundingClientRect();c.width=Math.max(10,r.width*dpr);c.height=Math.max(10,r.height*dpr);let x=c.getContext('2d');x.setTransform(dpr,0,0,dpr,0,0);return [x,r.width,r.height]}
+function interval(){
+ let [x,w,h]=setupCanvas(intervalCanvas);x.clearRect(0,0,w,h);let q=(+qrange.value)/1000,n=+qlevel.value;
+ x.font='14px system-ui';x.fillStyle='#637083';x.fillText(`q = ${q.toFixed(3)} · nivel ${n}`,12,22);
+ for(let k=1;k<=n;k++){let cells=2**k,a=Math.floor(q*cells)/cells,b=a+1/cells,y=30+k*(h-45)/n;
+  x.strokeStyle='#dbe2ea';x.beginPath();x.moveTo(15,y);x.lineTo(w-15,y);x.stroke();
+  x.fillStyle='rgba(35,87,216,.15)';x.fillRect(15+a*(w-30),y-10,(b-a)*(w-30),20);
+  x.fillStyle='#172033';x.fillText(`[${a.toFixed(3)}, ${b.toFixed(3)}]`,20,y+5)}
+ x.fillStyle='#b42318';x.fillRect(15+q*(w-30)-1,28,2,h-40)
+}
+qrange.oninput=qlevel.oninput=interval;
+
+function floatplot(){
+ let [x,w,h]=setupCanvas(floatCanvas),p=+pbits.value;x.clearRect(0,0,w,h);let vals=[];
+ for(let e=-3;e<=3;e++)for(let k=0;k<2**p;k++)vals.push((1+k/2**p)*2**e);
+ let max=16,min=.125,logmin=Math.log2(min),logmax=Math.log2(max),map=v=>25+(Math.log2(v)-logmin)/(logmax-logmin)*(w-50);
+ x.strokeStyle='#8793a5';x.beginPath();x.moveTo(25,h/2);x.lineTo(w-25,h/2);x.stroke();
+ vals.filter(v=>v>=min&&v<=max).forEach(v=>{let xx=map(v);x.strokeStyle='#2357d8';x.beginPath();x.moveTo(xx,h/2-8);x.lineTo(xx,h/2+8);x.stroke()});
+ x.fillStyle='#637083';x.font='13px system-ui';[-3,-2,-1,0,1,2,3,4].forEach(e=>{let v=2**e;if(v>=min&&v<=max)x.fillText(`2^${e}`,map(v)-10,h/2+30)})
+}
+pbits.oninput=floatplot;
+
+function soft(){
+ let a=nums(softx.value);if(!a.length)return;let direct=a.map(Math.exp),sd=direct.reduce((s,v)=>s+v,0),naive=direct.map(v=>v/sd);
+ let m=Math.max(...a),ex=a.map(v=>Math.exp(v-m)),se=ex.reduce((s,v)=>s+v,0),stable=ex.map(v=>v/se);
+ softout.innerHTML=`Directa: <code>${naive.map(v=>String(v)).join(', ')}</code><br>Estable: <b>${stable.map(v=>v.toPrecision(6)).join(', ')}</b>`;
+}
+softx.oninput=soft;
+
+
+function normalizeDemo(){
+ let x=Number(normInput.value),nb=Math.max(6,Math.min(40,Number(normBits.value)||16));
+ if(!Number.isFinite(x)){normOut.innerHTML='<div class="callout warn">Entrada no finita o inválida.</div>';return;}
+ if(x===0){normOut.innerHTML='<div class="mathmed mathleft">\\(x=0\\): no tiene representación normalizada con \\(1\\le q<2\\).</div>';rerender(normOut);return;}
+ let sign=x<0?'-':'',a=Math.abs(x),m=Math.floor(Math.log2(a)),q=a/2**m;
+ let frac=q-1,bits='';for(let i=0;i<nb;i++){frac*=2;if(frac>=1){bits+='1';frac-=1}else bits+='0'}
+ normOut.innerHTML=`
+ <div class="mathmed mathleft">\\(x=${x}\\)</div>
+ <div class="mathmed mathleft">\\(|x|=${q.toPrecision(12)}\\,2^{${m}}\\)</div>
+ <div class="mathmed mathleft">\\(q\\approx(1.${bits})_2\\)</div>
+ <div class="resultbox"><div class="mathmed mathleft">\\(x\\approx ${sign}(1.${bits})_2\\,2^{${m}}\\)</div></div>`;
+ rerender(normOut);
+}
+normInput.oninput=normBits.oninput=normalizeDemo;
+
+/* slide 35 representations */
+function f32(x){return new Float32Array([x])[0]}
+function f16Approx(x){
+ if(!Number.isFinite(x)||x===0)return x;
+ let s=Math.sign(x),ax=Math.abs(x),e=Math.floor(Math.log2(ax));
+ if(e>15)return s*Infinity;
+ if(e<-24)return s*0;
+ let step=e>=-14?2**(e-10):2**-24;
+ return s*Math.round(ax/step)*step;
+}
+function bf16Approx(x){
+ let b=new ArrayBuffer(4),dv=new DataView(b);
+ dv.setFloat32(0,x,false);let u=dv.getUint32(0,false);
+ let lsb=(u>>16)&1;u=(u+0x7FFF+lsb)&0xFFFF0000;
+ dv.setUint32(0,u,false);return dv.getFloat32(0,false);
+}
+function digits10(p){return Math.floor((p-1)*Math.log10(2))}
+function fmtSig(x,n){
+ if(!Number.isFinite(x))return String(x);
+ if(x===0)return '0';
+ return Number(x).toPrecision(n);
+}
+const repData={
+ half:{exact:'\\frac12',desc:'Racional exacto y también representable exactamente en binario.',val:0.5,binary:'0.1₂'},
+ pi:{exact:'\\pi',desc:'Irracional: su expansión decimal y binaria son infinitas no periódicas.',val:Math.PI,binary:'aproximación binaria finita'},
+ dec01:{exact:'\\frac1{10}',desc:'Decimal finito, pero no binario finito.',val:0.1,binary:'0.0001100110011…₂'},
+ fifth:{exact:'\\frac15',desc:'Racional exacto; expansión binaria infinita periódica.',val:0.2,binary:'0.001100110011…₂'},
+ e:{exact:'e',desc:'Irracional; en máquina se almacena una aproximación.',val:Math.E,binary:'aproximación binaria finita'}
+};
+function repShow(){
+ let d;
+ if(repSelect.value==='custom'){
+   let v=Number(repCustom.value);
+   if(!Number.isFinite(v)){repExact.innerHTML='';repDesc.textContent='Valor inválido';repFloat.innerHTML='';repFormats.innerHTML='';return;}
+   d={exact:String(v),desc:'Valor digitado por el usuario.',val:v,binary:'aproximación binaria según el formato'};
+ }else d=repData[repSelect.value];
+ let buf=new ArrayBuffer(8),dv=new DataView(buf);dv.setFloat64(0,d.val,false);
+ let bits='';for(let i=0;i<8;i++)bits+=dv.getUint8(i).toString(2).padStart(8,'0');
+ repExact.innerHTML=`\\(${d.exact}\\)`;repDesc.textContent=d.desc;
+ repFloat.innerHTML=`<p><b>Referencia matemática/Float64:</b> <code>${d.val.toPrecision(17)}</code></p>
+ <p><b>Binario conceptual:</b> ${d.binary}</p>
+ <p class="tiny"><b>bits Float64:</b><br><code style="word-break:break-all">${bits.slice(0,1)} ${bits.slice(1,12)} ${bits.slice(12)}</code></p>`;
+ const rows=[
+   {name:'Float16',p:11,val:f16Approx(d.val)},
+   {name:'bfloat16',p:8,val:bf16Approx(d.val)},
+   {name:'Float32',p:24,val:f32(d.val)},
+   {name:'Float64',p:53,val:d.val}
+ ];
+ repFormats.innerHTML=`<table><tr><th>Formato</th><th>p</th><th>cifras garantizadas</th><th>valor almacenado, expresado en decimal</th></tr>
+ ${rows.map(r=>`<tr><td>${r.name}</td><td>${r.p}</td><td>${digits10(r.p)}</td><td><code>${Number.isFinite(r.val) ? String(r.val) : String(r.val)}</code></td></tr>`).join('')}
+ </table>`;
+ rerender(repExact);rerender(repFormats);
+}
+repSelect.onchange=repShow;repCustom.oninput=()=>{if(repSelect.value==='custom')repShow()};
+
+function roundexp(){
+ let m=+mexp.value,p=+pprec.value,step=2**(m-p);
+ roundtxt.innerHTML=`<p>En el modelo simplificado, dentro de \\([2^m,2^{m+1})\\):</p>
+ <div class="mathbig">\\(\\Delta=2^{m-p}=${step.toExponential(3)}\\)</div>
+ <p>Error máximo por redondeo al vecino ≈ \\(\\Delta/2\\), mientras el error <b>relativo</b> permanece del orden de \\(2^{-p}\\).</p>`;rerender(roundtxt);
+ let [x,w,h]=setupCanvas(roundCanvas);x.clearRect(0,0,w,h);x.strokeStyle='#8793a5';x.beginPath();x.moveTo(25,h/2);x.lineTo(w-25,h/2);x.stroke();
+ let N=Math.min(2**p,64);for(let k=0;k<=N;k++){let xx=25+k/N*(w-50);x.strokeStyle='#2357d8';x.beginPath();x.moveTo(xx,h/2-12);x.lineTo(xx,h/2+12);x.stroke()}
+ x.font='13px system-ui';x.fillStyle='#637083';x.fillText(`2^${m}`,25,h/2+35);x.fillText(`2^${m+1}`,w-60,h/2+35)
+}
+mexp.oninput=pprec.oninput=roundexp;
+
+
+const parInfo={
+ simd:`<h3>SIMD · vectorización dentro de un núcleo</h3><p>Ejemplo: sumar 8 números Float32 por instrucción en un registro vectorial de 256 bits. Es útil en operaciones BLAS-1 y en los micro-kernels de BLAS-3.</p><p><b>Cuello de botella:</b> si los datos no llegan desde caché/memoria a suficiente velocidad, las unidades vectoriales quedan ociosas.</p>`,
+ threads:`<h3>Multihilo · varios núcleos compartiendo memoria</h3><p>Ejemplo: dividir las filas/bloques de una multiplicación de matrices entre los núcleos de la CPU. OpenBLAS, BLIS y oneMKL pueden crear hilos internamente.</p><p><b>Riesgos:</b> competencia por ancho de banda, sincronización, afinidad de hilos y efectos NUMA.</p>`,
+ gpu:`<h3>GPU / manycore · paralelismo masivo</h3><p>Ejemplo: miles de hilos calculan bloques del producto <b>C = AB</b>. Las bibliotecas organizan tiles para reutilizar <i>A</i> y <i>B</i> en memorias rápidas locales.</p><p><b>Clave:</b> se necesitan suficientes operaciones independientes y datos para amortizar transferencias y lanzamiento de kernels.</p>`,
+ dist:`<h3>Distribuido · varios nodos</h3><p>Ejemplo: una matriz se reparte en bloques 2D entre procesos MPI. Cálculos locales usan BLAS; comunicaciones intercambian paneles, fronteras o reducciones.</p><p><b>Cuello de botella:</b> latencia y ancho de banda de red. Aquí minimizar comunicación puede ser tan importante como minimizar FLOPs.</p>`
+};
+function setPar(k){
+ document.querySelectorAll('[data-par]').forEach(el=>el.classList.toggle('selected',el.dataset.par===k));
+ parDetail.innerHTML=parInfo[k];rerender(parDetail);
+}
+document.querySelectorAll('[data-par]').forEach(el=>el.onclick=()=>setPar(el.dataset.par));
+
+/* final random message */
+const messages=[
+ 'El producto matricial no es una fórmula: son cuatro interpretaciones de la misma operación.',
+ 'Producto interno: dos vectores → un escalar. Producto externo: dos vectores → una matriz de rango uno.',
+ 'Ax se puede leer por filas o como combinación lineal de las columnas de A.',
+ 'AB se puede leer por columnas, por filas, entrada a entrada o como suma de matrices de rango uno.',
+ 'Una identidad algebraica correcta no garantiza una implementación numéricamente estable.',
+ 'Rango y precisión son recursos diferentes.',
+ 'Los números de máquina son discretos y su espaciamiento depende de la escala.',
+ 'La baja precisión es útil cuando el algoritmo y el hardware están diseñados para controlarla.',
+ 'En álgebra lineal de alto rendimiento, mover datos puede costar más que hacer operaciones.',
+ 'BLAS-3 es central porque el producto matriz–matriz reutiliza datos y expone paralelismo.',
+ 'La precisión mixta combina velocidad de baja precisión con correcciones de mayor precisión.',
+ 'El algoritmo moderno también debe decidir dónde viven los datos: CPU, GPU, APU/NPU o varios nodos.'
+];
+function randomMessage(){mainMessage.textContent=messages[Math.floor(Math.random()*messages.length)]}
+newMessage.onclick=randomMessage;setInterval(randomMessage,3000);
+
+function underflowPlot(){
+ if(!window.ufCanvas)return;
+ let [x,w,h]=setupCanvas(ufCanvas);x.clearRect(0,0,w,h);
+ let left=38,right=w-34,y=h*.58;
+ // zones
+ x.fillStyle='rgba(180,83,9,.12)'; x.fillRect(left,y-46,(w-72)*.38,70);
+ x.fillStyle='rgba(35,87,216,.10)'; x.fillRect(left+(w-72)*.10,y-46,(w-72)*.28,70);
+ x.fillStyle='rgba(180,35,24,.10)'; x.fillRect(left+(w-72)*.90,y-46,(w-72)*.10,70);
+ x.strokeStyle='#7d8898';x.beginPath();x.moveTo(left,y);x.lineTo(right,y);x.stroke();
+ const pos={zero:.02,minsub:.10,minnorm:.38,one:.67,max:.90,inf:.98};
+ function mark(p,label,color,above=false){
+   let xx=left+p*(w-72);x.strokeStyle=color;x.beginPath();x.moveTo(xx,y-12);x.lineTo(xx,y+12);x.stroke();
+   x.fillStyle=color;x.font='12px system-ui';x.fillText(label,Math.max(2,xx-38),above?y-22:y+31);
+ }
+ mark(pos.zero,'0','#172033');
+ mark(pos.minsub,'min subnormal','#2357d8',true);
+ mark(pos.minnorm,'min normal','#b45309');
+ mark(pos.one,'1','#172033',true);
+ mark(pos.max,'max finite','#172033');
+ mark(pos.inf,'∞','#b42318',true);
+ x.font='bold 13px system-ui';
+ x.fillStyle='#b45309';x.fillText('UNDERFLOW',left+(w-72)*.16,y-58);
+ x.fillStyle='#2357d8';x.fillText('SUBNORMALES',left+(w-72)*.12,y-36);
+ x.fillStyle='#b42318';x.fillText('OVERFLOW',left+(w-72)*.87,y-58);
+ x.fillStyle='#657286';x.font='12px system-ui';
+ x.fillText('magnitud positiva (esquema conceptual, no a escala)',left,y+52);
+}
+function drawAll(){
+ if(window.ufCanvas && ufCanvas.closest('.active'))underflowPlot();
+ if(intervalCanvas.closest('.active'))interval();
+ if(floatCanvas.closest('.active'))floatplot();
+ if(roundCanvas.closest('.active'))roundexp();
+}
+window.addEventListener('resize',drawAll);
+window.addEventListener('load',()=>{
+ renderMath();opRender();vectorProducts();matrixVector();rowMatrix();colInterpret();rowInterpret();matrixMatrixEntry();outerDecomp();
+ uint();intDemo();bigRatDemo();binconv();errorExample();normalizeDemo();soft();repShow();randomMessage();blockExample();setPar('simd');show(0);
+});
+</script>
+</body>
+</html>
