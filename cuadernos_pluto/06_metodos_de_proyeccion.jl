@@ -1,278 +1,394 @@
 ### A Pluto.jl notebook ###
-# v0.19.38
+# v0.20.4
 
 using Markdown
 using InteractiveUtils
 
-# ╔═╡ e44895d0-6c5b-11ee-3d3f-a3f41cdc51a1
+# ╔═╡ 7d363390-66d7-11ee-12b0-0f5139bbd847
 begin
-	using PlutoUI
-	using HypertextLiteral
 	using LinearAlgebra
 	using Plots
+	using PlutoUI
 end
 
-# ╔═╡ 8d26cca5-0c60-4bc3-88a3-4131544a6624
-using Gridap
+# ╔═╡ 2a3b7177-38a5-4cbe-8e49-06a92ee44870
+PlutoUI.TableOfContents(title="Métodos de Proyección ", aside=true)
 
-# ╔═╡ 9f6d65e6-434e-4787-8ad4-2d8dd58a47c5
-md""" Pluto copy of tutorial in [tutorial](https://github.com/gridap/Tutorials/blob/master/src/poisson.jl)"""
-
-# ╔═╡ 5024f850-0164-4e98-861a-68267705307b
-PlutoUI.TableOfContents(title="Poisson", aside=true)
-
-# ╔═╡ a4928017-8dff-45e9-8fbc-6ea49f4cf5e8
+# ╔═╡ 8bb16c2a-c1ce-475e-a3e1-e78a6c7801a4
 md"""
-In this tutorial, we will learn
+# Métodod de proyección
 
-    -How to solve a simple PDE in Julia with Gridap
-    -How to load a discrete model (aka a FE mesh) from a file
-    -How to build a conforming Lagrangian FE space
-    -How to define the different terms in a weak form
-    -How to impose Dirichlet and Neumann boundary conditions
-    -How to visualize results
-"""
+Considere los subspacasios $\mathcal{K},\mathcal{L}\subset \mathbb{R}^n$. El espacio solución es $\mathcal{k}$ y $\mathcal{L}$ es el espacio de prueba. 
 
-# ╔═╡ 28b43ff3-1ed8-418e-be4c-0c02e781e93d
-md"""
+Queremos aproximar la solución de $Ax=b$. 
+La idea es en cada iteración seleccionar espacios adecuados. Suponga que tenemos $x^{(k)}$ y espacios 
+$\mathcal{K}^{(k)},\mathcal{L}^{(k)}\subset \mathbb{R}^n$
+Queremos encontrar una posible mejor aproximación $x^{(k+1)}=x^{(k)}+\delta^{(k)}$ tal que 
+1. el incremento satisface $\delta^{(k)}\in \mathcal{K}^{(k)}$.
 
+2. el residuo satisface $r^{(k+1)}= b-Ax^{(k+1)} \perp \mathcal{L}^{(k)}$. ($r$ es el residuo).
 
- ## Problem statement
+Note que $$r^{(k+1)}=b-Ax^{(k+1)}=b-A(x^{(k)}+\delta^{(k)})=(b-Ax^{(k)})+\delta^{(k)}=r^{(k)}-A\delta^{(k)}.$$
 
- In this first tutorial, we provide an overview of a complete simulation pipeline in Gridap: from the construction of the FE mesh to the visualization of the computed results. To this end, we consider a simple model problem: the Poisson equation.
+Por lo tanto, el ítem 2. arriba es equivalente a 
 
-We want to solve the Poisson equation on the 3D domain depicted in next figure with Dirichlet and Neumann boundary conditions. Dirichlet boundary conditions are applied on $\Gamma_{\rm D}$, being the outer sides of the prism (marked in red). Non-homogeneous Neumann conditions are applied to the internal boundaries $\Gamma_{\rm G}$, $\Gamma_{\rm Y}$, and $\Gamma_{\rm B}$ (marked in green, yellow and blue espectively). And homogeneous Neumann boundary conditions are applied in $\Gamma_{\rm W}$, the remaining portion of the boundary (marked in white).
+$w^T(r^{(k)}-A\delta^{(k)})=0 \mbox{ para todo } w\in \mathcal{L}^{(k)},$
+lo que podemos escribir como
 
- ![](../assets/poisson/model-r1-2.png)
+$w^T(A\delta^{(k)})=w^Tr^{(k)}\mbox{ para todo } w\in \mathcal{L}^{(k)}.$
 
-  Formally, the problem to solve is: find the scalar field $u$ such that
+*Se observa entonces que $A\delta^{(k)}$ es la projección en $A\mathcal{K}$ ortogonalmente a $\mathcal{L}$*. Note que si $\mathcal{L}=A\mathcal{L}$ tenemos el caso de una proyección ortogonal en la noma euclidiana.  
 
- $\left\lbrace
- \begin{aligned}
- -\Delta u = f  \ &\text{in} \ \Omega,\\
- u = g \ &\text{on}\ \Gamma_{\rm D},\\
- \nabla u\cdot n = h \ &\text{on}\  \Gamma_{\rm N},\\
- \end{aligned}
- \right.$
+Si $\mathcal{K}=\mathcal{L}$ es el caso de Galerkin o de proyección ortogonal. En general se dice que es el caso de Petrov-Galerkin.
 
-  being $n$ the outwards unit normal vector to the Neumann boundary $\Gamma_{\rm N} \doteq \Gamma_{\rm G}\cup\Gamma_{\rm Y}\cup\Gamma_{\rm B}\cup\Gamma_{\rm W}$. In this example, we chose $f(x) = 1$, $g(x) = 2$, and $h(x)=3$ on $\Gamma_{\rm G}\cup\Gamma_{\rm Y}\cup\Gamma_{\rm B}$ and $h(x)=0$ on $\Gamma_{\rm W}$. The variable $x$ is the position vector $x=(x_1,x_2,x_3)$.
-
-  ## Numerical scheme
-
-  To solve this PDE, we use a conventional Galerkin finite element (FE) method with conforming Lagrangian FE spaces (see, e.g., [1] for specific details on this formulation). The weak form associated with this formulation is: find $u\in U_g$ such that $ a(u,v) = b(v) $ for all $v\in V_0$, where $U_g$ and $V_0$ are the subset of functions in $H^1(\Omega)$ that fulfill the Dirichlet boundary condition $g$ and $0$ respectively. The bilinear and linear forms for this problems are
-
-$a(u,v) \doteq \int_{\Omega} \nabla v \cdot \nabla u \ {\rm d}\Omega, \quad b(v) \doteq \int_{\Omega} v\ f  \ {\rm  d}\Omega + \int_{\Gamma_{\rm N}} v\ h \ {\rm d}\Gamma_{\rm N}.$
-
- The problem is solved numerically by approximating the spaces $U_g$ and $V_0$ by their discrete counterparts associated with a FE mesh of the computational domain $\Omega$. As we have anticipated, we consider standard conforming Lagrangian FE spaces for this purpose.
-
- The implementation of this numerical scheme in Gridap is done in a user-friendly way thanks to the abstractions provided by the library. As it will be seen below, all the mathematical objects involved in the definition of the discrete weak problem have a correspondent representation in the code.
-
-## Setup
-
-  The step number 0 in order to solve the problem is to load the Gridap library in the code. If you have configured your Julia environment properly, it is simply done with the line:
+Podemos ilustrar este procedimeinto como sigue a continuación. 
 
 """
 
-# ╔═╡ 459bade0-9427-4181-910f-408b2bea4e0e
-md"""
- ## Discrete model
+# ╔═╡ 4702d844-c4d5-47a0-bb1b-01927b8daac7
+LocalResource(joinpath(@__DIR__, "06_proyeccion_ortogonal.png"))
 
- As in any FE simulation, we need a discretization of the computational domain (i.e., a FE mesh). All geometrical data needed for solving a FE problem is provided in Gridap by types inheriting from the abstract type `DiscreteModel`. In the following line, we build an instance of `DiscreteModel` by loading a `json` file.
+# ╔═╡ a4323b5f-d950-4dc0-b697-4dfabedf4db8
+md"""
+## Representación matricial
+
+Si  $\mathcal{K}^{(k)}=\mbox{span}(V)$, es decir, es la imagen de una matriz $V$ con columnas linealmente independientes, entonces $\delta^{(k)}=Vy^{(k)}$. 
+
+De igual forma, si  $\mathcal{L}^{(k)}=\mbox{span}(W)$ entonces íitem 2. arriba es equivalente a 
+
+$W^Tr^{(k+1)}=0.$
+
+Reemplazando $r^{(k+1)}=r^{(k)}-A\delta^{(k)}$ obtenemos 
+
+$W^TAV y^{(k)} =W^Tr^{(k)}$
+que da, en caso que que $H:=W^TAV$ sea no singular (lo cual hay que garantizar de alguna forma), 
+
+$y^{(k)} =(W^TAV)^{-1}W^Tr^{(k)}.$
+Obtenemos finalmente, 
+
+$x^{(k+1)}=x^{(k)} + V(W^TAV)^{-1}W^Tr^{(k)}$
+y además, 
+
+$r^{(k+1)}=r^{(k)}-A Vy^{(k)}.$
+
+
+
 
 """
 
-# ╔═╡ d841ad97-b71d-4a40-85ac-913b49440827
-model = DiscreteModelFromFile("model.json")
-
-# ╔═╡ 80ce49a3-004b-4320-ae0c-6b7de994cc01
+# ╔═╡ 6ce74da7-fc10-4b67-af8d-10a4e5160f46
 md"""
-The file `"model.json"` is a regular `json` file that includes a set of fields that describe the discrete model. It was generated by using together the [GMSH](http://gmsh.info/) mesh generator and the [GridapGmsh](https://github.com/gridap/GridapGmsh.jl) package. First, we generate a `"model.msh"` file with GMSH (which contains a FE mesh and information about user-defined physical boundaries in {GMSH} format). Then, this file is converted to the Gridap-compatible `"model.json"` file using the conversion tools available in the GridapGmsh package. See the documentation of the [GridapGmsh](https://github.com/gridap/GridapGmsh.jl) for more information.
+Tenemos el siguiente pseudocódigo:
 
- You can easily inspect the generated discrete model in [Paraview](https://www.paraview.org/) by writing it in `vtk` format.
+
+Hasta convergencia haga:
+1. Seleccionar  subsepacios $\mathcal{K}$ y $\mathcal{L}$
+2. Seleccionar bases $V=[v_1,v_2,\dots,v_m]$ y $W=[w_1,w_2,\dots,w_m]$ para  $\mathcal{K}$ y $\mathcal{L}$
+3. Calcular residuo $r=b-Ax$
+4. Calcular $y=(W^TAV)^{-1}W^Tr$
+5. Actualizar $x=x+Vy$
 
 """
 
-# ╔═╡ 663535c6-cc82-4e76-beec-fa9c2ee6deda
-writevtk(model,"model")
-
-# ╔═╡ e00f3eca-9871-4a73-9a77-eba97f75bf18
+# ╔═╡ b51a1aac-6ab3-4d53-9fde-417401083ade
 md"""
- The previous line generates four different files `model_0.vtu`, `model_1.vtu`, `model_2.vtu`, and `model_3.vtu` containing the vertices, edges, faces, and cells present in the discrete model. Moreover, you can easily inspect which boundaries are defined within the model.
-
- For instance, if you want to see which faces of the model are on the boundary $\Gamma_{\rm B}$ (i.e., the walls of the circular perforation), open the file `model_2.vtu` and chose coloring by the element field "circle". You should see that only the faces on the circular hole have a value different from zero (see next figure).
-
- ![](../assets/poisson/fig_faces_on_circle.png)
-
- It is also possible to see which vertices are on the Dirichlet boundary $\Gamma_{\rm D}$. To do so, open the file `model_0.vtu` and chose coloring by the field "sides" (see next figure).
-
- ![](../assets/poisson/fig_vertices_on_sides.png)
-
- That is, the boundary $\Gamma_{\rm B}$ (i.e., the walls of the circular hole) is called "circle" and the Dirichlet boundary $\Gamma_{\rm D}$ is called "sides" in the model. In addition, the walls of the triangular hole $\Gamma_{\rm G}$ and the walls of the square hole $\Gamma_{\rm Y}$ are identified in the model with the names "triangle" and "square" respectively. You can easily check this by opening the corresponding file in Paraview.
-
-
-## FE spaces
-
- Once we have a discretization of the computational domain, the next step is to generate a discrete approximation of the finite element spaces $V_0$ and $U_g$ (i.e. the test and trial FE spaces) of the problem. To do so, first, we are going to build a discretization of $V_0$ as the standard Conforming Lagrangian FE space (with zero boundary conditions) associated with the discretization of the computational domain. The approximation of the FE space $V_0$ is built as follows:
+La matriz $W^TAV$ es no singular sii ningún vector del subspacio $A\mathcal{K}$ es ortogonal al subspacio $\mathcal{L}$.
 """
 
-# ╔═╡ 7cf9ea6f-76ee-4fe0-9112-ffd2d0a7c3e2
+# ╔═╡ 3a14c566-e3fe-4d9e-b279-d6be971c0a1f
+md"""
+**Teorema:** Si tenemos alguna de las dos posibilidades
+1. La matriz $A$ is positiva definida y $\mathcal{K}=\mathcal{L}$, o
+2. La matriz $A$ es no singular y $\mathcal{L}=A\mathcal{K}$
+
+
+entonces $H=W^TAV$ es no singular para cualquier bases $V$ y $W$ de  $\mathcal{K}$ y $\mathcal{L}$. 
+"""
+
+# ╔═╡ fdff76fe-cb0c-45bf-b0c2-9f45cb04081b
+md"""
+## Teoría general
+
+**Proposición:** Asuma que $A$ es simetrica y positiva definida con $\mathcal{K}=\mathcal{L}$. Supoga que $Ax_*=b$. Etonces un vector $\bar{x}$ es el result de un método de projección orgotonal sobre $\mathcal{K}$ con vector inicial $x_0$ sii 
+$\bar{x} \in \arg \min E(x)$
+donde 
+
+$E(x):=\Big( (x_*-x)^TA(x_*-x) \Big)^{0.5} := ||x_*-x ||_A.$
+"""
+
+# ╔═╡ 33456248-bf4e-4615-853b-a7cc22ad4fe1
+md"""
+**Proposición:** Asuma que $A$ es no singulary que $\mathcal{L}=A\mathcal{K}$. Supoga que $Ax_*=b$. 
+Etonces un vector $\tilde{x}$ es el resultado de un método de projección (oblicua) sobre $\mathcal{K}$ y ortogonalmente a $\mathcal{L}$ con vector inicial $x_0$ sii 
+
+$\tilde{x} \in \arg \min R(x)$
+donde 
+
+$R(x):=||b-Ax||_2.$
+"""
+
+# ╔═╡ 55ad72fa-756a-4709-993b-5c784a74a093
+md"""
+## Error
+"""
+
+# ╔═╡ d1e32cc0-df8c-4f21-99c6-0a7daa40f9e5
+md"""
+# Proyecciones unidimensionales
+
+## Descenso mas empinado
+
+Recuerde que con $H=W^TAV$ tenemos el incremento
+
+$y =H^{-1}W^Tr.$
+y la acutalización 
+
+$x=x + VH^{-1}W^Tr.$
+
+
+En este caso $V=[r]$ y $W=[r]$. En este caso $H=r^TAr$ y $y=\frac{r^Tr}{r^TAr}=\alpha$. 
+Por lo que la acutalización es 
+
+$x=x+\alpha r.$
+y 
+
+$r=r-\alpha Ar.$
+
+Tenemos el suguiente algoritmo, 
+
+**Algoritmo:**
+
+(0) Calcular $r=b-Ax$ y $p=Ar$
+
+Hasta convergencia haga, 
+
+(1) $\alpha=r^Tr/r^Tp$
+
+(2) $x=x+\alpha r$
+
+(3) $r=r-\alpha p$
+
+(4) $p=Ar$
+
+
+"""
+
+# ╔═╡ ddd8cf41-0312-4e30-a06f-4db660cb711d
 begin
-	order = 1
-	reffe = ReferenceFE(lagrangian,Float64,order)
-	V0 = TestFESpace(model,reffe;conformity=:H1,dirichlet_tags="sides")
+	Aaux=rand(5,5)
+	qraux=qr(Aaux)
+	D=diagm([1,10,50,100,200])
+	A=qraux.Q'*D*qraux.Q
+	
+	display(A)
 end
 
-# ╔═╡ b6eb129c-ccce-451f-9dbf-a54ebcf20fa1
-md"""
+# ╔═╡ 8a8a8e99-5365-49a7-858f-01be53f26388
+eigvals(A)
 
- Here, we have used the `TestFESpace` constructor, which constructs a particular FE space (to be used as a test space) from a set of options described as positional and key-word arguments. The first positional argument is the model on top of which we want to build the space. The second positional argument contains information about the type of FE interpolation (the reference FE in this case). With `ReferenceFE(lagrangian,Float64,order)` We select a scalar-valued Lagrangian reference FE of order 1, where the value of the shape functions will be represented with  64-bit floating point numbers. With the key-word argument `conformity` we define the regularity of the interpolation at the boundaries of the cells in the mesh. Here, we use `conformity=:H1`, which means that the resulting interpolation space is a subset of $H^1(\Omega)$ (i.e., continuous shape functions). On the other hand, we pass the identifiers of the Dirichlet boundary via the `dirichlet_tags` argument. In this case, we mark as Dirichlet all objects of the discrete model identified with the `"sides"` tag. Since this is a test space, the corresponding shape functions vanishes at the Dirichlet boundary.
+# ╔═╡ d7550a06-a204-451f-bcee-a07f871072ff
+A-A'
 
- Once the space $V_0$ is discretized in the code, we proceed with the approximation of the trial space $U_g$.
+# ╔═╡ 4128a480-88ef-4c3a-a76f-d026da7a4c98
+function dme(A,x,b,M,tol)
+    r=b-A*x
+    p=A*r
+    nr0=norm(r)
+    for i=1:M
+        nr2=dot(r,r)
+        nr=sqrt(nr2)
+        println("Norma r_",i," =",nr,".. ",sqrt(r'*A*r))
+        if ( nr/nr0< tol)  # necesita garatizar un buen residuo inicial
+            break
+        end
+        α=nr2/dot(r,p)
+        x=x+α*r
+        r=r-α*p
+        p=A*r
+    end
+    return x
+end
 
-"""
-
-# ╔═╡ 1e63102c-e958-432d-b7cd-272441b33633
+# ╔═╡ 075409f4-8111-43c2-b228-c9b4a22b38df
 begin
-	
-	g(x) = 2.0
-	Ug = TrialFESpace(V0,g)
-	
+	b=fill(1,size(A)[2])
+	x=fill(0,size(A)[2])
+	x=dme(A,x,b,2000,0.001)
+
 end
 
-# ╔═╡ 4cc1bfb8-7007-4334-adc6-aa7115fef2ba
+# ╔═╡ 7c3300d5-c311-4bed-9dde-826f940d276d
+x
+
+# ╔═╡ 3d63b547-bd59-4724-935d-b138a3e61c27
+norm(b-A*x)
+
+# ╔═╡ 60616fe9-11f5-47d8-82be-2817b6075132
 md"""
- To this end, we have used the `TrialFESpace` constructors. Note that we have passed a function representing the value of the Dirichlet boundary condition, when building the trial space.
+## Iteración de residuo mínimo
+Asumimos que $A^T+A$ es positiva definida y selecionamos en cada itearción  $V=[r]$ y $W=[Ar]$. En este caso $H=r^TA^TAr=Ar\cdot Ar $ y $y=\frac{r^Tr}{r^TA^TAr}=\alpha$. 
+Por lo que la acutalización es 
 
+$x=x+\alpha r.$
+y 
 
- ## Numerical integration
+$r=r-\alpha Ar.$
 
- Once we have built the interpolation spaces, the next step is to set up the machinery to perform the integrals in the weak form numerically. Here, we need to compute integrals on the interior of the domain $\Omega$ and on the Neumann boundary $\Gamma_{\rm N}$. In both cases, we need two main ingredients. We need to define an integration mesh (i.e. a triangulation of the integration domain), plus a Gauss-like quadrature in each of the cells in the triangulation. In Gridap, integration meshes are represented by types inheriting from the abstract type `Triangulation`. For integrating on the domain $\Omega$, we build the following triangulation and the corresponding Lebesgue measure, which will allow to write down integrals in a syntax similar to the usual mathematical notation.
+Tenemos el suguiente algoritmo, 
 
+**Algoritmo:**
+
+0. Calcular $r=b-Ax$ y $p=Ar$
+
+Hasta convergencia haga, 
+1. $\alpha=r^Tr/p^Tp$
+2. $x=x+\alpha r$
+3. $r=r-\alpha p$
+4. $p=Ar$
 """
 
-# ╔═╡ bb9e1600-17ae-4448-8974-a98dff39fe13
+# ╔═╡ dfde1f7d-bcd0-4cea-973b-70f8471e5251
+function mr(A,x,b,M,tol)
+    r=b-A*x
+    p=A*r
+    nr0=norm(r)
+    for i=1:M
+        nr2=dot(r,r)
+        nr=sqrt(nr2)
+        println("Norma r_",i," =",nr)
+        if ( nr/nr0< tol)  # necesita garatizar un buen residuo inicial
+            break
+        end
+        α=nr2/dot(p,p)
+        x=x+α*r
+        r=r-α*p
+        p=A*r
+    end
+    return x
+end
+
+# ╔═╡ 0a5b8b75-67ac-4318-b3f7-621076cac2df
 begin
-	
-	degree = 2
-	Ω = Triangulation(model)
-	dΩ = Measure(Ω,degree)
+	Amr = [8.0  5.0   0.0  4.0  4.0;
+	 5.0  10.0   5.0  1.0  1.0;
+	 9.0  9.0  14.0  4.0  3.0;
+	 8.0  0.0   3.0  5.0  1.0;
+	 2.0  8.0   1.0  3.0  10.0]
+	eigvals(Amr)
 end
 
-# ╔═╡ 54943573-627f-407c-922f-f90d5f138043
-md"""
-
-Here, we build a triangulation from the cells of the model and build (an approximation of) the Lebesgue measure using a quadrature rule of degree 2 in the cells of this triangulation. This is enough for integrating the corresponding terms of the weak form exactly for an interpolation of order 1.
-
- On the other hand, we need a special type of triangulation, represented by the type `BoundaryTriangulation`, to integrate on the boundary. Essentially, a `BoundaryTriangulation` is a particular type of `Triangulation` that is aware of which cells in the model are touched by faces on the boundary. We build an instance of this type from the discrete model and the names used to identify the Neumann boundary as follows:
-
-"""
-
-# ╔═╡ ed5bfe2b-abfd-44df-85e4-831a99b6caa5
+# ╔═╡ 0b0a4913-5c7e-4e6e-b7c1-1eec2a8413b5
 begin
-	
-	neumanntags = ["circle", "triangle", "square"]
-	Γ = BoundaryTriangulation(model,tags=neumanntags)
-	dΓ = Measure(Γ,degree)
-	
+	bmr=fill(1,size(A)[2])
+	xmr=fill(0,size(A)[2])
+	xmr=mr(A,xmr,b,200,0.001)
 end
 
-# ╔═╡ 2fe39d31-ef9f-4643-8651-336f09b286ba
+# ╔═╡ 6d3e433e-8dae-4554-9551-1f3cf52a6872
 md"""
+## Descenso mas profundo en la norma del residuo
 
-In addition, we have created a quadrature of degree 2 on top of the cells in the triangulation for the Neumann boundary.
+Asumimos que $A$ es no singular y selecionamos en cada itearción  $V=[A^Tr]$ y $W=[Av=AA^Tr]$. En este caso $H=r^TAA^TAA^Tr$ y $y=\frac{r^TAA^Tr}{r^TAA^TAA^Tr}=\alpha$. 
+Por lo que la acutalización es 
 
-## Weak form
+$x=x+\alpha A^Tr.$
+y 
 
- With all the ingredients presented so far, we are ready to define the weak form. This is done by defining functions representing the bi-linear and linear forms:
+$r=r-\alpha AA^Tr.$
+
+Tenemos el suguiente algoritmo, 
+
+**Algoritmo:**
+
+0. Calcular $r=b-Ax$
+
+Hasta convergencia haga, 
+1. $v=A^Tr$
+2. $\alpha=||v||^2/||(Av) ||^2$
+3. $x=x+\alpha r$
+4. $r=r-\alpha p$
 
 """
 
-# ╔═╡ d2cabfec-a22c-48a2-a2c9-630f7a93b6ea
-begin
-	
-	f(x) = 1.0
-	h(x) = 3.0
-	a(u,v) = ∫( ∇(v)⋅∇(u) )*dΩ
-	b(v) = ∫( v*f )*dΩ + ∫( v*h )*dΓ
-	
-end
-
-# ╔═╡ ce73a7ec-fc57-4969-a4df-2260c9331909
+# ╔═╡ efca1f99-50cb-40f4-bed1-47d7345dfb72
 md"""
+## Procesos aditivos y multiplicativos
 
- Note that by using the integral function `∫`, the Lebesgue measures `dΩ`, `dΓ`, and the gradient function `∇`, the weak form is written with an obvious relation with the corresponding mathematical notation.
+Considere una descomposición de $\mathcal{R}^n$ en $p$ subspacios $\mbox{span}(V_i)$, $i=1,2,\dots,p$, de dimensión $n_i$ de tal forma que 
+$V_i\subset \mathcal{R}^n$ y $\mathcal{R}^n=\sum_{i=1}^p \mbox{span}(V_i)$.
+Tambien requerimos que $\mbox{span}(V_i)\not = \mbox{span}(V_j)$ for $i\not = j$. 
 
-  ## FE Problem
+En este caso tomarmos $\mathcal{K}=\mathcal{L}=\mbox{span}(V_i)$ para $i=1,2,\dots,p$. 
+Defina 
 
-  At this point, we can build the FE problem that, once solved, will provide the numerical solution we are looking for. A FE problem is represented in Gridap by types inheriting from the abstract type `FEOperator` (both for linear and nonlinear cases). Since we want to solve a linear problem, we use the concrete type `AffineFEOperator`, i.e., a problem represented by a matrix and a right hand side vector.
+$A_i=V_i^TAV_i$
+y
+
+$y_i = A_i^{-1}V_i^Tr^{(k)}, i=1,2,\dots,p.$
+Actualice 
+
+$
+x^{(k+1)} = x^{(k)} + \sum_{i=1}^p V_iy_i=  x^{(k)} + \Big(\sum_{i=1}^p V_iA_i^{-1}V_i^T\Big)r^{(k)}.$
+
+El proximo residuo es 
+
+$r^{(k+1)} =b- Ax^{(k+1)}=\Big(I-\sum_{i=1}^p A V_iA_i^{-1}V_i^T\Big)r^{(k)}.$
+
+Defina la proyección sobre $AV_i$ ortogonalmente a $V_i$ por 
+
+$P_i= A V_iA_i^{-1}V_i^T.$
+Entonces 
+
+$r^{(k+1)}=\Big(I-\sum_{i=1}^p P_i\Big)r^{(k)}.$
+Si se usan parametros de acelaración $\omega_i$, actualizamos $x^{(k+1)} = x^{(k)} + \sum_{i=1}^p \omega_iV_iy_i$ y obtenemos 
+
+$r^{(k+1)}=\Big(I-\sum_{i=1}^p \omega_iP_i\Big)r^{(k)}.$
 
 """
 
-# ╔═╡ 2decd483-3d07-4761-84ec-c775bf9f028a
-op = AffineFEOperator(a,b,Ug,V0)
-
-# ╔═╡ 81455030-7366-4b86-891a-84c71893dd06
+# ╔═╡ 6dfbdeba-6f1e-4c7f-853e-618ae1bbab43
 md"""
-Note that the `AffineFEOperator` object representing our FE problem is built from the function `a` and `b` representing the weak form and test and trial FE spaces `V0` and `Ug`.
+## Procesos aditivos y multiplicativos
 
-  ## Solver phase
+Considere una descomposición de $\mathcal{R}^n$ en $p$ subspacios $\mbox{span}(V_i)$, $i=1,2,\dots,p$, de dimensión $n_i$ de tal forma que 
+$V_i\subset \mathcal{R}^n$ y $\mathcal{R}^n=\sum_{i=1}^p \mbox{span}(V_i)$.
+Tambien requerimos que $\mbox{span}(V_i)\not = \mbox{span}(V_j)$ for $i\not = j$. 
 
-  We have constructed a FE problem, the last step is to solve it. In Gridap, FE problems are solved with types inheriting from the abstract type `FESolver`. Since this is a linear problem, we use a `LinearFESolver`:
-"""
+En este caso tomarmos $\mathcal{K}=\mathcal{L}=\mbox{span}(V_i)$ para $i=1,2,\dots,p$. 
+Defina 
 
-# ╔═╡ 339b8ef8-48f9-4c1e-9f50-e858981f1f6f
-begin
-	
-	ls = LUSolver()
-	solver = LinearFESolver(ls)
-end
+$A_i=V_i^TAV_i$
+y
 
-# ╔═╡ 86e7fafe-950a-4795-a941-5a98b08cb419
-md"""
+$y_i = A_i^{-1}V_i^Tr^{(k)}, i=1,2,\dots,p.$
+Actualice 
 
-  `LinearFESolver` objects are built from a given algebraic linear solver. In this case, we use a LU factorization. Now we are ready to solve the FE problem with the FE solver as follows:
+$x^{(k+1)} = x^{(k)} + \sum_{i=1}^p V_iy_i=  x^{(k)} + \Big(\sum_{i=1}^p V_iA_i^{-1}V_i^T\Big)r^{(k)}.$
 
-"""
+El proximo residuo es 
 
-# ╔═╡ db66c00d-ce62-42b1-b8bc-f02892b507ad
+$r^{(k+1)} =b- Ax^{(k+1)}=\Big(I-\sum_{i=1}^p A V_iA_i^{-1}V_i^T\Big)r^{(k)}.$
 
-uh = solve(solver,op)
+Defina la proyección sobre $AV_i$ ortogonalmente a $V_i$ por 
 
-# ╔═╡ c33c478a-75bf-4846-8104-e8e162756e3c
-md"""
-The `solve` function returns the computed numerical solution `uh`. This object is an instance of `FEFunction`, the type used to represent a function in a FE space. We can inspect the result by writing it into a `vtk` file:
+$P_i= A V_iA_i^{-1}V_i^T.$
+Entonces 
 
-"""
+$r^{(k+1)}=\Big(I-\sum_{i=1}^p P_i\Big)r^{(k)}.$
+Si se usan parametros de acelaración $\omega_i$, actualizamos $x^{(k+1)} = x^{(k)} + \sum_{i=1}^p \omega_iV_iy_i$ y obtenemos 
 
-# ╔═╡ fa6c1ff1-32ce-4369-b2f4-ee9222d129a4
-
-writevtk(Ω,"results",cellfields=["uh"=>uh])
-
-# ╔═╡ 5d26b762-b55f-4abd-b673-da1c5807d368
-md"""
-
- which will generate a file named `results.vtu` having a nodal field named `"uh"` containing the solution of our problem (see next figure).
-
- ![](../assets/poisson/fig_uh.png)
-
- ## References
-
- [1] C. Johnson. *Numerical Solution of Partial Differential Equations by the Finite Element Method*. Dover Publications, 2009.
+$r^{(k+1)}=\Big(I-\sum_{i=1}^p \omega_iP_i\Big)r^{(k)}.$
 
 """
 
 # ╔═╡ 00000000-0000-0000-0000-000000000001
 PLUTO_PROJECT_TOML_CONTENTS = """
 [deps]
-Gridap = "56d4f2e9-7ea1-5844-9cf6-b9c51ca7ce8e"
-HypertextLiteral = "ac1192a8-f4b3-4bfe-ba22-af5b92cd3ab2"
 LinearAlgebra = "37e2e46d-f89d-539d-b4ee-838fcccc9c8e"
 Plots = "91a5bcdd-55d7-5caf-9e0b-520d859cae80"
 PlutoUI = "7f904dfe-b85e-4ff6-b463-dae2292396a8"
 
 [compat]
-Gridap = "~0.17.20"
-HypertextLiteral = "~0.9.4"
 Plots = "~1.39.0"
 PlutoUI = "~0.7.52"
 """
@@ -281,23 +397,9 @@ PlutoUI = "~0.7.52"
 PLUTO_MANIFEST_TOML_CONTENTS = """
 # This file is machine-generated - editing it directly is not advised
 
-julia_version = "1.10.0"
+julia_version = "1.10.2"
 manifest_format = "2.0"
-project_hash = "e716d3fc242002129d5bbc28235b9d843ca362bf"
-
-[[deps.AbstractFFTs]]
-deps = ["LinearAlgebra"]
-git-tree-sha1 = "d92ad398961a3ed262d8bf04a1a2b8340f915fef"
-uuid = "621f4979-c628-5d54-868e-fcf4e3e8185c"
-version = "1.5.0"
-
-    [deps.AbstractFFTs.extensions]
-    AbstractFFTsChainRulesCoreExt = "ChainRulesCore"
-    AbstractFFTsTestExt = "Test"
-
-    [deps.AbstractFFTs.weakdeps]
-    ChainRulesCore = "d360d2e6-b24c-11e9-a2a3-2a2ae2dbcce4"
-    Test = "8dfed614-e22c-5e08-85e1-65c5234f0b40"
+project_hash = "1ff3745eff7c3e774e7175c12e528d972b134f01"
 
 [[deps.AbstractPlutoDingetjes]]
 deps = ["Pkg"]
@@ -305,75 +407,12 @@ git-tree-sha1 = "91bd53c39b9cbfb5ef4b015e8b582d344532bd0a"
 uuid = "6e696c72-6542-2067-7265-42206c756150"
 version = "1.2.0"
 
-[[deps.AbstractTrees]]
-git-tree-sha1 = "faa260e4cb5aba097a73fab382dd4b5819d8ec8c"
-uuid = "1520ce14-60c1-5f80-bbc7-55ef81b5835c"
-version = "0.4.4"
-
-[[deps.Adapt]]
-deps = ["LinearAlgebra", "Requires"]
-git-tree-sha1 = "76289dc51920fdc6e0013c872ba9551d54961c24"
-uuid = "79e6a3ab-5dfb-504d-930d-738a2a938a0e"
-version = "3.6.2"
-weakdeps = ["StaticArrays"]
-
-    [deps.Adapt.extensions]
-    AdaptStaticArraysExt = "StaticArrays"
-
-[[deps.ArgCheck]]
-git-tree-sha1 = "a3a402a35a2f7e0b87828ccabbd5ebfbebe356b4"
-uuid = "dce04be8-c92d-5529-be00-80e4d2c0e197"
-version = "2.3.0"
-
 [[deps.ArgTools]]
 uuid = "0dad84c5-d112-42e6-8d28-ef12dabb789f"
 version = "1.1.1"
 
-[[deps.ArrayInterface]]
-deps = ["Adapt", "LinearAlgebra", "Requires", "SparseArrays", "SuiteSparse"]
-git-tree-sha1 = "f83ec24f76d4c8f525099b2ac475fc098138ec31"
-uuid = "4fba245c-0d91-5ea0-9b3e-6abc04ee57a9"
-version = "7.4.11"
-
-    [deps.ArrayInterface.extensions]
-    ArrayInterfaceBandedMatricesExt = "BandedMatrices"
-    ArrayInterfaceBlockBandedMatricesExt = "BlockBandedMatrices"
-    ArrayInterfaceCUDAExt = "CUDA"
-    ArrayInterfaceGPUArraysCoreExt = "GPUArraysCore"
-    ArrayInterfaceStaticArraysCoreExt = "StaticArraysCore"
-    ArrayInterfaceTrackerExt = "Tracker"
-
-    [deps.ArrayInterface.weakdeps]
-    BandedMatrices = "aae01518-5342-5314-be14-df237901396f"
-    BlockBandedMatrices = "ffab5731-97b5-5995-9138-79e8c1846df0"
-    CUDA = "052768ef-5323-5732-b1bb-66c8b64840ba"
-    GPUArraysCore = "46192b85-c4d5-4398-a991-12ede77f4527"
-    StaticArraysCore = "1e83bf80-4336-4d27-bf5d-d5a4f845583c"
-    Tracker = "9f7883ad-71c0-57eb-9f7f-b5c9e6d3789c"
-
-[[deps.ArrayLayouts]]
-deps = ["FillArrays", "LinearAlgebra"]
-git-tree-sha1 = "9a731850434825d183af39c6e6cd0a1c32dd7e20"
-uuid = "4c555306-a7a7-4459-81d9-ec55ddd5c99a"
-version = "1.4.2"
-weakdeps = ["SparseArrays"]
-
-    [deps.ArrayLayouts.extensions]
-    ArrayLayoutsSparseArraysExt = "SparseArrays"
-
 [[deps.Artifacts]]
 uuid = "56f22d72-fd6d-98f1-02f0-08ddc0907c33"
-
-[[deps.AutoHashEquals]]
-deps = ["Pkg"]
-git-tree-sha1 = "16d2cc66d4de2b4cac1b0942671e07edbfb922c5"
-uuid = "15f4f7f2-30c1-5605-9d31-71845cf9641f"
-version = "2.0.0"
-
-[[deps.BSON]]
-git-tree-sha1 = "2208958832d6e1b59e49f53697483a84ca8d664e"
-uuid = "fbb218c0-5317-5bc6-957e-2ee96dd4b1f0"
-version = "0.3.7"
 
 [[deps.Base64]]
 uuid = "2a0f44e3-6c83-55bd-87e4-b1978d98bd5f"
@@ -382,12 +421,6 @@ uuid = "2a0f44e3-6c83-55bd-87e4-b1978d98bd5f"
 git-tree-sha1 = "43b1a4a8f797c1cddadf60499a8a077d4af2cd2d"
 uuid = "d1d4a3ce-64b1-5f1a-9ba4-7e7e69966f35"
 version = "0.1.7"
-
-[[deps.BlockArrays]]
-deps = ["ArrayLayouts", "FillArrays", "LinearAlgebra"]
-git-tree-sha1 = "54cd829dd26330c42e1cf9df68470dd4df602c61"
-uuid = "8e7c35d0-a365-5155-bbbb-fb81a777f24e"
-version = "0.16.38"
 
 [[deps.Bzip2_jll]]
 deps = ["Artifacts", "JLLWrappers", "Libdl", "Pkg"]
@@ -424,27 +457,18 @@ deps = ["ColorTypes", "FixedPointNumbers", "LinearAlgebra", "Requires", "Statist
 git-tree-sha1 = "a1f44953f2382ebb937d60dafbe2deea4bd23249"
 uuid = "c3611d14-8923-5661-9e6a-0046d554d3a4"
 version = "0.10.0"
-weakdeps = ["SpecialFunctions"]
 
     [deps.ColorVectorSpace.extensions]
     SpecialFunctionsExt = "SpecialFunctions"
+
+    [deps.ColorVectorSpace.weakdeps]
+    SpecialFunctions = "276daf66-3868-5448-9aa4-cd146d93841b"
 
 [[deps.Colors]]
 deps = ["ColorTypes", "FixedPointNumbers", "Reexport"]
 git-tree-sha1 = "fc08e5930ee9a4e03f84bfb5211cb54e7769758a"
 uuid = "5ae59095-9a9b-59fe-a467-6f913c188581"
 version = "0.12.10"
-
-[[deps.Combinatorics]]
-git-tree-sha1 = "08c8b6831dc00bfea825826be0bc8336fc369860"
-uuid = "861a8166-3701-5b0c-9a16-15d98fcdc6aa"
-version = "1.0.2"
-
-[[deps.CommonSubexpressions]]
-deps = ["MacroTools", "Test"]
-git-tree-sha1 = "7b8a93dba8af7e3b42fecabf646260105ac373f7"
-uuid = "bbf7d656-a473-5ed7-a52c-81e309532950"
-version = "0.3.0"
 
 [[deps.Compat]]
 deps = ["UUIDs"]
@@ -459,27 +483,13 @@ weakdeps = ["Dates", "LinearAlgebra"]
 [[deps.CompilerSupportLibraries_jll]]
 deps = ["Artifacts", "Libdl"]
 uuid = "e66e0078-7015-5450-92f7-15fbd957f2ae"
-version = "1.0.5+1"
+version = "1.1.0+0"
 
 [[deps.ConcurrentUtilities]]
 deps = ["Serialization", "Sockets"]
 git-tree-sha1 = "5372dbbf8f0bdb8c700db5367132925c0771ef7e"
 uuid = "f0e56b4a-5159-44fe-b623-3e5288b988bb"
 version = "2.2.1"
-
-[[deps.ConstructionBase]]
-deps = ["LinearAlgebra"]
-git-tree-sha1 = "c53fc348ca4d40d7b371e71fd52251839080cbc9"
-uuid = "187b0558-2788-49d3-abe0-74a17ed4e7c9"
-version = "1.5.4"
-
-    [deps.ConstructionBase.extensions]
-    ConstructionBaseIntervalSetsExt = "IntervalSets"
-    ConstructionBaseStaticArraysExt = "StaticArrays"
-
-    [deps.ConstructionBase.weakdeps]
-    IntervalSets = "8197267c-284f-5f27-9208-e0e47529a953"
-    StaticArrays = "90137ffa-7385-5640-81b9-e52037218182"
 
 [[deps.Contour]]
 git-tree-sha1 = "d05d9e7b7aedff4e5b51a029dced05cfb6125781"
@@ -506,36 +516,6 @@ deps = ["Mmap"]
 git-tree-sha1 = "9e2f36d3c96a820c678f2f1f1782582fcf685bae"
 uuid = "8bb1440f-4735-579b-a4ab-409b98df4dab"
 version = "1.9.1"
-
-[[deps.DiffResults]]
-deps = ["StaticArraysCore"]
-git-tree-sha1 = "782dd5f4561f5d267313f23853baaaa4c52ea621"
-uuid = "163ba53b-c6d8-5494-b064-1a9d43ac40c5"
-version = "1.1.0"
-
-[[deps.DiffRules]]
-deps = ["IrrationalConstants", "LogExpFunctions", "NaNMath", "Random", "SpecialFunctions"]
-git-tree-sha1 = "23163d55f885173722d1e4cf0f6110cdbaf7e272"
-uuid = "b552c78f-8df3-52c6-915a-8e097449b14b"
-version = "1.15.1"
-
-[[deps.Distances]]
-deps = ["LinearAlgebra", "Statistics", "StatsAPI"]
-git-tree-sha1 = "5225c965635d8c21168e32a12954675e7bea1151"
-uuid = "b4f34e82-e78d-54a5-968a-f98e89d6e8f7"
-version = "0.10.10"
-
-    [deps.Distances.extensions]
-    DistancesChainRulesCoreExt = "ChainRulesCore"
-    DistancesSparseArraysExt = "SparseArrays"
-
-    [deps.Distances.weakdeps]
-    ChainRulesCore = "d360d2e6-b24c-11e9-a2a3-2a2ae2dbcce4"
-    SparseArrays = "2f01184e-e22b-5df5-ae63-d93ebab69eaf"
-
-[[deps.Distributed]]
-deps = ["Random", "Serialization", "Sockets"]
-uuid = "8ba89e20-285c-5b6f-9357-94700520ee1b"
 
 [[deps.DocStringExtensions]]
 deps = ["LibGit2"]
@@ -578,59 +558,8 @@ git-tree-sha1 = "74faea50c1d007c85837327f6775bea60b5492dd"
 uuid = "b22a6f82-2f65-5046-a5b2-351ab43fb4e5"
 version = "4.4.2+2"
 
-[[deps.FFTW]]
-deps = ["AbstractFFTs", "FFTW_jll", "LinearAlgebra", "MKL_jll", "Preferences", "Reexport"]
-git-tree-sha1 = "b4fbdd20c889804969571cc589900803edda16b7"
-uuid = "7a1cc6ca-52ef-59f5-83cd-3a7055c09341"
-version = "1.7.1"
-
-[[deps.FFTW_jll]]
-deps = ["Artifacts", "JLLWrappers", "Libdl", "Pkg"]
-git-tree-sha1 = "c6033cc3892d0ef5bb9cd29b7f2f0331ea5184ea"
-uuid = "f5851436-0d7a-5f13-b9de-f02708fd171a"
-version = "3.3.10+0"
-
-[[deps.FastGaussQuadrature]]
-deps = ["LinearAlgebra", "SpecialFunctions", "StaticArrays"]
-git-tree-sha1 = "58d83dd5a78a36205bdfddb82b1bb67682e64487"
-uuid = "442a2c76-b920-505d-bb47-c5924d526838"
-version = "0.4.9"
-
-[[deps.FileIO]]
-deps = ["Pkg", "Requires", "UUIDs"]
-git-tree-sha1 = "299dc33549f68299137e51e6d49a13b5b1da9673"
-uuid = "5789e2e9-d7fb-5bc7-8068-2c6fae9b9549"
-version = "1.16.1"
-
 [[deps.FileWatching]]
 uuid = "7b1f6079-737a-58dc-b8bc-7a2ca5c1b5ee"
-
-[[deps.FillArrays]]
-deps = ["LinearAlgebra", "Random"]
-git-tree-sha1 = "a20eaa3ad64254c61eeb5f230d9306e937405434"
-uuid = "1a297f60-69ca-5386-bcde-b61e274b549b"
-version = "1.6.1"
-weakdeps = ["SparseArrays", "Statistics"]
-
-    [deps.FillArrays.extensions]
-    FillArraysSparseArraysExt = "SparseArrays"
-    FillArraysStatisticsExt = "Statistics"
-
-[[deps.FiniteDiff]]
-deps = ["ArrayInterface", "LinearAlgebra", "Requires", "Setfield", "SparseArrays"]
-git-tree-sha1 = "c6e4a1fbe73b31a3dea94b1da449503b8830c306"
-uuid = "6a86dc24-6348-571c-b903-95158fe2bd41"
-version = "2.21.1"
-
-    [deps.FiniteDiff.extensions]
-    FiniteDiffBandedMatricesExt = "BandedMatrices"
-    FiniteDiffBlockBandedMatricesExt = "BlockBandedMatrices"
-    FiniteDiffStaticArraysExt = "StaticArrays"
-
-    [deps.FiniteDiff.weakdeps]
-    BandedMatrices = "aae01518-5342-5314-be14-df237901396f"
-    BlockBandedMatrices = "ffab5731-97b5-5995-9138-79e8c1846df0"
-    StaticArrays = "90137ffa-7385-5640-81b9-e52037218182"
 
 [[deps.FixedPointNumbers]]
 deps = ["Statistics"]
@@ -650,16 +579,6 @@ git-tree-sha1 = "8339d61043228fdd3eb658d86c926cb282ae72a8"
 uuid = "59287772-0a20-5a39-b81b-1366585eb4c0"
 version = "0.4.2"
 
-[[deps.ForwardDiff]]
-deps = ["CommonSubexpressions", "DiffResults", "DiffRules", "LinearAlgebra", "LogExpFunctions", "NaNMath", "Preferences", "Printf", "Random", "SpecialFunctions"]
-git-tree-sha1 = "cf0fe81336da9fb90944683b8c41984b08793dad"
-uuid = "f6369f11-7733-5829-9624-2563aa707210"
-version = "0.10.36"
-weakdeps = ["StaticArrays"]
-
-    [deps.ForwardDiff.extensions]
-    ForwardDiffStaticArraysExt = "StaticArrays"
-
 [[deps.FreeType2_jll]]
 deps = ["Artifacts", "Bzip2_jll", "JLLWrappers", "Libdl", "Zlib_jll"]
 git-tree-sha1 = "d8db6a5a2fe1381c1ea4ef2cab7c69c2de7f9ea0"
@@ -671,10 +590,6 @@ deps = ["Artifacts", "JLLWrappers", "Libdl", "Pkg"]
 git-tree-sha1 = "aa31987c2ba8704e23c6c8ba8a4f769d5d7e4f91"
 uuid = "559328eb-81f9-559d-9380-de523a88c83c"
 version = "1.0.10+0"
-
-[[deps.Future]]
-deps = ["Random"]
-uuid = "9fa8497b-333b-5362-9e8d-4d0656e87820"
 
 [[deps.GLFW_jll]]
 deps = ["Artifacts", "JLLWrappers", "Libdl", "Libglvnd_jll", "Pkg", "Xorg_libXcursor_jll", "Xorg_libXi_jll", "Xorg_libXinerama_jll", "Xorg_libXrandr_jll"]
@@ -712,12 +627,6 @@ git-tree-sha1 = "344bf40dcab1073aca04aa0df4fb092f920e4011"
 uuid = "3b182d85-2403-5c21-9c21-1e1f0cc25472"
 version = "1.3.14+0"
 
-[[deps.Gridap]]
-deps = ["AbstractTrees", "BSON", "BlockArrays", "Combinatorics", "DataStructures", "DocStringExtensions", "FastGaussQuadrature", "FileIO", "FillArrays", "ForwardDiff", "JLD2", "JSON", "LineSearches", "LinearAlgebra", "NLsolve", "NearestNeighbors", "PolynomialBases", "QuadGK", "Random", "SparseArrays", "SparseMatricesCSR", "StaticArrays", "Test", "WriteVTK"]
-git-tree-sha1 = "f504a1dc2a1474784e6d9854692d320be171f18f"
-uuid = "56d4f2e9-7ea1-5844-9cf6-b9c51ca7ce8e"
-version = "0.17.20"
-
 [[deps.Grisu]]
 git-tree-sha1 = "53bb909d1151e57e2484c3d1b53e19552b887fb2"
 uuid = "42e2da0e-8278-4e71-bc24-59509adca0fe"
@@ -753,12 +662,6 @@ git-tree-sha1 = "d75853a0bdbfb1ac815478bacd89cd27b550ace6"
 uuid = "b5f81e59-6552-4d32-b1f0-c071b021bf89"
 version = "0.2.3"
 
-[[deps.IntelOpenMP_jll]]
-deps = ["Artifacts", "JLLWrappers", "Libdl", "Pkg"]
-git-tree-sha1 = "ad37c091f7d7daf900963171600d7c1c5c3ede32"
-uuid = "1d5cc7b8-4909-519e-a0f8-d0f5ad9712d0"
-version = "2023.2.0+0"
-
 [[deps.InteractiveUtils]]
 deps = ["Markdown"]
 uuid = "b77e0a4c-d291-57a0-90e8-8db25a27a240"
@@ -768,17 +671,11 @@ git-tree-sha1 = "630b497eafcc20001bba38a4651b327dcfc491d2"
 uuid = "92d709cd-6900-40b7-9082-c6be49f344b6"
 version = "0.2.2"
 
-[[deps.JLD2]]
-deps = ["FileIO", "MacroTools", "Mmap", "OrderedCollections", "Pkg", "Printf", "Reexport", "Requires", "TranscodingStreams", "UUIDs"]
-git-tree-sha1 = "c11d691a0dc8e90acfa4740d293ade57f68bfdbb"
-uuid = "033835bb-8acc-5ee8-8aae-3f567f8a3819"
-version = "0.4.35"
-
 [[deps.JLFzf]]
 deps = ["Pipe", "REPL", "Random", "fzf_jll"]
-git-tree-sha1 = "9fb0b890adab1c0a4a475d4210d51f228bfc250d"
+git-tree-sha1 = "f377670cda23b6b7c1c0b3893e37451c5c1a2185"
 uuid = "1019f520-868f-41f5-a6de-eb00f4b6a39c"
-version = "0.1.6"
+version = "0.1.5"
 
 [[deps.JLLWrappers]]
 deps = ["Artifacts", "Preferences"]
@@ -840,10 +737,6 @@ version = "0.16.1"
     [deps.Latexify.weakdeps]
     DataFrames = "a93c6f00-e57d-5684-b7b6-d8193f3e46c0"
     SymEngine = "123dc426-2d89-5057-bbad-38513e3affd8"
-
-[[deps.LazyArtifacts]]
-deps = ["Artifacts", "Pkg"]
-uuid = "4af54fe1-eca0-43a8-85a7-787d91b784e3"
 
 [[deps.LibCURL]]
 deps = ["LibCURL_jll", "MozillaCACerts_jll"]
@@ -920,18 +813,6 @@ git-tree-sha1 = "7f3efec06033682db852f8b3bc3c1d2b0a0ab066"
 uuid = "38a345b3-de98-5d2b-a5d3-14cd9215e700"
 version = "2.36.0+0"
 
-[[deps.LightXML]]
-deps = ["Libdl", "XML2_jll"]
-git-tree-sha1 = "e129d9391168c677cd4800f5c0abb1ed8cb3794f"
-uuid = "9c8b4983-aa76-5018-a973-4c85ecc9e179"
-version = "0.9.0"
-
-[[deps.LineSearches]]
-deps = ["LinearAlgebra", "NLSolversBase", "NaNMath", "Parameters", "Printf"]
-git-tree-sha1 = "7bbea35cec17305fc70a0e5b4641477dc0789d9d"
-uuid = "d3d80556-e9d4-5f37-9878-2ab0fcc64255"
-version = "7.2.0"
-
 [[deps.LinearAlgebra]]
 deps = ["Libdl", "OpenBLAS_jll", "libblastrampoline_jll"]
 uuid = "37e2e46d-f89d-539d-b4ee-838fcccc9c8e"
@@ -957,20 +838,14 @@ uuid = "56ddb016-857b-54e1-b83d-db4d58db5568"
 
 [[deps.LoggingExtras]]
 deps = ["Dates", "Logging"]
-git-tree-sha1 = "c1dd6d7978c12545b4179fb6153b9250c96b0075"
+git-tree-sha1 = "0d097476b6c381ab7906460ef1ef1638fbce1d91"
 uuid = "e6f89c97-d47a-5376-807f-9c37f3926c36"
-version = "1.0.3"
+version = "1.0.2"
 
 [[deps.MIMEs]]
 git-tree-sha1 = "65f28ad4b594aebe22157d6fac869786a255b7eb"
 uuid = "6c6e2e6c-3030-632d-7369-2d6c69616d65"
 version = "0.1.4"
-
-[[deps.MKL_jll]]
-deps = ["Artifacts", "IntelOpenMP_jll", "JLLWrappers", "LazyArtifacts", "Libdl", "Pkg"]
-git-tree-sha1 = "eb006abbd7041c28e0d16260e50a24f8f9104913"
-uuid = "856f044c-d86e-5d09-b602-aeab76dc8ba7"
-version = "2023.2.0+0"
 
 [[deps.MacroTools]]
 deps = ["Markdown", "Random"]
@@ -1011,29 +886,11 @@ uuid = "a63ad114-7e13-5084-954f-fe012c677804"
 uuid = "14a3606d-f60d-562e-9121-12d972cd8159"
 version = "2023.1.10"
 
-[[deps.NLSolversBase]]
-deps = ["DiffResults", "Distributed", "FiniteDiff", "ForwardDiff"]
-git-tree-sha1 = "a0b464d183da839699f4c79e7606d9d186ec172c"
-uuid = "d41bc354-129a-5804-8e4c-c37616107c6c"
-version = "7.8.3"
-
-[[deps.NLsolve]]
-deps = ["Distances", "LineSearches", "LinearAlgebra", "NLSolversBase", "Printf", "Reexport"]
-git-tree-sha1 = "019f12e9a1a7880459d0173c182e6a99365d7ac1"
-uuid = "2774e3e8-f4cf-5e23-947b-6d7e65073b56"
-version = "4.5.1"
-
 [[deps.NaNMath]]
 deps = ["OpenLibm_jll"]
 git-tree-sha1 = "0877504529a3e5c3343c6f8b4c0381e57e4387e4"
 uuid = "77ba4419-2d1f-58cd-9bb1-8ffee604a2e3"
 version = "1.0.2"
-
-[[deps.NearestNeighbors]]
-deps = ["Distances", "StaticArrays"]
-git-tree-sha1 = "2c3726ceb3388917602169bed973dbc97f1b51a8"
-uuid = "b8a86587-4115-5ab1-83bc-aa920d37bbce"
-version = "0.4.13"
 
 [[deps.NetworkOptions]]
 uuid = "ca575930-c2e3-43a9-ace4-1e988b2c1908"
@@ -1048,7 +905,7 @@ version = "1.3.5+1"
 [[deps.OpenBLAS_jll]]
 deps = ["Artifacts", "CompilerSupportLibraries_jll", "Libdl"]
 uuid = "4536629a-c528-5b80-bd46-f80d51c5b363"
-version = "0.3.23+2"
+version = "0.3.23+4"
 
 [[deps.OpenLibm_jll]]
 deps = ["Artifacts", "Libdl"]
@@ -1067,12 +924,6 @@ git-tree-sha1 = "a12e56c72edee3ce6b96667745e6cbbe5498f200"
 uuid = "458c3c95-2e84-50aa-8efc-19380b2a3a95"
 version = "1.1.23+0"
 
-[[deps.OpenSpecFun_jll]]
-deps = ["Artifacts", "CompilerSupportLibraries_jll", "JLLWrappers", "Libdl", "Pkg"]
-git-tree-sha1 = "13652491f6856acfd2db29360e1bbcd4565d04f1"
-uuid = "efe28fd5-8261-553b-a9e1-b2916fc3738e"
-version = "0.5.5+0"
-
 [[deps.Opus_jll]]
 deps = ["Artifacts", "JLLWrappers", "Libdl", "Pkg"]
 git-tree-sha1 = "51a08fb14ec28da2ec7a927c4337e4332c2a4720"
@@ -1088,12 +939,6 @@ version = "1.6.2"
 deps = ["Artifacts", "Libdl"]
 uuid = "efcefdf7-47ab-520b-bdef-62a2eaa19f15"
 version = "10.42.0+1"
-
-[[deps.Parameters]]
-deps = ["OrderedCollections", "UnPack"]
-git-tree-sha1 = "34c0e9ad262e5f7fc75b10a9952ca7692cfc5fbe"
-uuid = "d96e819e-fc66-5662-9728-84c9c7592b0a"
-version = "0.12.3"
 
 [[deps.Parsers]]
 deps = ["Dates", "PrecompileTools", "UUIDs"]
@@ -1155,12 +1000,6 @@ git-tree-sha1 = "e47cd150dbe0443c3a3651bc5b9cbd5576ab75b7"
 uuid = "7f904dfe-b85e-4ff6-b463-dae2292396a8"
 version = "0.7.52"
 
-[[deps.PolynomialBases]]
-deps = ["ArgCheck", "AutoHashEquals", "FFTW", "FastGaussQuadrature", "LinearAlgebra", "Requires", "SimpleUnPack", "SpecialFunctions"]
-git-tree-sha1 = "aa1877430a7e8b0c7a35ea095c415d462af0870f"
-uuid = "c74db56a-226d-5e98-8bb0-a6049094aeea"
-version = "0.4.21"
-
 [[deps.PrecompileTools]]
 deps = ["Preferences"]
 git-tree-sha1 = "03b4c25b43cb84cee5c90aa9b5ea0a78fd848d2f"
@@ -1182,12 +1021,6 @@ deps = ["Artifacts", "CompilerSupportLibraries_jll", "Fontconfig_jll", "Glib_jll
 git-tree-sha1 = "7c29f0e8c575428bd84dc3c72ece5178caa67336"
 uuid = "c0090381-4147-56d7-9ebc-da0b1113ec56"
 version = "6.5.2+2"
-
-[[deps.QuadGK]]
-deps = ["DataStructures", "LinearAlgebra"]
-git-tree-sha1 = "9ebcd48c498668c7fa0e97a9cae873fbee7bfee1"
-uuid = "1fd47b50-473d-5c70-9696-f719f8f3bcdc"
-version = "2.9.1"
 
 [[deps.REPL]]
 deps = ["InteractiveUtils", "Markdown", "Sockets", "Unicode"]
@@ -1216,9 +1049,9 @@ version = "1.2.2"
 
 [[deps.RelocatableFolders]]
 deps = ["SHA", "Scratch"]
-git-tree-sha1 = "ffdaf70d81cf6ff22c2b6e733c900c3321cab864"
+git-tree-sha1 = "90bc7a7c96410424509e4263e277e43250c05691"
 uuid = "05181044-ff0b-4ac5-8273-598c1e38db00"
-version = "1.0.1"
+version = "1.0.0"
 
 [[deps.Requires]]
 deps = ["UUIDs"]
@@ -1239,12 +1072,6 @@ version = "1.2.0"
 [[deps.Serialization]]
 uuid = "9e88b42a-f829-5b0c-bbe9-9e923198166b"
 
-[[deps.Setfield]]
-deps = ["ConstructionBase", "Future", "MacroTools", "StaticArraysCore"]
-git-tree-sha1 = "e2cc6d8c88613c05e1defb55170bf5ff211fbeac"
-uuid = "efcf1570-3423-57d1-acb7-fd33fddbac46"
-version = "1.1.1"
-
 [[deps.Showoff]]
 deps = ["Dates", "Grisu"]
 git-tree-sha1 = "91eddf657aca81df9ae6ceb20b959ae5653ad1de"
@@ -1254,11 +1081,6 @@ version = "1.0.3"
 [[deps.SimpleBufferStream]]
 git-tree-sha1 = "874e8867b33a00e784c8a7e4b60afe9e037b74e1"
 uuid = "777ac1f9-54b0-4bf8-805c-2214025038e7"
-version = "1.1.0"
-
-[[deps.SimpleUnPack]]
-git-tree-sha1 = "58e6353e72cde29b90a69527e56df1b5c3d8c437"
-uuid = "ce78b400-467f-4804-87d8-8f486da07d0a"
 version = "1.1.0"
 
 [[deps.Sockets]]
@@ -1275,39 +1097,6 @@ deps = ["Libdl", "LinearAlgebra", "Random", "Serialization", "SuiteSparse_jll"]
 uuid = "2f01184e-e22b-5df5-ae63-d93ebab69eaf"
 version = "1.10.0"
 
-[[deps.SparseMatricesCSR]]
-deps = ["LinearAlgebra", "SparseArrays", "SuiteSparse"]
-git-tree-sha1 = "38677ca58e80b5cad2382e5a1848f93b054ad28d"
-uuid = "a0a7dd2c-ebf4-11e9-1f05-cf50bc540ca1"
-version = "0.6.7"
-
-[[deps.SpecialFunctions]]
-deps = ["IrrationalConstants", "LogExpFunctions", "OpenLibm_jll", "OpenSpecFun_jll"]
-git-tree-sha1 = "e2cfc4012a19088254b3950b85c3c1d8882d864d"
-uuid = "276daf66-3868-5448-9aa4-cd146d93841b"
-version = "2.3.1"
-
-    [deps.SpecialFunctions.extensions]
-    SpecialFunctionsChainRulesCoreExt = "ChainRulesCore"
-
-    [deps.SpecialFunctions.weakdeps]
-    ChainRulesCore = "d360d2e6-b24c-11e9-a2a3-2a2ae2dbcce4"
-
-[[deps.StaticArrays]]
-deps = ["LinearAlgebra", "Random", "StaticArraysCore"]
-git-tree-sha1 = "0adf069a2a490c47273727e029371b31d44b72b2"
-uuid = "90137ffa-7385-5640-81b9-e52037218182"
-version = "1.6.5"
-weakdeps = ["Statistics"]
-
-    [deps.StaticArrays.extensions]
-    StaticArraysStatisticsExt = "Statistics"
-
-[[deps.StaticArraysCore]]
-git-tree-sha1 = "36b3d696ce6366023a0ea192b4cd442268995a0d"
-uuid = "1e83bf80-4336-4d27-bf5d-d5a4f845583c"
-version = "1.4.2"
-
 [[deps.Statistics]]
 deps = ["LinearAlgebra", "SparseArrays"]
 uuid = "10745b16-79ce-11e8-11f9-7d13ad32a3b2"
@@ -1321,13 +1110,9 @@ version = "1.7.0"
 
 [[deps.StatsBase]]
 deps = ["DataAPI", "DataStructures", "LinearAlgebra", "LogExpFunctions", "Missings", "Printf", "Random", "SortingAlgorithms", "SparseArrays", "Statistics", "StatsAPI"]
-git-tree-sha1 = "1d77abd07f617c4868c33d4f5b9e1dbb2643c9cf"
+git-tree-sha1 = "75ebe04c5bed70b91614d684259b661c9e6274a4"
 uuid = "2913bbd2-ae8a-5f71-8c99-4fb6c76f3a91"
-version = "0.34.2"
-
-[[deps.SuiteSparse]]
-deps = ["Libdl", "LinearAlgebra", "Serialization", "SparseArrays"]
-uuid = "4607b0f0-06f3-5cda-b6b1-a6196a1729e9"
+version = "0.34.0"
 
 [[deps.SuiteSparse_jll]]
 deps = ["Artifacts", "Libdl", "libblastrampoline_jll"]
@@ -1361,23 +1146,18 @@ uuid = "3bb67fe8-82b1-5028-8e26-92a6c54297fa"
 version = "0.9.13"
 
 [[deps.Tricks]]
-git-tree-sha1 = "eae1bb484cd63b36999ee58be2de6c178105112f"
+git-tree-sha1 = "aadb748be58b492045b4f56166b5188aa63ce549"
 uuid = "410a4b4d-49e4-4fbc-ab6d-cb71b17b3775"
-version = "0.1.8"
+version = "0.1.7"
 
 [[deps.URIs]]
-git-tree-sha1 = "67db6cc7b3821e19ebe75791a9dd19c9b1188f2b"
+git-tree-sha1 = "b7a5e99f24892b6824a954199a45e9ffcc1c70f0"
 uuid = "5c2747f8-b7ea-4ff2-ba2e-563bfd36b1d4"
-version = "1.5.1"
+version = "1.5.0"
 
 [[deps.UUIDs]]
 deps = ["Random", "SHA"]
 uuid = "cf7118a7-6976-5b1a-9a39-7adc72f591a4"
-
-[[deps.UnPack]]
-git-tree-sha1 = "387c1f73762231e86e0c9c5443ce3b4a0a9a0c2b"
-uuid = "3a884ed6-31ef-47d7-9d2a-63182c4928ed"
-version = "1.0.2"
 
 [[deps.Unicode]]
 uuid = "4ec0a83e-493e-50e2-b9ac-8f72acf5a8f5"
@@ -1413,11 +1193,6 @@ git-tree-sha1 = "ca0969166a028236229f63514992fc073799bb78"
 uuid = "41fe7b60-77ed-43a1-b4f0-825fd5a5650d"
 version = "0.2.0"
 
-[[deps.VTKBase]]
-git-tree-sha1 = "c2d0db3ef09f1942d08ea455a9e252594be5f3b6"
-uuid = "4004b06d-e244-455f-a6ce-a5f9919cc534"
-version = "1.0.1"
-
 [[deps.Vulkan_Loader_jll]]
 deps = ["Artifacts", "JLLWrappers", "Libdl", "Wayland_jll", "Xorg_libX11_jll", "Xorg_libXrandr_jll", "xkbcommon_jll"]
 git-tree-sha1 = "2f0486047a07670caad3a81a075d2e518acc5c59"
@@ -1436,17 +1211,11 @@ git-tree-sha1 = "4528479aa01ee1b3b4cd0e6faef0e04cf16466da"
 uuid = "2381bf8a-dfd0-557d-9999-79630e7b1b91"
 version = "1.25.0+0"
 
-[[deps.WriteVTK]]
-deps = ["Base64", "CodecZlib", "FillArrays", "LightXML", "TranscodingStreams", "VTKBase"]
-git-tree-sha1 = "7b46936613e41cfe1c6a5897d243ddcab8feabec"
-uuid = "64499a7a-5c06-52f2-abe2-ccb03c286192"
-version = "1.18.0"
-
 [[deps.XML2_jll]]
 deps = ["Artifacts", "JLLWrappers", "Libdl", "Libiconv_jll", "Zlib_jll"]
-git-tree-sha1 = "24b81b59bd35b3c42ab84fa589086e19be919916"
+git-tree-sha1 = "04a51d15436a572301b5abbb9d099713327e9fc4"
 uuid = "02c8fc9c-b97f-50b9-bbe4-9be30ff0a78a"
-version = "2.11.5+0"
+version = "2.10.4+0"
 
 [[deps.XSLT_jll]]
 deps = ["Artifacts", "JLLWrappers", "Libdl", "Libgcrypt_jll", "Libgpg_error_jll", "Libiconv_jll", "Pkg", "XML2_jll", "Zlib_jll"]
@@ -1623,9 +1392,9 @@ version = "3.2.9+0"
 
 [[deps.fzf_jll]]
 deps = ["Artifacts", "JLLWrappers", "Libdl", "Pkg"]
-git-tree-sha1 = "47cf33e62e138b920039e8ff9f9841aafe1b733e"
+git-tree-sha1 = "868e669ccb12ba16eaf50cb2957ee2ff61261c56"
 uuid = "214eeab7-80f7-51ab-84ad-2988db7cef09"
-version = "0.35.1+0"
+version = "0.29.0+0"
 
 [[deps.gperf_jll]]
 deps = ["Artifacts", "JLLWrappers", "Libdl", "Pkg"]
@@ -1716,34 +1485,31 @@ version = "1.4.1+1"
 """
 
 # ╔═╡ Cell order:
-# ╠═e44895d0-6c5b-11ee-3d3f-a3f41cdc51a1
-# ╟─9f6d65e6-434e-4787-8ad4-2d8dd58a47c5
-# ╠═5024f850-0164-4e98-861a-68267705307b
-# ╟─a4928017-8dff-45e9-8fbc-6ea49f4cf5e8
-# ╟─28b43ff3-1ed8-418e-be4c-0c02e781e93d
-# ╠═8d26cca5-0c60-4bc3-88a3-4131544a6624
-# ╟─459bade0-9427-4181-910f-408b2bea4e0e
-# ╠═d841ad97-b71d-4a40-85ac-913b49440827
-# ╟─80ce49a3-004b-4320-ae0c-6b7de994cc01
-# ╠═663535c6-cc82-4e76-beec-fa9c2ee6deda
-# ╟─e00f3eca-9871-4a73-9a77-eba97f75bf18
-# ╠═7cf9ea6f-76ee-4fe0-9112-ffd2d0a7c3e2
-# ╟─b6eb129c-ccce-451f-9dbf-a54ebcf20fa1
-# ╠═1e63102c-e958-432d-b7cd-272441b33633
-# ╟─4cc1bfb8-7007-4334-adc6-aa7115fef2ba
-# ╠═bb9e1600-17ae-4448-8974-a98dff39fe13
-# ╟─54943573-627f-407c-922f-f90d5f138043
-# ╠═ed5bfe2b-abfd-44df-85e4-831a99b6caa5
-# ╟─2fe39d31-ef9f-4643-8651-336f09b286ba
-# ╠═d2cabfec-a22c-48a2-a2c9-630f7a93b6ea
-# ╟─ce73a7ec-fc57-4969-a4df-2260c9331909
-# ╠═2decd483-3d07-4761-84ec-c775bf9f028a
-# ╟─81455030-7366-4b86-891a-84c71893dd06
-# ╠═339b8ef8-48f9-4c1e-9f50-e858981f1f6f
-# ╠═86e7fafe-950a-4795-a941-5a98b08cb419
-# ╠═db66c00d-ce62-42b1-b8bc-f02892b507ad
-# ╠═c33c478a-75bf-4846-8104-e8e162756e3c
-# ╠═fa6c1ff1-32ce-4369-b2f4-ee9222d129a4
-# ╟─5d26b762-b55f-4abd-b673-da1c5807d368
+# ╠═7d363390-66d7-11ee-12b0-0f5139bbd847
+# ╠═2a3b7177-38a5-4cbe-8e49-06a92ee44870
+# ╟─8bb16c2a-c1ce-475e-a3e1-e78a6c7801a4
+# ╠═4702d844-c4d5-47a0-bb1b-01927b8daac7
+# ╟─a4323b5f-d950-4dc0-b697-4dfabedf4db8
+# ╟─6ce74da7-fc10-4b67-af8d-10a4e5160f46
+# ╟─b51a1aac-6ab3-4d53-9fde-417401083ade
+# ╟─3a14c566-e3fe-4d9e-b279-d6be971c0a1f
+# ╟─fdff76fe-cb0c-45bf-b0c2-9f45cb04081b
+# ╟─33456248-bf4e-4615-853b-a7cc22ad4fe1
+# ╟─55ad72fa-756a-4709-993b-5c784a74a093
+# ╟─d1e32cc0-df8c-4f21-99c6-0a7daa40f9e5
+# ╠═ddd8cf41-0312-4e30-a06f-4db660cb711d
+# ╠═8a8a8e99-5365-49a7-858f-01be53f26388
+# ╠═d7550a06-a204-451f-bcee-a07f871072ff
+# ╠═4128a480-88ef-4c3a-a76f-d026da7a4c98
+# ╠═075409f4-8111-43c2-b228-c9b4a22b38df
+# ╠═7c3300d5-c311-4bed-9dde-826f940d276d
+# ╠═3d63b547-bd59-4724-935d-b138a3e61c27
+# ╟─60616fe9-11f5-47d8-82be-2817b6075132
+# ╠═dfde1f7d-bcd0-4cea-973b-70f8471e5251
+# ╠═0a5b8b75-67ac-4318-b3f7-621076cac2df
+# ╠═0b0a4913-5c7e-4e6e-b7c1-1eec2a8413b5
+# ╟─6d3e433e-8dae-4554-9551-1f3cf52a6872
+# ╟─efca1f99-50cb-40f4-bed1-47d7345dfb72
+# ╟─6dfbdeba-6f1e-4c7f-853e-618ae1bbab43
 # ╟─00000000-0000-0000-0000-000000000001
 # ╟─00000000-0000-0000-0000-000000000002

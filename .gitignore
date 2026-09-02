@@ -1,0 +1,17 @@
+# Jupyter
+.ipynb_checkpoints/
+
+# Pluto / Julia
+*.jl.cov
+*.jl.*.cov
+Manifest.toml
+
+# Xournal++
+.*.autosave.xopp
+
+# Archivos generados y temporales
+*.log
+tmp/
+.DS_Store
+Thumbs.db
+
